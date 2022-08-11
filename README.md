@@ -1,8 +1,30 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a template to quickly create a NextJS site with MUI using Typescript
+
+## Features
+
+- Build in Next links with MUI styling. Also works for MUI Buttons. This means internal links will transition smoothly with no page refresh
+- Using `theme.palette` colors will change automatically with dark & light themes when using themeContext
+- Built in dark/light mode toggle switch and appropriate themes located in one theme.ts file
+- Premade AppBar with mobile nav and alignment options
+- Premade Footer with variants
+- Typography variant formatting, and other components such as blockquotes
+- In-page nav menu for specific sections
+- 404 page
+- path definitions, no more `../../../spaghetti`
+- Page template, component template
+- Framer motion full-page animations built in, and support for component animations
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
