@@ -19,15 +19,15 @@ const Home: NextPage = () => {
       <Typography color="text.secondary">
         Text Secondary
       </Typography>
-      <Box>
+      <Typography>
         <Link href="/page">Test Link</Link>
-      </Box>
-      <Box>
+      </Typography>
+      <Typography>
         <Link href="https://ergopad.io">External Link</Link>
-      </Box>
-      <Box>
+      </Typography>
+      <Typography>
         <Link href="/">Active Link</Link>
-      </Box>
+      </Typography>
       <ButtonLink
         href="/page"
         variant="contained"

@@ -1,9 +1,16 @@
 import NextLink, { LinkProps } from 'next/link';
-import { FC } from 'react';
+import { FC, HTMLProps } from 'react';
 import { Button, ButtonProps } from '@mui/material';
 import { sizeHeight } from '@mui/system';
 
-const ButtonLink: FC<LinkProps & ButtonProps> = ({
+// Use only when the button is linking to internal pages. 
+// For external links or buttons that use onClick functions, don't use this component
+
+const ButtonLink: FC<
+  LinkProps &
+  // HTMLProps<HTMLAnchorElement> &
+  ButtonProps
+> = ({
   as,
   children,
   href,
@@ -21,32 +28,34 @@ const ButtonLink: FC<LinkProps & ButtonProps> = ({
   startIcon,
   sx,
   variant,
-  ...rest
+  // ...rest
 }) => (
-  <NextLink
-    as={as}
-    href={href}
-    passHref
-    replace={replace}
-    scroll={scroll}
-    shallow={shallow}
-  >
-    <Button
-      classes={classes}
-      color={color}
-      disabled={disabled}
-      disableElevation={disableElevation}
-      disableFocusRipple={disableFocusRipple}
-      endIcon={endIcon}
-      fullWidth={fullWidth}
-      size={size}
-      startIcon={startIcon}
-      sx={sx}
-      variant={variant}
+    <NextLink
+      as={as}
+      href={href}
+      passHref
+      replace={replace}
+      scroll={scroll}
+      shallow={shallow}
     >
-      {children}
-    </Button>
-  </NextLink>
-);
+      {/* <a {...rest}> */}
+      <Button
+        classes={classes}
+        color={color}
+        disabled={disabled}
+        disableElevation={disableElevation}
+        disableFocusRipple={disableFocusRipple}
+        endIcon={endIcon}
+        fullWidth={fullWidth}
+        size={size}
+        startIcon={startIcon}
+        sx={sx}
+        variant={variant}
+      >
+        {children}
+      </Button>
+      {/* </a> */}
+    </NextLink>
+  );
 
 export default ButtonLink;

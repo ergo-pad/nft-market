@@ -1,4 +1,4 @@
-import React, { FC, useContext, useMemo } from 'react';
+import React, { FC, useContext } from 'react';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import AppBar from "@mui/material/AppBar";
@@ -8,21 +8,12 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import SvgIcon from "@mui/material/SvgIcon";
-import Button from "@mui/material/Button";
-import { useMediaQuery } from "@mui/material";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { DarkTheme, LightTheme } from "@theme/theme";
 import { Theme } from '@mui/material';
 import Box from "@mui/material/Box";
-import Fade from "@mui/material/Fade";
-import Divider from "@mui/material/Divider";
-import Fab from "@mui/material/Fab";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import Zoom from "@mui/material/Zoom";
-import Toolbar from "@mui/material/Toolbar";
-import { useRouter } from "next/router";
 import Link from '@components/Link'
-import { IThemeContext, ThemeContext } from "@lib/ThemeContext";
+import { ThemeContext } from "@lib/ThemeContext";
+import { useRouter } from 'next/router';
 
 const pages = [
   {
@@ -34,8 +25,8 @@ const pages = [
     link: "/about",
   },
   {
-    name: "Education",
-    link: "/education",
+    name: "Disabled",
+    link: "/disabled",
     disabled: true,
   },
   {
@@ -69,6 +60,8 @@ const Header: FC<IHeaderProps> = ({ }) => {
   const { theme, setTheme } = useContext(ThemeContext);
   const [navbarOpen, setNavbarOpen] = React.useState(false);
 
+  const router = useRouter();
+
   const toggleTheme = () => {
     setTheme((prevTheme: Theme) => (prevTheme === LightTheme ? DarkTheme : LightTheme));
     let temp = theme === LightTheme ? "dark" : "light";
@@ -88,15 +81,22 @@ const NavigationListItem: React.FC<INavItemProps> = ({ size, page }) => {
           {page.name}
         </Typography>
       ) : (
-        <Box
+        <Typography
           onClick={() => setNavbarOpen(false)}
         >
           <Link
             href={page.link}
+            sx={{
+              color: router.pathname === page.link ? theme.palette.secondary.main : theme.palette.primary.main,
+              textDecoration: router.pathname === page.link ? "underline" : "none",
+              "&:hover": {
+                color: theme.palette.secondary.main,
+              },
+            }}
           >
             {page.name}
           </Link>
-        </Box>
+        </Typography>
       )}
     </Grid>
   );
@@ -120,7 +120,7 @@ return (
         zIndex: "24",
         backdropFilter: `${trigger ? "blur(25px)" : ""}`,
         background: `${trigger
-          ? "linear-gradient(130.4deg, rgba(7, 10, 17, 0.6) 14.89%, rgba(7, 10, 17, 0.3) 87.67%)"
+          ? theme.palette.background
           : ""
           }`,
       }}

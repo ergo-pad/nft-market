@@ -5,6 +5,9 @@ import NextLink from 'next/link';
 import { Link as MuiLink } from '@mui/material';
 import { SxProps } from "@mui/material";
 
+// This component will use NextLink for internal links and MuiLink for external
+// It will also skin internal links with the MuiLink wrapper
+
 interface INextLinkComposedProps {
   to: URL | string;
   as?: string;
@@ -68,10 +71,10 @@ const Link = React.forwardRef<HTMLAnchorElement, ILinkProps>(((props, ref) => {
 
   if (isExternal) {
     if (noLinkStyle) {
-      return <a className={className} href={href} ref={ref} target="_blank" {...other} />;
+      return <a className={className} href={href} ref={ref} target="_blank" rel="noopener" {...other} />;
     }
 
-    return <MuiLink className={className} href={href} ref={ref} target="_blank" {...other} />;
+    return <MuiLink className={className} href={href} ref={ref} target="_blank" rel="noopener" {...other} />;
   }
 
   if (noLinkStyle) {
