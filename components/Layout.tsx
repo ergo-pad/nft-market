@@ -2,8 +2,9 @@ import React from "react";
 import Head from "next/head";
 import Header from "@components/layout/Header";
 import Footer from "@components/layout/Footer";
-import { motion } from "framer-motion";
+import { calcLength, motion } from "framer-motion";
 import { useRouter } from "next/router";
+import { Grid, Box } from "@mui/material";
 
 const variants = {
   hidden: { opacity: 0, x: 0, y: 500 },
@@ -30,8 +31,19 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         className=""
         key={router.route}
       >
-        {children}
-        <Footer />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+            pt: '90px', // give space for floating navbar
+          }}
+        >
+          <Box sx={{ flexGrow: '1' }}>
+            {children}
+          </Box>
+          <Footer />
+        </Box>
       </motion.main>
     </>
   );

@@ -6,7 +6,7 @@ import ButtonLink from '@components/ButtonLink'
 
 const Home: NextPage = () => {
   return (
-    <Container sx={{ minHeight: '100vh' }}>
+    <Container>
       <Typography color="primary">
         Primary Color
       </Typography>
@@ -38,7 +38,132 @@ const Home: NextPage = () => {
       >
         Test Button Link
       </ButtonLink>
+
+
+      <Typography color="primary">
+        Primary Color
+      </Typography>
+      <Typography color="secondary">
+        Secondary Color
+      </Typography>
+      <Typography color="text.primary">
+        Text Primary
+      </Typography>
+      <Typography color="text.secondary">
+        Text Secondary
+      </Typography>
+      <Typography>
+        <Link href="/page">Test Link</Link>
+      </Typography>
+      <Typography>
+        <Link href="https://ergopad.io">External Link</Link>
+      </Typography>
+      <Typography>
+        <Link href="/">Active Link</Link>
+      </Typography>
+      <ButtonLink
+        href="/page"
+        variant="contained"
+        size="small"
+        sx={{
+          mt: '55px',
+        }}
+      >
+        Test Button Link
+      </ButtonLink><Typography color="primary">
+        Primary Color
+      </Typography>
+      <Typography color="secondary">
+        Secondary Color
+      </Typography>
+      <Typography color="text.primary">
+        Text Primary
+      </Typography>
+      <Typography color="text.secondary">
+        Text Secondary
+      </Typography>
+      <Typography>
+        <Link href="/page">Test Link</Link>
+      </Typography>
+      <Typography>
+        <Link href="https://ergopad.io">External Link</Link>
+      </Typography>
+      <Typography>
+        <Link href="/">Active Link</Link>
+      </Typography>
+      <ButtonLink
+        href="/page"
+        variant="contained"
+        size="small"
+        sx={{
+          mt: '55px',
+        }}
+      >
+        Test Button Link
+      </ButtonLink><Typography color="primary">
+        Primary Color
+      </Typography>
+      <Typography color="secondary">
+        Secondary Color
+      </Typography>
+      <Typography color="text.primary">
+        Text Primary
+      </Typography>
+      <Typography color="text.secondary">
+        Text Secondary
+      </Typography>
+      <Typography>
+        <Link href="/page">Test Link</Link>
+      </Typography>
+      <Typography>
+        <Link href="https://ergopad.io">External Link</Link>
+      </Typography>
+      <Typography>
+        <Link href="/">Active Link</Link>
+      </Typography>
+      <ButtonLink
+        href="/page"
+        variant="contained"
+        size="small"
+        sx={{
+          mt: '55px',
+        }}
+      >
+        Test Button Link
+      </ButtonLink><Typography color="primary">
+        Primary Color
+      </Typography>
+      <Typography color="secondary">
+        Secondary Color
+      </Typography>
+      <Typography color="text.primary">
+        Text Primary
+      </Typography>
+      <Typography color="text.secondary">
+        Text Secondary
+      </Typography>
+      <Typography>
+        <Link href="/page">Test Link</Link>
+      </Typography>
+      <Typography>
+        <Link href="https://ergopad.io">External Link</Link>
+      </Typography>
+      <Typography>
+        <Link href="/">Active Link</Link>
+      </Typography>
+      <ButtonLink
+        href="/page"
+        variant="contained"
+        size="small"
+        sx={{
+          mt: '55px',
+        }}
+      >
+        Test Button Link
+      </ButtonLink>
+
     </Container>
+    
   )
 }
 

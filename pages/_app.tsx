@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <ThemeProvider theme={theme}>
         <ThemeContext.Provider value={{ theme, setTheme }}>
-          <CssBaseline />
+          <CssBaseline enableColorScheme />
           <AnimatePresence exitBeforeEnter>
             <Layout>
               <Component {...pageProps} />

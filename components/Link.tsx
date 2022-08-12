@@ -74,7 +74,7 @@ const Link = React.forwardRef<HTMLAnchorElement, ILinkProps>(((props, ref) => {
       return <a className={className} href={href} ref={ref} target="_blank" rel="noopener" {...other} />;
     }
 
-    return <MuiLink className={className} href={href} ref={ref} target="_blank" rel="noopener" {...other} />;
+    return <MuiLink className={className} href={href} ref={ref} sx={sx} target="_blank" rel="noopener" {...other} />;
   }
 
   if (noLinkStyle) {

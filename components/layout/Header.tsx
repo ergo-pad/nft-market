@@ -7,13 +7,13 @@ import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import SvgIcon from "@mui/material/SvgIcon";
 import { DarkTheme, LightTheme } from "@theme/theme";
-import { Theme } from '@mui/material';
+import { Theme, Fade } from '@mui/material';
 import Box from "@mui/material/Box";
 import Link from '@components/Link'
 import { ThemeContext } from "@lib/ThemeContext";
 import { useRouter } from 'next/router';
+import Logo from '@components/svgs/Logo';
 
 const pages = [
   {
@@ -23,11 +23,6 @@ const pages = [
   {
     name: "About",
     link: "/about",
-  },
-  {
-    name: "Disabled",
-    link: "/disabled",
-    disabled: true,
   },
   {
     name: "Projects",
@@ -40,6 +35,11 @@ const pages = [
   {
     name: "Dashboard",
     link: "/dashboard",
+  },
+  {
+    name: "Disabled",
+    link: "/disabled",
+    disabled: true,
   },
 ];
 
@@ -69,187 +69,257 @@ const Header: FC<IHeaderProps> = ({ }) => {
     console.log(temp)
   };
 
-const NavigationListItem: React.FC<INavItemProps> = ({ size, page }) => {
-  return (
-    <Grid item>
-      {page.disabled ? (
-        <Typography
-          sx={{
-            // color: theme.palette.text.secondary,
-          }}
-        >
-          {page.name}
-        </Typography>
-      ) : (
-        <Typography
-          onClick={() => setNavbarOpen(false)}
-        >
-          <Link
-            href={page.link}
+  const NavigationListItem: React.FC<INavItemProps> = ({ size, page }) => {
+    return (
+      <Grid item>
+        {page.disabled ? (
+          <Typography
             sx={{
-              color: router.pathname === page.link ? theme.palette.secondary.main : theme.palette.primary.main,
-              textDecoration: router.pathname === page.link ? "underline" : "none",
-              "&:hover": {
-                color: theme.palette.secondary.main,
-              },
+              color: theme.palette.text.secondary,
+              fontWeight: 'bold',
             }}
           >
             {page.name}
-          </Link>
-        </Typography>
-      )}
-    </Grid>
-  );
-};
-
-const trigger = useScrollTrigger({
-  disableHysteresis: true,
-  threshold: 0,
-});
-
-return (
-  <>
-    <Box sx={{ mt: '90px' }}>
-
-    </Box>
-    <AppBar
-      position="fixed"
-      color="transparent"
-      elevation={trigger && !navbarOpen ? 4 : 0}
-      sx={{
-        zIndex: "24",
-        backdropFilter: `${trigger ? "blur(25px)" : ""}`,
-        background: `${trigger
-          ? theme.palette.background
-          : ""
-          }`,
-      }}
-    >
-      <Container sx={{ px: "24px" }}>
-        <Grid
-          container
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ minHeight: "70px" }}
-        >
-          <Grid
-            item
-            alignItems="center"
-            sx={{
-              height: { xs: "32px", md: "40px" },
-              width: { xs: "32px", md: "40px" },
-            }}
+          </Typography>
+        ) : (
+          <Typography
+            onClick={() => setNavbarOpen(false)}
           >
-            <Link href="/">
-              <SvgIcon
-                sx={{
-                  cursor: "pointer",
+            <Link
+              href={page.link}
+              sx={{
+                color: router.pathname === page.link ? theme.palette.primary.main : theme.palette.text.primary,
+                textDecoration: router.pathname === page.link ? "underline" : "none",
+                fontWeight: 'bold',
+                "&:hover": {
                   color: theme.palette.primary.main,
-                  fontSize: { xs: "32px", md: "40px" },
-                  "&:hover": {
-                    color: theme.palette.text.primary,
-                  },
-                }}
-              >
-                <rect width="3.56138" height="16.1036" rx="0.5" />
-                <rect
-                  x="12.6965"
-                  y="7.89648"
-                  width="3.56138"
-                  height="16.1036"
-                  rx="0.5"
-                />
-                <rect x="6.34839" width="3.56138" height="9.75509" rx="0.5" />
-                <rect
-                  x="6.34839"
-                  y="14.2446"
-                  width="3.56138"
-                  height="9.75509"
-                  rx="0.5"
-                />
-              </SvgIcon>
-            </Link>
-          </Grid>
-          <Grid item>
-            <Grid
-              container
-              justifyContent="flex-end"
-              alignItems="center"
-              spacing={6}
+                },
+              }}
             >
-              <Grid item sx={{ display: { xs: "none", md: "flex" } }}>
-                <Grid
-                  container
-                  spacing={3}
-                >
-                  {pages.map((page, i) => (
-                    <NavigationListItem size={13} key={i} page={page} />
-                  ))}
-                </Grid>
-              </Grid>
-              <Grid
-                item
-              // sx={{ display: { xs: "none", md: "flex" } }}
-              >
-                <IconButton sx={{ ml: 1 }} onClick={toggleTheme} color="inherit">
-                  {(theme === DarkTheme) ? <Brightness7Icon /> : <Brightness4Icon />}
-                </IconButton>
-              </Grid>
-              <Grid item sx={{ display: { xs: "flex", md: "none" } }}>
-                <Box
+              {page.name}
+            </Link>
+          </Typography>
+        )}
+      </Grid>
+    );
+  };
+
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+  });
+
+  return (
+    <>
+      <AppBar
+        position="fixed"
+        color="transparent"
+        elevation={trigger && !navbarOpen ? 4 : 0}
+        sx={{
+          zIndex: "24",
+          backdropFilter: `${trigger ? "blur(25px)" : ""}`,
+          background: `${trigger
+            ? theme.palette.background
+            : ""
+            }`,
+        }}
+      >
+        <Container sx={{ px: "24px" }}>
+          <Grid
+            container
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ minHeight: "70px" }}
+          >
+            <Grid
+              item
+              alignItems="center"
+              sx={{
+                height: { xs: "32px", md: "40px" },
+                width: { xs: "32px", md: "40px" },
+              }}
+            >
+              <Link href="/">
+                <Logo
                   sx={{
-                    zIndex: "25",
-                    position: "relative",
-                    width: "40px",
-                    height: "40px",
-                    color: "#fff",
-                    // focus: 'outline-none',
+                    color: theme.palette.text.primary,
+                    fontSize: { xs: "32px", md: "40px" },
+                    "&:hover": {
+                      color: theme.palette.primary.main,
+                    },
                   }}
-                  onClick={() => setNavbarOpen(!navbarOpen)}
+                />
+              </Link>
+            </Grid>
+            <Grid item sx={{ display: { xs: "none", md: "flex" } }}>
+              <Grid
+                container
+                spacing={3}
+              >
+                {pages.map((page, i) => (
+                  <NavigationListItem size={13} key={i} page={page} />
+                ))}
+              </Grid>
+            </Grid>
+            <Grid item>
+              <Grid
+                container
+                justifyContent="flex-start"
+                alignItems="center"
+                spacing={1}
+              >
+                <Grid
+                  item
                 >
+                  <IconButton onClick={toggleTheme} color="inherit">
+                    {(theme === DarkTheme) ? <Brightness7Icon /> : <Brightness4Icon />}
+                  </IconButton>
+                </Grid>
+                <Grid item sx={{ display: { xs: "flex", md: "none" } }}>
                   <Box
                     sx={{
-                      position: "absolute",
-                      width: "20px",
-                      transform: "translate(-50%, -50%)",
-                      left: "50%",
-                      top: "50%",
+                      zIndex: "25",
+                      position: "relative",
+                      width: "40px",
+                      height: "40px",
+                      color: theme.palette.text.primary,
+                      // focus: 'outline-none',
                     }}
+                    onClick={() => setNavbarOpen(!navbarOpen)}
                   >
                     <Box
                       sx={{
                         position: "absolute",
-                        height: "3px",
-                        width: "28px",
-                        borderRadius: "2px",
-                        background: "#fff",
-                        transition: "transform 100ms ease-in-out",
-                        transform: `${navbarOpen ? "rotate(45deg)" : "translateY(6px)"
-                          }`,
+                        width: "20px",
+                        transform: "translate(-50%, -50%)",
+                        left: "50%",
+                        top: "50%",
                       }}
-                    ></Box>
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        height: "3px",
-                        width: "28px",
-                        borderRadius: "2px",
-                        background: "#fff",
-                        transition: "transform 100ms ease-in-out",
-                        transform: `${navbarOpen ? "rotate(-45deg)" : "translateY(-6px)"
-                          }`,
-                      }}
-                    ></Box>
+                    >
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          height: "3px",
+                          width: "28px",
+                          borderRadius: "2px",
+                          background: theme.palette.text.primary,
+                          transition: "transform 100ms ease-in-out",
+                          transform: `${navbarOpen ? "rotate(45deg)" : "translateY(6px)"
+                            }`,
+                        }}
+                      ></Box>
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          height: "3px",
+                          width: "28px",
+                          borderRadius: "2px",
+                          background: theme.palette.text.primary,
+                          transition: "transform 100ms ease-in-out",
+                          transform: `${navbarOpen ? "rotate(-45deg)" : "translateY(-6px)"
+                            }`,
+                        }}
+                      ></Box>
+                    </Box>
                   </Box>
-                </Box>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Container>
-    </AppBar>
-  </>
-);
+        </Container>
+      </AppBar>
+      <Fade in={navbarOpen} style={{ transitionDuration: "400ms" }}>
+        <Box
+          sx={{
+            zIndex: "35",
+            position: "fixed",
+            width: "40px",
+            height: "40px",
+            top: "14px",
+            right: "24px",
+            color: theme.palette.text.primary,
+          }}
+          onClick={() => setNavbarOpen(!navbarOpen)}
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              width: "20px",
+              transform: "translate(-50%, -50%)",
+              left: "50%",
+              top: "50%",
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                height: "3px",
+                width: "28px",
+                borderRadius: "2px",
+                background: theme.palette.text.primary,
+                transition: "transform 100ms ease-in-out",
+                transform: `${navbarOpen ? "rotate(45deg)" : "translateY(6px)"
+                  }`,
+              }}
+            ></Box>
+            <Box
+              sx={{
+                position: "absolute",
+                height: "3px",
+                width: "28px",
+                borderRadius: "2px",
+                background: theme.palette.text.primary,
+                transition: "transform 100ms ease-in-out",
+                transform: `${navbarOpen ? "rotate(-45deg)" : "translateY(-6px)"
+                  }`,
+              }}
+            ></Box>
+          </Box>
+        </Box>
+      </Fade>
+      <Fade in={navbarOpen} style={{ transitionDuration: "400ms" }}>
+        <Box
+          sx={{
+            height: "100vh",
+            width: "100vw",
+            position: "fixed",
+            bottom: "0px",
+            zIndex: "25",
+            background: theme.palette.background.default,
+            backdropFilter: "blur(55px)",
+            p: "24px",
+            pb: "0",
+          }}
+        >
+          <Grid
+            container
+            direction="column"
+            justifyContent="flex-end"
+            alignItems="flex-start"
+            spacing={3}
+            height="100%"
+          >
+            <Grid item>
+              <Grid
+                container
+                spacing={3}
+                direction="column"
+                justifyContent="flex-end"
+                alignItems="flex-start"
+                sx={{
+
+                }}
+              >
+                {pages.map((page, i) => (
+                  <NavigationListItem size={20} key={i} page={page} />
+                ))}
+              </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+      </Fade>
+    </>
+  );
 };
 
 export default Header;
