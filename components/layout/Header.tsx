@@ -25,22 +25,22 @@ const pages = [
     link: "/about",
   },
   {
-    name: "Projects",
-    link: "/projects",
+    name: "Marketplace",
+    link: "/marketplace",
   },
   {
-    name: "Blog",
-    link: "/blog",
+    name: "Collections",
+    link: "/collections",
   },
   {
-    name: "Dashboard",
-    link: "/dashboard",
+    name: "Activity",
+    link: "/activity",
   },
-  {
-    name: "Disabled",
-    link: "/disabled",
-    disabled: true,
-  },
+  // {
+  //   name: "Disabled",
+  //   link: "/disabled",
+  //   disabled: true,
+  // },
 ];
 
 interface INavItemProps {
@@ -151,7 +151,15 @@ const Header: FC<IHeaderProps> = ({ }) => {
                 />
               </Link>
             </Grid>
-            <Grid item sx={{ display: { xs: "none", md: "flex" } }}>
+            
+            <Grid item>
+              <Grid
+                container
+                justifyContent="flex-start"
+                alignItems="center"
+                spacing={{xs: 1, md: 3}}
+              >
+                <Grid item sx={{ display: { xs: "none", md: "flex" } }}>
               <Grid
                 container
                 spacing={3}
@@ -161,13 +169,6 @@ const Header: FC<IHeaderProps> = ({ }) => {
                 ))}
               </Grid>
             </Grid>
-            <Grid item>
-              <Grid
-                container
-                justifyContent="flex-start"
-                alignItems="center"
-                spacing={1}
-              >
                 <Grid
                   item
                 >
