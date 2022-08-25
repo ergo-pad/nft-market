@@ -66,7 +66,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
     setTheme((prevTheme: Theme) => (prevTheme === LightTheme ? DarkTheme : LightTheme));
     let temp = theme === LightTheme ? "dark" : "light";
     localStorage.setItem('darkToggle', temp);
-    console.log(temp)
+    // console.log(temp)
   };
 
   const NavigationListItem: React.FC<INavItemProps> = ({ size, page }) => {
@@ -113,15 +113,16 @@ const Header: FC<IHeaderProps> = ({ }) => {
     <>
       <AppBar
         position="fixed"
-        color="transparent"
-        elevation={trigger && !navbarOpen ? 4 : 0}
+        // color="transparent"
+        elevation={0}
         sx={{
           zIndex: "24",
+          borderBottom: theme.palette.mode == 'dark' ? "1px solid #1d242f" : "1px solid rgba(140,140,140,0.2)",
           backdropFilter: `${trigger ? "blur(25px)" : ""}`,
-          background: `${trigger
-            ? theme.palette.background
-            : ""
-            }`,
+          background:
+            //`${trigger ? 
+            theme.palette.mode == 'dark' ? "rgba(60,80,140,0.02)" : "rgba(140,140,140,0.05)",
+          //: ""}`,
         }}
       >
         <Container sx={{ px: "24px" }}>
@@ -129,7 +130,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
             container
             justifyContent="space-between"
             alignItems="center"
-            sx={{ minHeight: "70px" }}
+            sx={{ height: "89px" }}
           >
             <Grid
               item
@@ -151,28 +152,28 @@ const Header: FC<IHeaderProps> = ({ }) => {
                 />
               </Link>
             </Grid>
-            
+
             <Grid item>
               <Grid
                 container
                 justifyContent="flex-start"
                 alignItems="center"
-                spacing={{xs: 1, md: 3}}
+                spacing={{ xs: 1, md: 3 }}
               >
                 <Grid item sx={{ display: { xs: "none", md: "flex" } }}>
-              <Grid
-                container
-                spacing={3}
-              >
-                {pages.map((page, i) => (
-                  <NavigationListItem size={13} key={i} page={page} />
-                ))}
-              </Grid>
-            </Grid>
+                  <Grid
+                    container
+                    spacing={3}
+                  >
+                    {pages.map((page, i) => (
+                      <NavigationListItem size={13} key={i} page={page} />
+                    ))}
+                  </Grid>
+                </Grid>
                 <Grid
                   item
                 >
-                  <IconButton onClick={toggleTheme} color="inherit">
+                  <IconButton onClick={toggleTheme} sx={{ color: theme.palette.text.primary }}>
                     {(theme === DarkTheme) ? <Brightness7Icon /> : <Brightness4Icon />}
                   </IconButton>
                 </Grid>

@@ -97,9 +97,8 @@ const linkList: FC<IPageLinkList> = ({ title, links }) => {
     <Grid item xs={6} md={3} sx={{}} zeroMinWidth>
       <Typography sx={titleFont}>{title}</Typography>
       {links.map((page, i) => (
-        <Typography><Link
+        <Typography key={i}><Link
           href={page.link}
-          key={i}
           sx={{
             color: theme.palette.text.primary,
             textDecoration: "none",

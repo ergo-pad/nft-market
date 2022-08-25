@@ -4,23 +4,8 @@ import { SxProps } from "@mui/material";
 
 const Logo: FC<{ sx?: SxProps }> = ({ sx }) => {
   return (
-    <SvgIcon sx={sx}>
-      <rect width="3.56138" height="16.1036" rx="0.5" />
-      <rect
-        x="12.6965"
-        y="7.89648"
-        width="3.56138"
-        height="16.1036"
-        rx="0.5"
-      />
-      <rect x="6.34839" width="3.56138" height="9.75509" rx="0.5" />
-      <rect
-        x="6.34839"
-        y="14.2446"
-        width="3.56138"
-        height="9.75509"
-        rx="0.5"
-      />
+    <SvgIcon sx={sx} viewBox="0 0 100 100">
+        <polygon points="0,0 100,0 50,100" />
     </SvgIcon>
   );
 };
