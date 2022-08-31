@@ -14,7 +14,12 @@ const Home: NextPage = () => {
         justifyContent="center"
         alignItems="center"
       >
-        <Grid item md={6} xs={12}>
+        <Grid item md={6} xs={12}
+          sx={{
+            pr: { xs: 0, md: '24px' },
+            py: '24px',
+          }}
+        >
           <Typography variant="h1">
             Decentralized Utility Driven NFTs
           </Typography>
@@ -23,7 +28,7 @@ const Home: NextPage = () => {
           </Typography>
         </Grid>
         <Grid item md={6} xs={12} sx={{ background: theme.palette.mode == 'dark' ? '#000' : '#fff', width: '100vw', height: '100vh' }}>
-          Hello?
+
         </Grid>
       </Grid>
 

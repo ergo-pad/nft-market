@@ -72,34 +72,42 @@ const Header: FC<IHeaderProps> = ({ }) => {
   const NavigationListItem: React.FC<INavItemProps> = ({ size, page }) => {
     return (
       <Grid item>
-        {page.disabled ? (
-          <Typography
-            sx={{
-              color: theme.palette.text.secondary,
-              fontWeight: 'bold',
-            }}
-          >
-            {page.name}
-          </Typography>
-        ) : (
-          <Typography
-            onClick={() => setNavbarOpen(false)}
-          >
-            <Link
-              href={page.link}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'tow',
+          }}
+        >
+          {page.disabled ? (
+            <Typography
               sx={{
-                color: router.pathname === page.link ? theme.palette.primary.main : theme.palette.text.primary,
-                textDecoration: router.pathname === page.link ? "underline" : "none",
-                fontWeight: 'bold',
-                "&:hover": {
-                  color: theme.palette.primary.main,
-                },
+                color: theme.palette.text.secondary,
+                lineHeight: 0,
               }}
             >
               {page.name}
-            </Link>
-          </Typography>
-        )}
+            </Typography>
+          ) : (
+            <Typography
+              onClick={() => setNavbarOpen(false)}
+            >
+              <Link
+                href={page.link}
+                sx={{
+                  color: router.pathname === page.link ? theme.palette.primary.main : theme.palette.text.primary,
+                  textDecoration: router.pathname === page.link ? "underline" : "none",
+                  "&:hover": {
+                    color: theme.palette.primary.main,
+                  },
+                }}
+              >
+                {page.name}
+              </Link>
+            </Typography>
+          )}
+        </Box>
       </Grid>
     );
   };

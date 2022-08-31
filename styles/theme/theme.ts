@@ -1,6 +1,88 @@
 import { createTheme } from "@mui/material/styles";
 
+const theme = createTheme();
+
+export const mainTheme = createTheme({
+  typography: {
+    fontFamily: '"Anek Telugu", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif',
+    h1: {
+      fontSize: "4.5rem",
+      [theme.breakpoints.down('sm')]: {
+        fontSize: '3rem',
+      },
+      fontWeight: "800",
+      lineHeight: 1.167,
+      marginBottom: "1.75rem",
+      fontFamily: '"Playfair Display", serif',
+      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      overflowWrap: "break-word",
+      hyphens: "manual",
+    },
+    h2: {
+      fontSize: "3rem",
+      [theme.breakpoints.down('sm')]: {
+        fontSize: '2.125rem',
+      },
+      fontWeight: "800",
+      lineHeight: 1.167,
+      marginBottom: "1.25rem",
+      fontFamily: '"Playfair Display", serif',
+      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      overflowWrap: "break-word",
+      hyphens: "manual",
+    },
+    h3: {
+      fontSize: "2.125rem",
+      [theme.breakpoints.down('sm')]: {
+        fontSize: '1.5rem',
+      },
+      fontWeight: "700",
+      lineHeight: 1.235,
+      marginBottom: "1rem",
+      fontFamily: '"Playfair Display", serif',
+      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      overflowWrap: "break-word",
+      hyphens: "manual",
+    },
+    h4: {
+      fontSize: "1.5rem",
+      [theme.breakpoints.down('sm')]: {
+        fontSize: '1.25rem',
+      },
+      fontWeight: "700",
+      lineHeight: 1.334,
+      marginBottom: "1rem",
+      fontFamily: '"Playfair Display", serif',
+      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      overflowWrap: "break-word",
+      hyphens: "manual",
+    },
+    h5: {
+      fontSize: "1.25rem",
+      fontWeight: "600",
+      lineHeight: 1.6,
+      marginBottom: "1rem",
+      fontFamily: '"Playfair Display", serif',
+      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      overflowWrap: "break-word",
+      hyphens: "manual",
+    },
+    h6: {
+      fontSize: "1rem",
+      fontWeight: "400",
+      lineHeight: 1.8,
+      letterSpacing: "0.0075em",
+      marginBottom: "0.5rem",
+      fontFamily: '"Playfair Display", serif',
+      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      overflowWrap: "break-word",
+      hyphens: "manual",
+    },
+  },
+});
+
 export const LightTheme = createTheme({
+  ...mainTheme,
   palette: {
     background: {
       default: "#FFFFFF",
@@ -19,6 +101,7 @@ export const LightTheme = createTheme({
 });
 
 export const DarkTheme = createTheme({
+  ...mainTheme,
   palette: {
     mode: "dark",
     background: {
