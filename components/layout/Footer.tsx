@@ -106,8 +106,8 @@ const linkList: FC<IPageLinkList> = ({ title, links }) => {
               textDecoration: "underline",
               color: theme.palette.primary.main,
             },
-            fontSize: "16px",
-            lineHeight: "28px",
+            // fontSize: "16px",
+            lineHeight: '1.625',
           }}
         >
           {page.name}
@@ -172,7 +172,6 @@ const Footer: FC = () => {
             justifyContent={{ xs: 'center', md: 'right' }}
             sx={{
               fontSize: "20px",
-
             }}
           >
             <SocialGrid

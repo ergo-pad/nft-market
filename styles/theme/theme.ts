@@ -1,15 +1,9 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
-const theme = createTheme();
-
-export const mainTheme = createTheme({
+let mainTheme = createTheme({
   typography: {
-    fontFamily: '"Anek Telugu", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif',
     h1: {
       fontSize: "4.5rem",
-      [theme.breakpoints.down('sm')]: {
-        fontSize: '3rem',
-      },
       fontWeight: "800",
       lineHeight: 1.167,
       marginBottom: "1.75rem",
@@ -20,9 +14,6 @@ export const mainTheme = createTheme({
     },
     h2: {
       fontSize: "3rem",
-      [theme.breakpoints.down('sm')]: {
-        fontSize: '2.125rem',
-      },
       fontWeight: "800",
       lineHeight: 1.167,
       marginBottom: "1.25rem",
@@ -33,9 +24,6 @@ export const mainTheme = createTheme({
     },
     h3: {
       fontSize: "2.125rem",
-      [theme.breakpoints.down('sm')]: {
-        fontSize: '1.5rem',
-      },
       fontWeight: "700",
       lineHeight: 1.235,
       marginBottom: "1rem",
@@ -46,9 +34,6 @@ export const mainTheme = createTheme({
     },
     h4: {
       fontSize: "1.5rem",
-      [theme.breakpoints.down('sm')]: {
-        fontSize: '1.25rem',
-      },
       fontWeight: "700",
       lineHeight: 1.334,
       marginBottom: "1rem",
@@ -78,8 +63,15 @@ export const mainTheme = createTheme({
       overflowWrap: "break-word",
       hyphens: "manual",
     },
+    body2: {
+      marginBottom: '24px',
+      fontSize: '1rem',
+      lineHeight: '1.75',
+    },
   },
 });
+
+mainTheme = responsiveFontSizes(mainTheme);
 
 export const LightTheme = createTheme({
   ...mainTheme,

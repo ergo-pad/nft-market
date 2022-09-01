@@ -74,17 +74,14 @@ const Header: FC<IHeaderProps> = ({ }) => {
       <Grid item>
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'tow',
+            display: 'inline-block',
+            // mt: '6px',
           }}
         >
           {page.disabled ? (
             <Typography
               sx={{
                 color: theme.palette.text.secondary,
-                lineHeight: 0,
               }}
             >
               {page.name}
