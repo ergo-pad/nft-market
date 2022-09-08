@@ -1,6 +1,6 @@
 import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
-let mainTheme = createTheme({
+const mainTheme = [{
   typography: {
     h1: {
       fontSize: "4.5rem",
@@ -18,7 +18,7 @@ let mainTheme = createTheme({
       lineHeight: 1.167,
       marginBottom: "1.25rem",
       fontFamily: '"Playfair Display", serif',
-      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
       overflowWrap: "break-word",
       hyphens: "manual",
     },
@@ -28,38 +28,38 @@ let mainTheme = createTheme({
       lineHeight: 1.235,
       marginBottom: "1rem",
       fontFamily: '"Playfair Display", serif',
-      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
       overflowWrap: "break-word",
       hyphens: "manual",
     },
     h4: {
-      fontSize: "1.5rem",
-      fontWeight: "700",
-      lineHeight: 1.334,
+      fontSize: "3rem",
+      fontWeight: "800",
+      lineHeight: 1.167,
       marginBottom: "1rem",
-      fontFamily: '"Playfair Display", serif',
+      fontFamily: '"Inter", sans-serif',
       textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
       overflowWrap: "break-word",
       hyphens: "manual",
     },
     h5: {
-      fontSize: "1.25rem",
-      fontWeight: "600",
-      lineHeight: 1.6,
+      fontSize: "2rem",
+      fontWeight: "700",
+      lineHeight: 1.235,
       marginBottom: "1rem",
-      fontFamily: '"Playfair Display", serif',
-      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      fontFamily: '"Inter", sans-serif',
+      // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
       overflowWrap: "break-word",
       hyphens: "manual",
     },
     h6: {
-      fontSize: "1rem",
-      fontWeight: "400",
-      lineHeight: 1.8,
+      fontSize: "1.5rem",
+      fontWeight: "700",
+      lineHeight: 1.6,
       letterSpacing: "0.0075em",
       marginBottom: "0.5rem",
-      fontFamily: '"Playfair Display", serif',
-      textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      fontFamily: '"Inter", sans-serif',
+      // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
       overflowWrap: "break-word",
       hyphens: "manual",
     },
@@ -69,19 +69,27 @@ let mainTheme = createTheme({
       lineHeight: '1.75',
     },
   },
-});
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px',
+          fontWeight: '700',
+          textTransform: 'none',
+        },
+      },
+    },
+  }
+}];
 
-mainTheme = responsiveFontSizes(mainTheme);
-
-export const LightTheme = createTheme({
-  ...mainTheme,
+let lightTheme = createTheme({
   palette: {
     background: {
       default: "#FFFFFF",
     },
     text: {
       primary: '#000',
-      secondary: '#999',
+      secondary: 'rgba(0,0,0,0.7)',
     },
     primary: {
       main: "#00868F",
@@ -90,10 +98,14 @@ export const LightTheme = createTheme({
       main: "#FF8219",
     },
   },
-});
+  typography: {
+    body2: {
+      color: 'rgba(0,0,0,0.8)',
+    }
+  }
+}, ...mainTheme);
 
-export const DarkTheme = createTheme({
-  ...mainTheme,
+let darkTheme = createTheme({
   palette: {
     mode: "dark",
     background: {
@@ -101,7 +113,7 @@ export const DarkTheme = createTheme({
     },
     text: {
       primary: '#fff',
-      secondary: '#aaa',
+      secondary: 'rgba(255,255,255,0.7)',
     },
     primary: {
       main: "#9FD2DB",
@@ -110,4 +122,13 @@ export const DarkTheme = createTheme({
       main: "#FC9E4F",
     },
   },
-});
+  typography: {
+    body2: {
+      color: 'rgba(255,255,255,0.8)',
+    }
+  }
+}, ...mainTheme);
+
+export const LightTheme = responsiveFontSizes(lightTheme);
+
+export const DarkTheme = responsiveFontSizes(darkTheme);
