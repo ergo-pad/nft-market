@@ -100,7 +100,7 @@ let lightTheme = createTheme({
   },
   typography: {
     body2: {
-      color: 'rgba(0,0,0,0.8)',
+      color: 'rgba(0,0,0,0.87)',
     }
   }
 }, ...mainTheme);
@@ -113,7 +113,7 @@ let darkTheme = createTheme({
     },
     text: {
       primary: '#fff',
-      secondary: 'rgba(255,255,255,0.7)',
+      secondary: 'rgba(255,255,255,0.87)',
     },
     primary: {
       main: "#9FD2DB",
@@ -124,7 +124,7 @@ let darkTheme = createTheme({
   },
   typography: {
     body2: {
-      color: 'rgba(255,255,255,0.8)',
+      color: 'rgba(255,255,255,0.87)',
     }
   }
 }, ...mainTheme);

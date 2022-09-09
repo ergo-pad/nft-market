@@ -413,11 +413,18 @@ const Home: NextPage = () => {
             )
           })}
         </Grid>
-        <NftCard imgUrl="">
-          <Typography>
-            Hello
-          </Typography>
-        </NftCard>
+        <NftCard
+          imgUrl="/images/nft-cube.png"
+          name="Obsidian Cube"
+          price="17 Erg"
+          views="5.1 k"
+          time="6 hours ago"
+          collection="Wrath of Gods"
+          collectionLink="/"
+          artist="Paideia"
+          artistLink="/"
+          artistLogo="/images/paideia-circle-logo.png"
+        />
       </Container>
     </>
   )
