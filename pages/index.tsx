@@ -23,6 +23,7 @@ import { DarkTheme } from '@styles/theme/theme';
 import Image from 'next/image';
 import CardSlider from '@components/CardSlider'
 import DiamondIcon from '@components/svgs/DiamondIcon'
+import { recentNfts } from '@components/placeholders/recentNfts'
 
 const features = [
   {
@@ -43,129 +44,6 @@ const features = [
   {
     title: 'Feature 4',
     content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimen tum volutpat accumsan.',
-  },
-]
-
-export const recentNfts = [
-  {
-    imgUrl: '/images/nft-cube.png',
-    name: 'Obsidian Cube',
-    price: '17 Erg',
-    rarity: 'Cube',
-    time: '6 hours ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
-  },
-  {
-    imgUrl: '/images/nft1.png',
-    name: 'Aviator Girl  #0314',
-    price: '37 Erg',
-    rarity: 'Common',
-    time: '12 hours ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
-  },
-  {
-    imgUrl: '/images/nft2.png',
-    name: 'Monk & Fox #0017',
-    price: '120 Erg',
-    rarity: 'Ultra Rare',
-    time: '1 day ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
-  },
-  {
-    imgUrl: '/images/nft-cube.png',
-    name: 'Obsidian Cube',
-    price: '17 Erg',
-    rarity: 'Cube',
-    time: '6 hours ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
-  },
-  {
-    imgUrl: '',
-    name: 'Obsidian Cube',
-    price: '17 Erg',
-    rarity: 'Cube',
-    time: '6 hours ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
-  },
-  {
-    imgUrl: '/images/nft-cube.png',
-    name: 'Obsidian Cube',
-    price: '17 Erg',
-    rarity: 'Cube',
-    time: '6 hours ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
-  },
-  {
-    imgUrl: '',
-    name: 'Obsidian Cube',
-    price: '17 Erg',
-    rarity: 'Cube',
-    time: '6 hours ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
-  },
-  {
-    imgUrl: '',
-    name: 'Obsidian Cube',
-    price: '17 Erg',
-    rarity: 'Cube',
-    time: '6 hours ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
-  },
-  {
-    imgUrl: '',
-    name: 'Obsidian Cube',
-    price: '17 Erg',
-    rarity: 'Uncommon',
-    time: '6 hours ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
-  },
-  {
-    imgUrl: '',
-    name: 'Obsidian Cube',
-    price: '17 Erg',
-    rarity: 'Cube',
-    time: '6 hours ago',
-    collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
-    artistLink: '/',
-    artistLogo: '/images/paideia-circle-logo.png'
   },
 ]
 
@@ -534,6 +412,8 @@ const Home: NextPage = () => {
           })}
         </Grid>
       </Container>
+
+      {/* RECENT NFTS */}
       <Box sx={{ mb: '100px' }}>
       <CardSlider uniqueId="recent-nfts" buttonTop addMargin={24} header={
         <Typography variant="h4">
@@ -544,6 +424,7 @@ const Home: NextPage = () => {
           return (
             <NftCard
               key={i}
+              link={props.link}
               imgUrl={props.imgUrl}
               name={props.name}
               price={props.price}
@@ -559,7 +440,71 @@ const Home: NextPage = () => {
         })}
       </CardSlider>
       </Box>
+
+      {/* MINT YOUR OWN */}
       <Container>
+      <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          columnSpacing={5}
+          sx={{ mb: '100px' }}
+        >
+          <Grid item md={6} xs={12}
+            sx={{
+              pr: { xs: 0, md: '24px' },
+              py: '24px',
+            }}
+          >
+            <Box
+              sx={{
+                height: '100%',
+                position: 'relative',
+              }}
+            >
+              <Box
+
+              >
+                <Typography variant="h1">
+                  Launch Your Project
+                </Typography>
+                <Typography variant="body2" sx={{ mb: '32px' }}>
+                  You can mass mint your own NFTs, create fungible tokens like our Cubes that users can open for unique NFTs, and create a sales portal through our website. You can even use our API and host your sale on your own website, with your own branding and graphics. 
+                  </Typography>
+                <Typography variant="body2" sx={{ mb: '32px' }}>
+                  Everything is done through smart contracts, and the backend code is handled for you. Not only that, but your NFTs will be added to our marketplace. You can even promote your project for more views!
+                </Typography>
+                <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
+                  Mint Now
+                </Button>
+              </Box>
+            </Box>
+          </Grid>
+          <Grid
+            item
+            md={6}
+            xs={12}
+            sx={{
+              height: '600px'
+            }}
+          >
+            <Box
+              sx={{
+                position: 'relative',
+                background: '#000',
+                height: '100%',
+                borderRadius: '16px'
+              }}
+            >
+              <Image
+                src="/images/nft-cube.png"
+                layout="fill"
+                objectFit="contain"
+              />
+            </Box>
+          </Grid>
+        </Grid>
       </Container>
     </>
   )

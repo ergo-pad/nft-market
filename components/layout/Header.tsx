@@ -21,10 +21,6 @@ const pages = [
     link: "/",
   },
   {
-    name: "About",
-    link: "/about",
-  },
-  {
     name: "Marketplace",
     link: "/marketplace",
   },
@@ -33,8 +29,12 @@ const pages = [
     link: "/collections",
   },
   {
-    name: "Activity",
-    link: "/activity",
+    name: "Mint",
+    link: "/mint",
+  },
+  {
+    name: "Dashboard",
+    link: "/dashboard",
   },
   // {
   //   name: "Disabled",

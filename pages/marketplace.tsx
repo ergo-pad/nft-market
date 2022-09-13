@@ -262,6 +262,7 @@ const Marketplace: NextPage = () => {
                 <Grid key={i} item xs={1}>
                   <NftCard
                     key={i}
+                    link={props.link}
                     imgUrl={props.imgUrl}
                     name={props.name}
                     price={props.price}

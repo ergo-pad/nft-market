@@ -1,6 +1,7 @@
 export const recentNfts = [
   {
     imgUrl: '/images/nft-cube.png',
+    link: '/marketplace',
     name: 'Obsidian Cube',
     price: '17 Erg',
     rarity: 'Cube',
@@ -13,6 +14,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '/images/nft1.png',
+    link: '/about',
     name: 'Aviator Girl  #0314',
     price: '37 Erg',
     rarity: 'Common',

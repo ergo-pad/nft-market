@@ -4,7 +4,7 @@ import NextLink from 'next/link'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
 
-const Activity: NextPage = () => {
+const Dashboard: NextPage = () => {
   return (
     <Container>
 
@@ -13,4 +13,4 @@ const Activity: NextPage = () => {
   )
 }
 
-export default Activity
+export default Dashboard

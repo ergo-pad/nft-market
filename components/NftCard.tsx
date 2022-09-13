@@ -15,9 +15,11 @@ import Image from 'next/image';
 import Link from '@components/Link';
 import { ThemeContext } from '@emotion/react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { useRouter } from 'next/router'
 
 interface INftCardProps {
   imgUrl?: string;
+  link?: string;
   name?: string;
   price?: string;
   rarity?: string;
@@ -29,7 +31,9 @@ interface INftCardProps {
   artistLink?: string;
 }
 
-const NftCard: FC<INftCardProps> = ({ imgUrl, name, price, rarity, time, collection, collectionLink, artist, artistLogo, artistLink }) => {
+const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, collection, collectionLink, artist, artistLogo, artistLink }) => {
+  const router = useRouter();
+  
   const randomInteger = (min: number, max: number) => {
     return (min + Math.random() * (max - min)).toFixed();
   };
@@ -43,7 +47,11 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, name, price, rarity, time, collect
         mb: '6px',
       }}
     >
-      <CardActionArea>
+      <CardActionArea
+        onClick={() => {
+          link && router.push(link);
+        }}
+      >
         <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
           <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" />
         </Box>

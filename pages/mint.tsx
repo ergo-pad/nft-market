@@ -4,7 +4,7 @@ import NextLink from 'next/link'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
 
-const About: NextPage = () => {
+const Mint: NextPage = () => {
   return (
     <Container>
 
@@ -13,4 +13,4 @@ const About: NextPage = () => {
   )
 }
 
-export default About
+export default Mint
