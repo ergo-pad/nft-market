@@ -103,7 +103,7 @@ const linkList: FC<IPageLinkList> = ({ title, links }) => {
             color: theme.palette.text.primary,
             textDecoration: "none",
             "&:hover": {
-              textDecoration: "underline",
+              // textDecoration: "underline",
               color: theme.palette.primary.main,
             },
             // fontSize: "16px",
@@ -157,11 +157,29 @@ const Footer: FC = () => {
           </Typography>
         </Grid>
         <Grid item xs={12} md="auto" sx={{ textAlign: { xs: 'center', md: 'center' } }}>
-          <Link href="/">
+          <Link
+            href="/"
+            sx={{
+              color: theme.palette.text.primary,
+              textDecoration: 'none',
+              "&:hover": {
+                color: theme.palette.primary.main,
+              },
+            }}
+          >
             Terms
           </Link>{" "}
           ·{" "}
-          <Link href="/">
+          <Link
+            href="/"
+            sx={{
+              color: theme.palette.text.primary,
+              textDecoration: 'none',
+              "&:hover": {
+                color: theme.palette.primary.main,
+              },
+            }}
+          >
             Privacy Policy
           </Link>
         </Grid>

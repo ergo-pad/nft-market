@@ -46,6 +46,129 @@ const features = [
   },
 ]
 
+export const recentNfts = [
+  {
+    imgUrl: '/images/nft-cube.png',
+    name: 'Obsidian Cube',
+    price: '17 Erg',
+    rarity: 'Cube',
+    time: '6 hours ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+  {
+    imgUrl: '/images/nft1.png',
+    name: 'Aviator Girl  #0314',
+    price: '37 Erg',
+    rarity: 'Common',
+    time: '12 hours ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+  {
+    imgUrl: '/images/nft2.png',
+    name: 'Monk & Fox #0017',
+    price: '120 Erg',
+    rarity: 'Ultra Rare',
+    time: '1 day ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+  {
+    imgUrl: '/images/nft-cube.png',
+    name: 'Obsidian Cube',
+    price: '17 Erg',
+    rarity: 'Cube',
+    time: '6 hours ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+  {
+    imgUrl: '',
+    name: 'Obsidian Cube',
+    price: '17 Erg',
+    rarity: 'Cube',
+    time: '6 hours ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+  {
+    imgUrl: '/images/nft-cube.png',
+    name: 'Obsidian Cube',
+    price: '17 Erg',
+    rarity: 'Cube',
+    time: '6 hours ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+  {
+    imgUrl: '',
+    name: 'Obsidian Cube',
+    price: '17 Erg',
+    rarity: 'Cube',
+    time: '6 hours ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+  {
+    imgUrl: '',
+    name: 'Obsidian Cube',
+    price: '17 Erg',
+    rarity: 'Cube',
+    time: '6 hours ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+  {
+    imgUrl: '',
+    name: 'Obsidian Cube',
+    price: '17 Erg',
+    rarity: 'Uncommon',
+    time: '6 hours ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+  {
+    imgUrl: '',
+    name: 'Obsidian Cube',
+    price: '17 Erg',
+    rarity: 'Cube',
+    time: '6 hours ago',
+    collection: 'Wrath of Gods',
+    collectionLink: '/',
+    artist: 'Paideia',
+    artistLink: '/',
+    artistLogo: '/images/paideia-circle-logo.png'
+  },
+]
+
 const Home: NextPage = () => {
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
@@ -375,15 +498,12 @@ const Home: NextPage = () => {
           >
             <Box
               sx={{
-                height: { xs: 'calc(100vh - 120px)', md: '100%' },
+                height: '100%',
                 position: 'relative',
               }}
             >
               <Box
-                sx={{
-                  position: { xs: 'absolute', md: 'relative' },
-                  bottom: 0,
-                }}
+
               >
                 <Typography variant="h1">
                   About Ergo Cubes
@@ -398,10 +518,10 @@ const Home: NextPage = () => {
             </Box>
           </Grid>
         </Grid>
-        <Grid container sx={{ mb: '50px' }}>
+        <Grid container spacing={2} sx={{ mb: '50px' }}>
           {features.map(({ icon, title, content }, i) => {
             return (
-              <Grid item md={3} key={i} sx={{ mb: '50px' }}>
+              <Grid item xs={12} sm={6} md={3} key={i} sx={{ mb: '50px' }}>
                 {icon ? icon : <DiamondIcon sx={{ fontSize: '48px' }} />}
                 <Typography variant="h6">
                   {title}
@@ -413,18 +533,33 @@ const Home: NextPage = () => {
             )
           })}
         </Grid>
-        <NftCard
-          imgUrl="/images/nft-cube.png"
-          name="Obsidian Cube"
-          price="17 Erg"
-          views="5.1 k"
-          time="6 hours ago"
-          collection="Wrath of Gods"
-          collectionLink="/"
-          artist="Paideia"
-          artistLink="/"
-          artistLogo="/images/paideia-circle-logo.png"
-        />
+      </Container>
+      <Box sx={{ mb: '100px' }}>
+      <CardSlider uniqueId="recent-nfts" buttonTop addMargin={24} header={
+        <Typography variant="h4">
+          Recent NFTs
+        </Typography>
+      }>
+        {recentNfts.map((props, i) => {
+          return (
+            <NftCard
+              key={i}
+              imgUrl={props.imgUrl}
+              name={props.name}
+              price={props.price}
+              rarity={props.rarity}
+              time={props.time}
+              collection={props.collection}
+              collectionLink={props.collectionLink}
+              artist={props.artist}
+              artistLink={props.artistLink}
+              artistLogo={props.artistLogo}
+            />
+          )
+        })}
+      </CardSlider>
+      </Box>
+      <Container>
       </Container>
     </>
   )

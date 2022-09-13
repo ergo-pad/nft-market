@@ -79,6 +79,13 @@ const mainTheme = [{
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px',
+        },
+      },
+    },
   }
 }];
 
@@ -126,6 +133,15 @@ let darkTheme = createTheme({
     body2: {
       color: 'rgba(255,255,255,0.87)',
     }
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(29,42,66,0.05)'
+        },
+      },
+    },
   }
 }, ...mainTheme);
 

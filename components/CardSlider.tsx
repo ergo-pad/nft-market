@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef } from "react";
-import { Button, Container, Box, Fab } from "@mui/material";
+import { Button, Container, Box, Fab, Grid } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
@@ -186,46 +186,52 @@ const CardSlider: FC<SliderProps> = ({
       >
         <Box
           sx={
-            noButton ? { display: 'none' } : 
-            buttonTop
-              ? {
-                  display: "flex",
-                  alignItems: "center",
+            noButton ? { display: 'none' } :
+              buttonTop
+                ? {
+                  // display: "block",
+                  // alignItems: "center",
                   mt: ".75rem",
                   mb: ".25rem",
-                  ml: { xs: "0", sm: "-1rem" },
-                  mr: { xs: "0", sm: "-1rem" }
+                  mx: { xs: "24px", sm: "0px" },
                 }
-              : {
+                : {
                   mx: { xs: "24px", sm: "0px" },
                 }
           }
         >
-          {header}
-          {/* design change here */}
-          <Fab
-            onClick={clickLeft}
-            disabled={leftDisabled}
-            color="primary"
-            sx={{ mr: ".5rem", zIndex: 1 }}
-            size="small"
-          >
-            <ArrowBackIosIcon sx={{ mr: "-.5rem" }} />
-          </Fab>
-          <Fab
-            onClick={clickRight}
-            disabled={rightDisabled}
-            color="primary"
-            size="small"
-            sx={{ zIndex: 1 }}
-          >
-            <ArrowForwardIosIcon />
-          </Fab>
+          <Grid container justifyContent="space-between" >
+            <Grid item>
+              {header}
+            </Grid>
+            <Grid item>
+              <Fab
+                onClick={clickLeft}
+                disabled={leftDisabled}
+                color="primary"
+                sx={{ 
+                  mr: ".5rem", 
+                  zIndex: 1 
+                }}
+                size="small"
+              >
+                <ArrowBackIosIcon sx={{ mr: "-.5rem" }} />
+              </Fab>
+              <Fab
+                onClick={clickRight}
+                disabled={rightDisabled}
+                color="primary"
+                size="small"
+                sx={{ zIndex: 1 }}
+              >
+                <ArrowForwardIosIcon />
+              </Fab>
+            </Grid>
+          </Grid>
         </Box>
       </Container>
     );
   };
-  const temp = buttonTop ? { pl: "0rem" } : {};
 
   return (
     <>
@@ -265,7 +271,6 @@ const CardSlider: FC<SliderProps> = ({
             width: "min-content",
             gap: "24px",
             ...marginLeftCalc,
-            ...temp,
           }}
         >
           {children}

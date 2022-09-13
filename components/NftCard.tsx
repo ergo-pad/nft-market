@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import {
   Card,
   CardMedia,
@@ -6,6 +6,7 @@ import {
   CardActions,
   CardActionArea,
   Button,
+  Box,
   Typography,
   useTheme
 } from '@mui/material'
@@ -13,12 +14,13 @@ import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Image from 'next/image';
 import Link from '@components/Link';
 import { ThemeContext } from '@emotion/react';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 interface INftCardProps {
   imgUrl?: string;
   name?: string;
   price?: string;
-  views?: string;
+  rarity?: string;
   time?: string;
   collection?: string;
   collectionLink?: string;
@@ -27,43 +29,99 @@ interface INftCardProps {
   artistLink?: string;
 }
 
-const NftCard: FC<INftCardProps> = ({ imgUrl, name, price, views, time, collection, collectionLink, artist, artistLogo, artistLink }) => {
+const NftCard: FC<INftCardProps> = ({ imgUrl, name, price, rarity, time, collection, collectionLink, artist, artistLogo, artistLink }) => {
+  const randomInteger = (min: number, max: number) => {
+    return (min + Math.random() * (max - min)).toFixed();
+  };
+  const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
+
   const theme = useTheme()
   return (
     <Card
       sx={{
-        maxWidth: '276px',
+        minWidth: '276px',
+        mb: '6px',
       }}
     >
       <CardActionArea>
-        <CardMedia
-          component="img"
-          alt=""
-          height="205"
-          image={imgUrl}
-        />
-
-        <CardContent>
+        <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
+          <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" />
+        </Box>
+        {price && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+              p: '8px',
+              background: 'rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(6px)',
+              color: '#fff',
+              borderRadius: '6px',
+            }}
+          >
+            <Typography sx={{ fontWeight: '700', }}>
+              {price}
+            </Typography>
+          </Box>
+        )}
+        <CardContent sx={{ position: 'relative' }}>
+          {rarity && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '-16px',
+                right: '16px',
+                height: '28px',
+                p: '2px 8px',
+                background: theme.palette.primary.main,
+                color: theme.palette.background.default,
+                borderRadius: '50px',
+              }}
+            >
+              <Typography sx={{ fontWeight: '700', }}>
+                {rarity}
+              </Typography>
+            </Box>
+          )}
           <Typography
             sx={{
               fontWeight: '700',
+              fontSize: '1.1rem',
+              mb: '6px',
             }}
           >
             {name}
           </Typography>
-          <Typography>
-            {time}
-          </Typography>
+          <Box>
+            <AccessTimeIcon
+              sx={{
+                verticalAlign: '-0.25em',
+                mr: '5px',
+              }}
+            />
+            <Typography
+              sx={{
+                display: 'inline-block',
+              }}
+            >
+              {time}
+            </Typography>
+          </Box>
         </CardContent>
       </CardActionArea>
-      <CardActions>
+      <CardActions
+        sx={{
+          p: '16px',
+        }}
+      >
         <Grid2
           container
           direction="row"
           justifyContent="space-between"
           alignItems="center"
           sx={{
-            width: '100%'
+            width: '100%',
           }}
         >
           <Grid2>
@@ -74,17 +132,17 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, name, price, views, time, collecti
             >
               {collectionLink ? (
                 <Link
-                href={collectionLink}
-                sx={{
-                  color: theme.palette.text.secondary,
-                  textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline'
-                  }
-                }}
-              >
-                {collection}
-              </Link>
+                  href={collectionLink}
+                  sx={{
+                    color: theme.palette.text.secondary,
+                    textDecoration: 'none',
+                    '&:hover': {
+                      textDecoration: 'underline'
+                    }
+                  }}
+                >
+                  {collection}
+                </Link>
               ) : (
                 collection
               )}
@@ -125,7 +183,7 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, name, price, views, time, collecti
                   textDecoration: 'none',
                   '&:hover': {
                     textDecoration: 'underline'
-                  }
+                  },
                 }}
               >
                 <Image src={artistLogo} layout="fixed" width={32} height={32} />
@@ -135,7 +193,6 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, name, price, views, time, collecti
             )}
           </Grid2>
         </Grid2>
-
       </CardActions>
     </Card>
   );
