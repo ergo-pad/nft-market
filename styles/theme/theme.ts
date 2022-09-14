@@ -86,6 +86,26 @@ const mainTheme = [{
         },
       },
     },
+    MuiFilledInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px',
+          '&::before': {
+            display: 'none',
+          },
+          '&::after': {
+            display: 'none',
+          }
+        }
+      }
+    },
+    MuiInputAdornment: {
+      styleOverrides: {
+        root : {
+          marginTop: '0 !important'
+        }
+      }
+    }
   }
 }];
 

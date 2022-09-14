@@ -380,19 +380,15 @@ const Home: NextPage = () => {
                 position: 'relative',
               }}
             >
-              <Box
-
-              >
-                <Typography variant="h1">
-                  About Ergo Cubes
-                </Typography>
-                <Typography variant="body2" sx={{ mb: '32px' }}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi.  Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </Typography>
-                <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
-                  Learn More
-                </Button>
-              </Box>
+              <Typography variant="h1">
+                About Ergo Cubes
+              </Typography>
+              <Typography variant="body2" sx={{ mb: '32px' }}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi.  Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </Typography>
+              <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
+                Learn More
+              </Button>
             </Box>
           </Grid>
         </Grid>
@@ -415,35 +411,35 @@ const Home: NextPage = () => {
 
       {/* RECENT NFTS */}
       <Box sx={{ mb: '100px' }}>
-      <CardSlider uniqueId="recent-nfts" buttonTop addMargin={24} header={
-        <Typography variant="h4">
-          Recent NFTs
-        </Typography>
-      }>
-        {recentNfts.map((props, i) => {
-          return (
-            <NftCard
-              key={i}
-              link={props.link}
-              imgUrl={props.imgUrl}
-              name={props.name}
-              price={props.price}
-              rarity={props.rarity}
-              time={props.time}
-              collection={props.collection}
-              collectionLink={props.collectionLink}
-              artist={props.artist}
-              artistLink={props.artistLink}
-              artistLogo={props.artistLogo}
-            />
-          )
-        })}
-      </CardSlider>
+        <CardSlider uniqueId="recent-nfts" buttonTop addMargin={24} header={
+          <Typography variant="h4">
+            Recent NFTs
+          </Typography>
+        }>
+          {recentNfts.map((props, i) => {
+            return (
+              <NftCard
+                key={i}
+                link={props.link}
+                imgUrl={props.imgUrl}
+                name={props.name}
+                price={props.price}
+                rarity={props.rarity}
+                time={props.time}
+                collection={props.collection}
+                collectionLink={props.collectionLink}
+                artist={props.artist}
+                artistLink={props.artistLink}
+                artistLogo={props.artistLogo}
+              />
+            )
+          })}
+        </CardSlider>
       </Box>
 
       {/* MINT YOUR OWN */}
       <Container>
-      <Grid
+        <Grid
           container
           direction="row"
           justifyContent="center"
@@ -470,8 +466,8 @@ const Home: NextPage = () => {
                   Launch Your Project
                 </Typography>
                 <Typography variant="body2" sx={{ mb: '32px' }}>
-                  You can mass mint your own NFTs, create fungible tokens like our Cubes that users can open for unique NFTs, and create a sales portal through our website. You can even use our API and host your sale on your own website, with your own branding and graphics. 
-                  </Typography>
+                  You can mass mint your own NFTs, create fungible tokens like our Cubes that users can open for unique NFTs, and create a sales portal through our website. You can even use our API and host your sale on your own website, with your own branding and graphics.
+                </Typography>
                 <Typography variant="body2" sx={{ mb: '32px' }}>
                   Everything is done through smart contracts, and the backend code is handled for you. Not only that, but your NFTs will be added to our marketplace. You can even promote your project for more views!
                 </Typography>

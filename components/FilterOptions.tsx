@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import {
   Typography,
   Box,
@@ -10,6 +10,7 @@ import {
   FormControlLabel,
   Checkbox,
   Slider,
+  Paper
 } from "@mui/material";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 
@@ -79,52 +80,90 @@ const FilterAccordionItem: FC<IAccordionProps> = ({
   );
 };
 
+const collectionOptions = [
+  "Ergopad Cubes",
+  "Wrath of Gods",
+  "Hello",
+  "Is it me",
+  "You're looking for?"
+]
+
 const FilterOptions = () => {
-  const totalMembers = [3, 4520];
-  const [daoMemberRange, setDaoMemberRange] = useState<number[]>(totalMembers);
+  const priceRange = [0, 500];
+  const [ergPriceRange, setErgPriceRange] = useState<number[]>(priceRange);
+  const [collectionChecks, setCollectionChecks] = useState<boolean[]>([])
+  const [collectionSelectAll, setCollectionSelectAll] = useState<boolean>(true);
 
   const handleChange = (event: Event, newValue: number | number[]) => {
-    setDaoMemberRange(newValue as number[]);
+    setErgPriceRange(newValue as number[]);
   };
 
+  useMemo(() => {
+    const array = Array.from(collectionOptions, () => true);
+    setCollectionChecks(array)
+  }, [collectionOptions])
+
+  const collectionCheckHandleChange = (key: number) => {
+    setCollectionChecks(collectionChecks => collectionChecks.map((item, i) => i === key ? !item : item))
+  }
+
+  const collectionCheckSelectAll = (all: boolean) => {
+    setCollectionChecks(collectionChecks => collectionChecks.map(() => all ? true : false))
+    setCollectionSelectAll(!collectionSelectAll)
+  }
+
+  useEffect(() => {
+    const check = collectionChecks.every(Boolean)
+    if (check) {
+      setCollectionSelectAll(true)
+    }
+    if (!check) {
+      setCollectionSelectAll(false)
+    }
+  }, [collectionCheckHandleChange])
+
   return (
-    <Box
+    <Paper
       sx={{
-        border: "1px solid #666",
-        p: "12px",
+        p: "24px",
       }}
     >
-      <Typography sx={{ color: "#bbb" }}>Filters</Typography>
-      <Divider sx={{ background: "rgba(255,255,255,0.3)", my: "12px" }} />
+      <Typography variant="h6" sx={{ mb: '24px' }}>Filters</Typography>
 
-      {/* FILTER BY CATEGORY */}
-      <FilterAccordionItem title="Categories">
+      {/* FILTER BY COLLECTION */}
+      <FilterAccordionItem title="Collections">
         <Box sx={{ mx: "6px" }}>
+          {collectionOptions.map((option, i) => {
+            return (
+              <FormControlLabel
+                key={i}
+                checked={collectionChecks[i]}
+                onChange={() => collectionCheckHandleChange(i)}
+                control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
+                label={option}
+                sx={{ display: 'block' }}
+              />
+            )
+          })}
           <FormControlLabel
+            checked={collectionSelectAll}
+            onChange={() => collectionCheckSelectAll(!collectionSelectAll)}
             control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="Music"
-          />
-          <FormControlLabel
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="Finance"
-          />
-          <FormControlLabel
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="Gaming"
+            label="Select All"
           />
         </Box>
       </FilterAccordionItem>
 
       {/* FILTER BY DAO SIZE */}
-      <FilterAccordionItem title="Members">
+      <FilterAccordionItem title="Price Range">
         <Box sx={{ mx: "12px" }}>
           <Slider
-            getAriaLabel={() => "DAO Members"}
-            value={daoMemberRange}
+            getAriaLabel={() => "Price Range"}
+            value={ergPriceRange}
             onChange={handleChange}
             valueLabelDisplay="auto"
-            min={totalMembers[0]}
-            max={totalMembers[1]}
+            min={priceRange[0]}
+            max={priceRange[1]}
           />
         </Box>
       </FilterAccordionItem>
@@ -132,6 +171,14 @@ const FilterOptions = () => {
       {/* FILTER BY DATE CREATED */}
       <FilterAccordionItem title="Initiation Date">
         <Box sx={{ mx: "6px" }}>
+          <FormControlLabel
+            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
+            label="24 Hours"
+          />
+          <FormControlLabel
+            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
+            label="Last week"
+          />
           <FormControlLabel
             control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
             label="Past month"
@@ -146,21 +193,7 @@ const FilterOptions = () => {
           />
         </Box>
       </FilterAccordionItem>
-
-      {/* FILTER BY GOVERNANCE TYPE */}
-      <FilterAccordionItem title="Governance" noDivider>
-        <Box sx={{ mx: "6px" }}>
-          <FormControlLabel
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="Optimistic"
-          />
-          <FormControlLabel
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="Standard Quorum"
-          />
-        </Box>
-      </FilterAccordionItem>
-    </Box>
+    </Paper>
   );
 };
 

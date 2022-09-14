@@ -7,7 +7,7 @@ import {
   InputLabel,
   MenuItem,
   InputAdornment,
-  OutlinedInput,
+  FilledInput,
   useMediaQuery,
   DialogTitle,
   DialogContent,
@@ -15,7 +15,8 @@ import {
   Dialog,
   Container,
   Typography,
-  Box
+  Box,
+  Paper
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
@@ -58,7 +59,7 @@ const SortBy: FC<ISortByProps> = ({ sx }) => {
   };
 
   return (
-    <FormControl fullWidth sx={sx}>
+    <FormControl fullWidth sx={sx} variant="filled">
       <InputLabel id="sort-select-box-input">Sort By</InputLabel>
       <Select
         labelId="sort-select-box-label"
@@ -85,16 +86,15 @@ interface ISearchBar {
 
 const SearchBar: FC<ISearchBar> = ({ sx }) => {
   return (
-    <FormControl fullWidth variant="outlined" sx={sx}>
-      <InputLabel htmlFor="outlined-adornment-search">Search</InputLabel>
-      <OutlinedInput
-        id="outlined-adornment-search"
+    <FormControl fullWidth variant="filled" sx={sx}>
+      <InputLabel htmlFor="component-filled">Search</InputLabel>
+      <FilledInput
+        id="search"
         endAdornment={
           <InputAdornment position="start">
             <SearchIcon />
           </InputAdornment>
         }
-        label="Search"
       />
     </FormControl>
   );
@@ -197,12 +197,34 @@ const Marketplace: NextPage = () => {
           </Typography>
         </Grid>
         <Grid item md={6}>
-          <Grid container>
+          <Grid container spacing={3}>
             {marketStats.map((props, i) => {
               return (
                 <Grid item md={3}>
-                  {props.number}
-                  {props.title}
+                  <Paper
+                    sx={{
+                      px: '24px',
+                      py: '16px',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: '1.5rem',
+                        fontWeight: '700'
+                      }}
+                    >
+                      {props.number}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: '0.8rem',
+                        color: theme.palette.text.secondary
+                      }}
+                    >
+                      {props.title}
+                    </Typography>
+                  </Paper>
                 </Grid>
               )
             })}
