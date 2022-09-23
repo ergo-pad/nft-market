@@ -1,7 +1,7 @@
 export const recentNfts = [
   {
     imgUrl: '/images/nft-cube.png',
-    link: '/marketplace',
+    link: '/marketplace/hello',
     name: 'Obsidian Cube',
     price: '17 Erg',
     rarity: 'Cube',
@@ -14,7 +14,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '/images/nft1.png',
-    link: '/about',
+    link: '/marketplace/hello',
     name: 'Aviator Girl  #0314',
     price: '37 Erg',
     rarity: 'Common',
@@ -27,6 +27,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '/images/nft2.png',
+    link: '/marketplace/hello',
     name: 'Monk & Fox #0017',
     price: '120 Erg',
     rarity: 'Ultra Rare',
@@ -39,6 +40,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '/images/nft-cube.png',
+    link: '/marketplace/hello',
     name: 'Obsidian Cube',
     price: '17 Erg',
     rarity: 'Cube',
@@ -51,6 +53,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '',
+    link: '/marketplace/hello',
     name: 'Obsidian Cube',
     price: '17 Erg',
     rarity: 'Cube',
@@ -63,6 +66,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '/images/nft-cube.png',
+    link: '/marketplace/hello',
     name: 'Obsidian Cube',
     price: '17 Erg',
     rarity: 'Cube',
@@ -75,6 +79,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '',
+    link: '/marketplace/hello',
     name: 'Obsidian Cube',
     price: '17 Erg',
     rarity: 'Cube',
@@ -87,6 +92,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '',
+    link: '/marketplace/hello',
     name: 'Obsidian Cube',
     price: '17 Erg',
     rarity: 'Cube',
@@ -99,6 +105,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '',
+    link: '/marketplace/hello',
     name: 'Obsidian Cube',
     price: '17 Erg',
     rarity: 'Uncommon',
@@ -111,6 +118,7 @@ export const recentNfts = [
   },
   {
     imgUrl: '',
+    link: '/marketplace/hello',
     name: 'Obsidian Cube',
     price: '17 Erg',
     rarity: 'Cube',

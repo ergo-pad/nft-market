@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef } from "react";
-import { Button, Container, Box, Fab, Grid } from "@mui/material";
+import { Button, Container, Box, Fab, Grid, IconButton } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
@@ -27,6 +27,12 @@ const CardSlider: FC<SliderProps> = ({
   const [leftDisabled, setLeftDisabled] = useState(false);
   const [rightDisabled, setRightDisabled] = useState(false);
   const [slideDistance, setSlideDistance] = useState(460);
+  const [setArrow, setSetArrow] = useState("grab")
+  const [temp, setTemp] = useState(true)
+
+  useEffect(() => {
+    temp ? setSetArrow("grab") : setSetArrow("arrow")
+  },[temp])
 
   const handleScroll = () => {
     const scroll: HTMLElement | null = document.getElementById(
@@ -50,14 +56,27 @@ const CardSlider: FC<SliderProps> = ({
     ) {
       setLeftDisabled(false);
       setRightDisabled(false);
-    } else if (contentMetricsLeft < containerMetricsLeft) {
+      setTemp(true)
+    } else if (containerMetricsLeft > contentMetricsLeft) {
       setRightDisabled(true);
-    } else if (contentMetricsRight > containerMetricsRight) {
+      setLeftDisabled(false);
+      setTemp(true)
+    } else if (containerMetricsRight < contentMetricsRight) {
       setLeftDisabled(true);
+      setRightDisabled(false);
+      setTemp(true)
     } else {
       setLeftDisabled(true);
       setRightDisabled(true);
+      setTemp(false)
     }
+
+    // console.log('containerMetricsLeft: ' + containerMetricsLeft)
+    // console.log('contentMetricsLeft: ' + contentMetricsLeft)
+    // console.log('containerMetricsRight: ' + containerMetricsRight)
+    // console.log('contentMetricsRight: ' + contentMetricsRight)
+    // console.log('leftDisabled: ' + leftDisabled)
+    // console.log('rightDisabled: ' + rightDisabled)
   };
 
   const marginFunction = () => {
@@ -85,30 +104,27 @@ const CardSlider: FC<SliderProps> = ({
     }
   }, []);
 
-  useEffect(() => {
+  const navPosition = () => {
     const pnProductNav = document.getElementById(uniqueId + "pnProductNav");
     const pnProductNavContents = document.getElementById(
       uniqueId + "pnProductNavContents"
     );
     determineOverflow(pnProductNavContents, pnProductNav);
+  }
+
+  useEffect(() => {
+    navPosition()
   }, [scrollPosition]);
 
   useEffect(() => {
-    // Add event listener
     window.addEventListener("resize", marginFunction);
-    // Call handler right away so state gets updated with initial window size
+    window.addEventListener("resize", navPosition);
     marginFunction();
-    // Remove event listener on cleanup
-    return () => window.removeEventListener("resize", marginFunction);
-  }, []);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      marginFunction();
-    }, 1000);
+    navPosition();
     return () => {
-      clearTimeout(timeout);
-    };
+      window.removeEventListener("resize", marginFunction);
+      window.removeEventListener("resize", navPosition);
+    }
   }, []);
 
   interface IPos {
@@ -130,17 +146,16 @@ const CardSlider: FC<SliderProps> = ({
   const handleMouseDown = (e: any) => {
     const pnProductNav = document.getElementById(uniqueId + "pnProductNav");
     if (pnProductNav) {
-      pnProductNav.style.cursor = "grabbing";
-      pnProductNav.style.userSelect = "none";
+      setSetArrow("grabbing")
 
       const mouseMoveHandler = (e: any) => {
         // @ts-ignore
         pnProductNav.scrollLeft = posRef.current.left - (e.clientX - posRef.current.x);
+        setSetArrow("grabbing")
       };
 
       const mouseUpHandler = (e: any) => {
-        pnProductNav.style.cursor = "grab";
-        pnProductNav.style.userSelect = "none";
+        setSetArrow("grab")
         document.removeEventListener("mousemove", mouseMoveHandler);
         document.removeEventListener("mouseup", mouseUpHandler);
       };
@@ -182,6 +197,7 @@ const CardSlider: FC<SliderProps> = ({
         sx={{
           my: buttonTop ? "0" : "32px",
           p: 0,
+          mb: '24px'
         }}
       >
         <Box
@@ -201,31 +217,33 @@ const CardSlider: FC<SliderProps> = ({
           }
         >
           <Grid container justifyContent="space-between" >
-            <Grid item>
-              {header}
+            <Grid item sm={9}>
+              {header && header}
             </Grid>
-            <Grid item>
-              <Fab
+            <Grid item sm={3} sx={{ textAlign: 'right' }}>
+              <IconButton 
                 onClick={clickLeft}
                 disabled={leftDisabled}
-                color="primary"
-                sx={{ 
-                  mr: ".5rem", 
-                  zIndex: 1 
-                }}
                 size="small"
+                color="primary"
+                sx={{
+                  mr: ".5rem",
+                  display: (leftDisabled && rightDisabled) ? 'none' : 'inline-block',
+                }}
               >
-                <ArrowBackIosIcon sx={{ mr: "-.5rem" }} />
-              </Fab>
-              <Fab
+                <ArrowBackIosIcon sx={{ ml: ".5rem" }} />
+              </IconButton>
+              <IconButton
                 onClick={clickRight}
                 disabled={rightDisabled}
-                color="primary"
                 size="small"
-                sx={{ zIndex: 1 }}
+                color="primary"
+                sx={{
+                  display: (leftDisabled && rightDisabled) ? 'none' : 'inline-block'
+                }}
               >
                 <ArrowForwardIosIcon />
-              </Fab>
+              </IconButton>
             </Grid>
           </Grid>
         </Box>
@@ -240,14 +258,21 @@ const CardSlider: FC<SliderProps> = ({
         id="setWidth"
         sx={{ zIndex: "1", width: "100vw" }}
       ></Container>
-      {buttonTop && <ButtonBox />}
+      {buttonTop ? <ButtonBox /> : (
+        header && (
+          <Box sx={{ mb: '24px' }}>
+            {header}
+          </Box>
+        )
+      )}
       <Box
         sx={{
           /* Make this scrollable when needed */
           overflowX: "auto",
           /* We don't want vertical scrolling */
           overflowY: "hidden",
-          cursor: "grab",
+          cursor: setArrow,
+          userSelect: (setArrow == 'grab' || setArrow == 'grabbing') ? 'none' : 'auto',
           /* Make an auto-hiding scroller for the 3 people using a IE */
           msOverflowStyle: "-ms-autohiding-scrollbar",
           /* For WebKit implementations, provide inertia scrolling */
@@ -262,7 +287,7 @@ const CardSlider: FC<SliderProps> = ({
           ml: contained ? "-24px" : "0",
         }}
         id={uniqueId + "pnProductNav"}
-        onMouseDown={(e) => handleMouseDown(e)}
+        onMouseDown={(e) => !(leftDisabled && rightDisabled) && handleMouseDown(e)}
       >
         <Box
           id={uniqueId + "pnProductNavContents"}

@@ -6,8 +6,6 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
-  InputAdornment,
-  FilledInput,
   useMediaQuery,
   DialogTitle,
   DialogContent,
@@ -20,13 +18,13 @@ import {
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import SearchIcon from "@mui/icons-material/Search";
 // @ts-ignore
 import FilterOptions from "@components/FilterOptions";
 import { SxProps } from "@mui/material";
 import NftCard from '@components/NftCard';
 import { recentNfts } from '@components/placeholders/recentNfts'
+import SearchBar from '@components/SearchBar'
+import SortBy from '@components/SortBy'
 
 const marketStats = [
   {
@@ -50,55 +48,6 @@ const marketStats = [
 interface ISortByProps {
   sx?: SxProps;
 }
-
-const SortBy: FC<ISortByProps> = ({ sx }) => {
-  const [sortOption, setSortOption] = React.useState("");
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setSortOption(event.target.value as string);
-  };
-
-  return (
-    <FormControl fullWidth sx={sx} variant="filled">
-      <InputLabel id="sort-select-box-input">Sort By</InputLabel>
-      <Select
-        labelId="sort-select-box-label"
-        id="sort-select-box"
-        value={sortOption}
-        label="Sort By"
-        onChange={handleChange}
-      >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        <MenuItem value={"oldest"}>Oldest</MenuItem>
-        <MenuItem value={"newest"}>Newest</MenuItem>
-        <MenuItem value={"most members"}>Most Members</MenuItem>
-        <MenuItem value={"least members"}>Least Members</MenuItem>
-      </Select>
-    </FormControl>
-  );
-};
-
-interface ISearchBar {
-  sx?: SxProps;
-}
-
-const SearchBar: FC<ISearchBar> = ({ sx }) => {
-  return (
-    <FormControl fullWidth variant="filled" sx={sx}>
-      <InputLabel htmlFor="component-filled">Search</InputLabel>
-      <FilledInput
-        id="search"
-        endAdornment={
-          <InputAdornment position="start">
-            <SearchIcon />
-          </InputAdornment>
-        }
-      />
-    </FormControl>
-  );
-};
 
 export interface ConfirmationDialogRawProps {
   id: string;

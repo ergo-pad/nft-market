@@ -397,7 +397,7 @@ const Home: NextPage = () => {
             return (
               <Grid item xs={12} sm={6} md={3} key={i} sx={{ mb: '50px' }}>
                 {icon ? icon : <DiamondIcon sx={{ fontSize: '48px' }} />}
-                <Typography variant="h6">
+                <Typography variant="h5">
                   {title}
                 </Typography>
                 <Typography variant="body2">

@@ -23,16 +23,6 @@ const mainTheme = [{
       hyphens: "manual",
     },
     h3: {
-      fontSize: "2.125rem",
-      fontWeight: "700",
-      lineHeight: 1.235,
-      marginBottom: "1rem",
-      fontFamily: '"Playfair Display", serif',
-      // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
-      overflowWrap: "break-word",
-      hyphens: "manual",
-    },
-    h4: {
       fontSize: "3rem",
       fontWeight: "800",
       lineHeight: 1.167,
@@ -42,7 +32,7 @@ const mainTheme = [{
       overflowWrap: "break-word",
       hyphens: "manual",
     },
-    h5: {
+    h4: {
       fontSize: "2rem",
       fontWeight: "700",
       lineHeight: 1.235,
@@ -52,7 +42,7 @@ const mainTheme = [{
       overflowWrap: "break-word",
       hyphens: "manual",
     },
-    h6: {
+    h5: {
       fontSize: "1.5rem",
       fontWeight: "700",
       lineHeight: 1.6,
@@ -62,6 +52,13 @@ const mainTheme = [{
       // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
       overflowWrap: "break-word",
       hyphens: "manual",
+    },
+    h6: {
+      textTransform: 'uppercase',
+      fontSize: '0.75rem',
+      display: 'inline-block',
+      fontFamily: '"Inter", sans-serif',
+      // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
     },
     body2: {
       marginBottom: '24px',
@@ -101,8 +98,27 @@ const mainTheme = [{
     },
     MuiInputAdornment: {
       styleOverrides: {
-        root : {
+        root: {
           marginTop: '0 !important'
+        }
+      }
+    },
+    MuiTabPanel: {
+      styleOverrides: {
+        root: {
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingTop: '48px',
+        }
+      }
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: 'none',
+          '&:hover': {
+            textDecoration: 'none',
+          }
         }
       }
     }
@@ -129,6 +145,17 @@ let lightTheme = createTheme({
     body2: {
       color: 'rgba(0,0,0,0.87)',
     }
+  },
+  components: {
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            color: '#000',
+          }
+        }
+      }
+    }
   }
 }, ...mainTheme);
 
@@ -140,7 +167,7 @@ let darkTheme = createTheme({
     },
     text: {
       primary: '#fff',
-      secondary: 'rgba(255,255,255,0.87)',
+      secondary: 'rgba(255,255,255,0.7)',
     },
     primary: {
       main: "#9FD2DB",
@@ -162,6 +189,15 @@ let darkTheme = createTheme({
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            color: '#fff',
+          }
+        }
+      }
+    }
   }
 }, ...mainTheme);
 
