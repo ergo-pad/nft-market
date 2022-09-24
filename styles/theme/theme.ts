@@ -115,6 +115,7 @@ const mainTheme = [{
     MuiLink: {
       styleOverrides: {
         root: {
+          fontFamily: '"Inter", sans-serif',
           textDecoration: 'none',
           '&:hover': {
             textDecoration: 'none',

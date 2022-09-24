@@ -20,6 +20,11 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import dynamic from 'next/dynamic'
+import UserInfo from '@components/nft/UserInfo';
+const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
+  ssr: false,
+})
 
 interface ISalesCardProps {
   sellerName?: string;
@@ -54,30 +59,28 @@ interface INftProps {
   collectionUrl?: string;
   collectionDescription?: string;
   artistName: string;
-  artistUrl: string;
   artistAddress: string;
   artistLogoUrl: string;
-  stats: {
-    title: string;
-    stat: number | string;
-  }[];
   salesCard: ISalesCardProps;
 }
 
 interface IAuctionDetailProps {
   time: Date;
   bidderName?: string;
-  bidderUrl: string;
   bidderAddress: string;
   bidderLogoUrl?: string;
   bidPrice: number;
   bidCurrency: string;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
+// BEGIN SAMPLE DATA ///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+
 const NftType = {
   title: 'Monk & Fox #0017',
   description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  mintDate: new Date(1663353871),
+  mintDate: new Date(1663353871000),
   tokenId: '9a8b5be32311f123c4e40f22233da12125c2123dcfd8d6a98e5a3659d38511c8',
   views: 124,
   category: 'Rare',
@@ -85,20 +88,13 @@ const NftType = {
   collectionUrl: '/collections/wrath-of-gods',
   collectionDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   artistName: 'Paideia',
-  artistUrl: '/users/paideia',
   artistAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
   artistLogoUrl: '/images/paideia-circle-logo.png',
-  stats: [
-    {
-      title: 'string',
-      stat: 100,
-    },
-  ],
   salesCard: {
     sellerName: 'Paideia',
     sellerPfpUrl: '/images/paideia-circle-logo.png',
     sellerAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    postDate: new Date(1663786534),
+    postDate: new Date(1663786534000),
     // sale: {
     //   currency: 'Erg',
     //   price: 10,
@@ -112,43 +108,70 @@ const NftType = {
       currentBidLink: '/',
       buyNowPrice: 100,
       buyNowLink: '/',
-      endTime: new Date(1664348610),
+      endTime: new Date(1664348610000),
     }
   }
 }
+
+const auctionHistory: IAuctionDetailProps[] = [
+  {
+    time: new Date(1664348610000),
+    bidderName: 'Eelon Musk',
+    bidderAddress: '9cmRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
+    bidderLogoUrl: '/images/users/eelon-musk.png',
+    bidPrice: 14,
+    bidCurrency: 'Erg',
+  },
+  {
+    time: new Date(1664348610000),
+    bidderAddress: '9fdPnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
+    bidPrice: 13,
+    bidCurrency: 'Erg',
+  },
+  {
+    time: new Date(1664348610000),
+    bidderAddress: '9xyZdDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
+    bidPrice: 12,
+    bidCurrency: 'Erg',
+  },
+  {
+    time: new Date(1664348610000),
+    bidderName: 'Alone Musk',
+    bidderAddress: '9abCdDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
+    bidderLogoUrl: '/images/users/alone-musk.png',
+    bidPrice: 11,
+    bidCurrency: 'Erg',
+  },
+  {
+    time: new Date(1664348610000),
+    bidderName: 'Elon Mask',
+    bidderAddress: '9tuVzDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
+    bidderLogoUrl: '/images/users/elon-mask.png',
+    bidPrice: 10,
+    bidCurrency: 'Erg',
+  },
+  {
+    time: new Date(1664348610000),
+    bidderAddress: '9heLlOa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
+    bidPrice: 9,
+    bidCurrency: 'Erg',
+  },
+  {
+    time: new Date(1664348610000),
+    bidderAddress: '9isItMeYoureLookiNgFor8SGYUbFpqTwE9G78yffudKq59xTa9',
+    bidPrice: 8,
+    bidCurrency: 'Erg',
+  },
+]
 
 const ApiPriceConversion: { [key: string]: number } = {
   erg: 2.83,
   ergopad: 0.032
 }
 
-const timeRemaining = (endTime: Date) => {
-  const now = Date.now() / 1000
-  const diff = endTime.getTime() - now;
-
-  let seconds: string | number = Math.floor(diff % 60),
-    minutes: string | number = Math.floor((diff / 60) % 60),
-    hours: string | number = Math.floor((diff / (60 * 60)) % 24),
-    days: string | number = Math.floor((diff / (60 * 60)) / 24);
-
-  return days + "d, " + hours + "h, " + minutes + "m, " + seconds + "s";
-}
-
-const TimeRemaining: FC<{ endTime: Date }> = ({ endTime }) => {
-  const [timeLeft, setTimeLeft] = useState(timeRemaining(endTime));
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimeLeft(timeRemaining(endTime));
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  });
-
-  const date = endTime.toLocaleDateString()
-
-  return <Tooltip title={date} arrow placement="top"><Box>{timeLeft}</Box></Tooltip>
-}
+////////////////////////////////////////////////////////////////////////////////////////
+// END SAMPLE DATA /////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 const SalesCard: FC<ISalesCardProps> = (props) => {
   const theme = useTheme()
@@ -156,117 +179,19 @@ const SalesCard: FC<ISalesCardProps> = (props) => {
   return (
     <Card>
       <CardContent>
-        <Grid
-          container
-          justifyContent="space-between"
-          sx={{
-            mb: '18px',
+        <UserInfo
+          name={props.sellerName}
+          pfpUrl={props.sellerPfpUrl}
+          address={props.sellerAddress}
+          date={'List Date: ' + props.postDate.toDateString()}
+          price={props.sale && {
+            price: props.sale.price,
+            currency: props.sale.currency,
+            usdConversion: ApiPriceConversion[props.sale.currency.toLowerCase()]
           }}
-        >
-          <Grid item>
-            <Grid
-              container
-            // alignItems="center"
-            >
-              <Grid item>
-                <Avatar
-                  alt={props.sellerName ? props.sellerName : props.sellerAddress}
-                  src={props.sellerPfpUrl}
-                  sx={{
-                    mr: '6px',
-                    width: 48,
-                    height: 48,
-                    display: upSm ? 'flex' : 'none',
-                    bgcolor: theme.palette.primary.main
-                  }}
-                />
-              </Grid>
-              <Grid item>
-
-                {/* SELLER ADDRESS OR NAME */}
-                <Box
-                  sx={{
-                    color: theme.palette.text.primary,
-                    // whiteSpace: 'nowrap',
-                    display: 'flex',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: 'inline-block',
-                      color: theme.palette.text.primary,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    Sold By {' '}
-                    <Link
-                      sx={{
-                        color: theme.palette.text.primary,
-                        fontWeight: '700',
-                        '&:hover': {
-                          color: theme.palette.primary.main,
-                        }
-                      }}
-                      href={'https://explorer.ergoplatform.com/en/addresses/' + props.sellerAddress}
-                    >
-                      {props.sellerName ? props.sellerName : props.sellerAddress}
-                    </Link>
-                  </Box>
-                </Box>
-
-                {/* DATE LISTED */}
-                <Box
-                  sx={{
-                    color: theme.palette.text.secondary,
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  <Icon
-                    sx={{
-                      verticalAlign: 'middle',
-                      mr: '6px',
-                      mt: '-4px',
-                      fontSize: '18px !important'
-                    }}
-                  >
-                    calendar_today
-                  </Icon>
-                  List Date: <Box sx={{ display: 'inline-block' }}>{props.postDate.toDateString()}</Box>
-                </Box>
-
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item sx={{ textAlign: 'right' }}>
-            {props.sale ? (
-              <>
-                <Typography
-                  sx={{
-                    mb: 0,
-                    fontSize: '1.5rem',
-                    fontWeight: '700',
-                    lineHeight: 1.3
-                  }}
-                >
-                  {props.sale.price + ' ' + props.sale.currency}
-                </Typography>
-                <Typography
-                  sx={{
-                    color: theme.palette.text.secondary,
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  ${ApiPriceConversion[props.sale.currency.toLowerCase()] * props.sale.price} USD
-                </Typography>
-              </>
-            ) : (
-              <></>
-            )}
-          </Grid>
-        </Grid>
-
+          timeIcon=""
+          saleSize
+        />
 
         {props.sale ? (
           props.sale.discount ?
@@ -324,14 +249,14 @@ const SalesCard: FC<ISalesCardProps> = (props) => {
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} sx={{ textAlign: 'center' }}>
-              <Typography
+              <Box
                 sx={{
                   color: theme.palette.text.primary,
                   fontWeight: '700',
                 }}
               >
                 <TimeRemaining endTime={props.auction.endTime} />
-              </Typography>
+              </Box>
               <Typography
                 sx={{
                   color: theme.palette.text.secondary,
@@ -371,7 +296,7 @@ const Nft: NextPage<INftProps> = (props) => {
   props = NftType;
   const theme = useTheme()
   const [tabValue, setTabValue] = React.useState('info');
-
+  const upSm = useMediaQuery(theme.breakpoints.up('sm'))
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
@@ -430,9 +355,9 @@ const Nft: NextPage<INftProps> = (props) => {
                   mb: '48px'
                 }}
               >
-                {props.artistUrl && props.artistLogoUrl ? (
+                {props.artistLogoUrl &&
                   <Link
-                    href={props.artistUrl}
+                    href={'/users/' + props.artistAddress}
                     sx={{
                       display: 'inline-block',
                       verticalAlign: 'middle',
@@ -441,9 +366,7 @@ const Nft: NextPage<INftProps> = (props) => {
                   >
                     <Image src={props.artistLogoUrl} layout="fixed" width={32} height={32} />
                   </Link>
-                ) : (
-                  ''
-                )}
+                }
                 <Typography sx={{ display: 'inline-block', fontWeight: '700', }}>
                   {props.collectionUrl ? (
                     <Link
@@ -472,22 +395,18 @@ const Nft: NextPage<INftProps> = (props) => {
                 >
                   by
                   {' '}
-                  {props.artistUrl ? (
-                    <Link
-                      href={props.artistUrl}
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        textDecoration: 'none',
-                        '&:hover': {
-                          textDecoration: 'underline'
-                        }
-                      }}
-                    >
-                      {props.artistName}
-                    </Link>
-                  ) : (
-                    props.artistName
-                  )}
+                  <Link
+                    href={'/users/' + props.artistAddress}
+                    sx={{
+                      color: theme.palette.text.secondary,
+                      textDecoration: 'none',
+                      '&:hover': {
+                        textDecoration: 'underline'
+                      }
+                    }}
+                  >
+                    {props.artistName}
+                  </Link>
                 </Typography>
               </Box>
 
@@ -496,17 +415,19 @@ const Nft: NextPage<INftProps> = (props) => {
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList
                       onChange={handleTabChange}
-                      aria-label="lab API tabs example"
+                      aria-label="NFT Information Tabs"
                       variant="scrollable"
                       scrollButtons="auto"
                       allowScrollButtonsMobile
                     >
                       <Tab label="Information" value="info" />
                       {props.salesCard.auction && <Tab label="Auction Info" value="auction" />}
-                      <Tab label="Properties" value="properties" />
+                      {/* <Tab label="Properties" value="properties" /> */}
                       <Tab label="Activity" value="activity" />
                     </TabList>
                   </Box>
+
+                  {/* INFO TAB */}
                   <TabPanel value="info">
                     <Typography variant="h6" sx={{ mb: '12px' }}>General Information</Typography>
 
@@ -561,9 +482,33 @@ const Nft: NextPage<INftProps> = (props) => {
                     )}
 
                   </TabPanel>
-                  <TabPanel value="auction">Auction Info</TabPanel>
-                  <TabPanel value="properties">Traits, rarity, etc.</TabPanel>
+
+                  {/* AUCTION TAB */}
+                  <TabPanel value="auction">
+                    {auctionHistory.map((props) => {
+                      return (
+                        <UserInfo
+                          name={props.bidderName}
+                          pfpUrl={props.bidderLogoUrl}
+                          address={props.bidderAddress}
+                          date={'17 minutes ago'}
+                          price={{
+                            price: props.bidPrice,
+                            currency: props.bidCurrency,
+                            usdConversion: ApiPriceConversion[props.bidCurrency.toLowerCase()]
+                          }}
+                          timeIcon="schedule"
+                        />
+                      )
+                    })}
+                  </TabPanel>
+
+                  {/* TRAITS TAB 
+                  <TabPanel value="properties">Traits, rarity, etc.</TabPanel> */}
+
+                  {/* ACTIVITY TAB */}
                   <TabPanel value="activity">Past sales activity</TabPanel>
+
                 </TabContext>
               </Box>
               {((props.salesCard.auction && ((props.salesCard.auction.endTime.getTime() - (Date.now() / 1000)) > 0)) || props.salesCard.sale) &&
@@ -572,7 +517,7 @@ const Nft: NextPage<INftProps> = (props) => {
             </Box>
           </Grid>
         </Grid>
-      </Container>
+      </Container >
     </>
   )
 }
