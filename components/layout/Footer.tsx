@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Link from "@components/Link"
 import SocialGrid from "@components/layout/SocialGrid";
 import Logo from "@components/svgs/Logo";
-import { ThemeContext } from "@lib/ThemeContext";
+import { ThemeContext } from "@contexts/ThemeContext";
 
 const titleFont = {
   fontFamily: ['"Space Grotesk"', "sans-serif"].join(","),

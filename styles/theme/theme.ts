@@ -186,7 +186,7 @@ let darkTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(29,42,66,0.05)'
+          background: '#1c212b'
         },
       },
     },

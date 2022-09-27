@@ -152,7 +152,7 @@ const Collections: NextPage = () => {
       <Typography variant="body2" sx={{ mb: '48px' }}>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dui ac nec molestie condimentum aliquam viverra sed nisi. Eu, nisl, integer ultricies fames pharetra sem eu commodo. Nam tellus, ut vel egestas pulvina.
       </Typography>
-      {collections.map((props) => {
+      {collections.map((props, i) => {
         return (
           <Collection
             imgUrl={props.imgUrl}
@@ -161,6 +161,7 @@ const Collections: NextPage = () => {
             artist={props.artist}
             description={props.description}
             link={props.link}
+            key={i}
           />
         )
       })}

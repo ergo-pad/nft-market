@@ -23,9 +23,11 @@
       "@theme/*": ["styles/theme/*"],
       "@public/*": ["public/*"],
       "@pages/*": ["pages/*"],
-      "@lib/*": ["lib/*"]
+      "@utils/*": ["utils/*"],
+      "@hooks/*": ["hooks/*"],
+      "@contexts/*": ["contexts/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "additional.d.ts"],
   "exclude": ["node_modules"]
 }

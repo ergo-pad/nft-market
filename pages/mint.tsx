@@ -7,9 +7,8 @@ import ButtonLink from '@components/ButtonLink'
 const Mint: NextPage = () => {
   return (
     <Container>
-
+      
     </Container>
-    
   )
 }
 

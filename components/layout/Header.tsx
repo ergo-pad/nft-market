@@ -11,9 +11,10 @@ import { DarkTheme, LightTheme } from "@theme/theme";
 import { Theme, Fade } from '@mui/material';
 import Box from "@mui/material/Box";
 import Link from '@components/Link'
-import { ThemeContext } from "@lib/ThemeContext";
+import { ThemeContext } from "@contexts/ThemeContext";
 import { useRouter } from 'next/router';
 import Logo from '@components/svgs/Logo';
+import AddWallet from '@components/wallet/AddWallet';
 
 const pages = [
   {
@@ -181,6 +182,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
                   <IconButton onClick={toggleTheme} sx={{ color: theme.palette.text.primary }}>
                     {(theme === DarkTheme) ? <Brightness7Icon /> : <Brightness4Icon />}
                   </IconButton>
+                  <AddWallet />
                 </Grid>
                 <Grid item sx={{ display: { xs: "flex", md: "none" } }}>
                   <Box

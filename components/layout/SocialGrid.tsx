@@ -7,7 +7,7 @@ import TwitterIcon from "@components/svgs/TwitterIcon";
 import DiscordIcon from "@components/svgs/DiscordIcon";
 import RedditIcon from "@components/svgs/RedditIcon";
 import LinkedinIcon from "@components/svgs/LinkedinIcon";
-import { ThemeContext } from "@lib/ThemeContext";
+import { ThemeContext } from "@contexts/ThemeContext";
 
 interface Props {
   hoverColor?: string;

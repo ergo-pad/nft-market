@@ -149,7 +149,7 @@ const Marketplace: NextPage = () => {
           <Grid container spacing={3}>
             {marketStats.map((props, i) => {
               return (
-                <Grid item md={3}>
+                <Grid item md={3} key={i}>
                   <Paper
                     sx={{
                       px: '24px',

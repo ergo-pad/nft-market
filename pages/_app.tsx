@@ -5,15 +5,23 @@ import { DarkTheme, LightTheme } from "@theme/theme";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useMediaQuery, Theme } from "@mui/material";
 import CssBaseline from '@mui/material/CssBaseline';
-import Layout from "@components/Layout";
+import Layout from "components/Layout";
 import Head from "next/head";
 import { AnimatePresence } from "framer-motion";
 import { ColorizeSharp } from "@mui/icons-material";
-import { ThemeContext } from "@lib/ThemeContext";
+import { ThemeContext } from "@contexts/ThemeContext";
+import { WalletContext } from '@contexts/WalletContext'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [theme, setTheme] = useState(LightTheme);
+  const [walletAddress, setWalletAddress] = useState('')
+  const [dAppWallet, setDAppWallet] = useState({
+    connected: false,
+    name: '',
+    addresses: [''],
+  })
+  const [addWalletModalOpen, setAddWalletModalOpen] = useState(false)
 
   useEffect(() => {
     setTheme(localStorage.getItem('darkToggle') === 'dark' ? DarkTheme : LightTheme)
@@ -29,12 +37,23 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <ThemeProvider theme={theme}>
         <ThemeContext.Provider value={{ theme, setTheme }}>
-          <CssBaseline enableColorScheme />
-          <AnimatePresence exitBeforeEnter>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </AnimatePresence>
+          <WalletContext.Provider
+            value={{
+              walletAddress,
+              setWalletAddress,
+              dAppWallet,
+              setDAppWallet,
+              addWalletModalOpen,
+              setAddWalletModalOpen
+            }}
+          >
+            <CssBaseline enableColorScheme />
+            <AnimatePresence exitBeforeEnter>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </AnimatePresence>
+          </WalletContext.Provider>
         </ThemeContext.Provider>
       </ThemeProvider>
     </>

@@ -11,7 +11,9 @@ import {
   useTheme,
   useMediaQuery,
   Icon,
-  Tooltip
+  Tooltip,
+  Fade,
+  Slide
 } from '@mui/material'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
@@ -22,9 +24,10 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import dynamic from 'next/dynamic'
 import UserInfo from '@components/nft/UserInfo';
+
 const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
   ssr: false,
-})
+});
 
 interface ISalesCardProps {
   sellerName?: string;
@@ -428,86 +431,94 @@ const Nft: NextPage<INftProps> = (props) => {
                   </Box>
 
                   {/* INFO TAB */}
-                  <TabPanel value="info">
-                    <Typography variant="h6" sx={{ mb: '12px' }}>General Information</Typography>
+                  <Slide direction="up" in={tabValue == 'info'} mountOnEnter unmountOnExit>
+                    <TabPanel value="info">
+                      <Typography variant="h6" sx={{ mb: '12px' }}>General Information</Typography>
 
-                    {/* TOKEN ID */}
-                    <Box
-                      sx={{
-                        mb: '12px',
-                        color: theme.palette.text.secondary,
-                        // whiteSpace: 'nowrap',
-                        display: 'flex',
-                      }}
-                    >
+                      {/* TOKEN ID */}
                       <Box
                         sx={{
-                          display: 'inline-block',
+                          mb: '12px',
                           color: theme.palette.text.secondary,
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
+                          // whiteSpace: 'nowrap',
+                          display: 'flex',
                         }}
                       >
-                        <Icon sx={{ display: 'inline-block', verticalAlign: 'middle', mr: '6px', mt: '-3px' }}>tag</Icon>
-                        Token ID: {' '}
-                        <Link href={'https://explorer.ergoplatform.com/en/token/' + props.tokenId}>
-                          {props.tokenId}
-                        </Link>
+                        <Box
+                          sx={{
+                            display: 'inline-block',
+                            color: theme.palette.text.secondary,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          <Icon sx={{ display: 'inline-block', verticalAlign: 'middle', mr: '6px', mt: '-3px' }}>tag</Icon>
+                          Token ID: {' '}
+                          <Link href={'https://explorer.ergoplatform.com/en/token/' + props.tokenId}>
+                            {props.tokenId}
+                          </Link>
+                        </Box>
                       </Box>
-                    </Box>
 
-                    {/* DATE MINTED */}
-                    <Box
-                      sx={{
-                        mb: '12px',
-                        color: theme.palette.text.secondary
-                      }}
-                    >
-                      <Icon sx={{ verticalAlign: 'middle', mr: '6px', mt: '-3px' }}>calendar_today</Icon>
-                      Date Minted: <Box sx={{ display: 'inline-block', color: theme.palette.text.primary }}>{props.mintDate.toDateString()}</Box>
-                    </Box>
+                      {/* DATE MINTED */}
+                      <Box
+                        sx={{
+                          mb: '12px',
+                          color: theme.palette.text.secondary
+                        }}
+                      >
+                        <Icon sx={{ verticalAlign: 'middle', mr: '6px', mt: '-3px' }}>calendar_today</Icon>
+                        Date Minted: <Box sx={{ display: 'inline-block', color: theme.palette.text.primary }}>{props.mintDate.toDateString()}</Box>
+                      </Box>
 
-                    <Typography variant="body2" sx={{ mb: '32px' }}>
-                      {props.description}
-                    </Typography>
+                      <Typography variant="body2" sx={{ mb: '32px' }}>
+                        {props.description}
+                      </Typography>
 
-                    {props.collectionDescription && (
-                      <>
-                        <Typography variant="h6" sx={{ mb: '12px' }}>Collection Description</Typography>
-                        <Typography variant="body2" sx={{ mb: '32px' }}>
-                          {props.collectionDescription}
-                        </Typography>
-                      </>
-                    )}
-
-                  </TabPanel>
+                      {props.collectionDescription && (
+                        <>
+                          <Typography variant="h6" sx={{ mb: '12px' }}>Collection Description</Typography>
+                          <Typography variant="body2" sx={{ mb: '32px' }}>
+                            {props.collectionDescription}
+                          </Typography>
+                        </>
+                      )}
+                    </TabPanel>
+                  </Slide>
 
                   {/* AUCTION TAB */}
-                  <TabPanel value="auction">
-                    {auctionHistory.map((props) => {
-                      return (
-                        <UserInfo
-                          name={props.bidderName}
-                          pfpUrl={props.bidderLogoUrl}
-                          address={props.bidderAddress}
-                          date={'17 minutes ago'}
-                          price={{
-                            price: props.bidPrice,
-                            currency: props.bidCurrency,
-                            usdConversion: ApiPriceConversion[props.bidCurrency.toLowerCase()]
-                          }}
-                          timeIcon="schedule"
-                        />
-                      )
-                    })}
-                  </TabPanel>
+                  <Slide direction="up" in={tabValue == 'auction'} mountOnEnter unmountOnExit>
+                    <TabPanel value="auction">
+                      {auctionHistory.map((props) => {
+                        return (
+                          <UserInfo
+                            name={props.bidderName}
+                            pfpUrl={props.bidderLogoUrl}
+                            address={props.bidderAddress}
+                            date={'17 minutes ago'}
+                            price={{
+                              price: props.bidPrice,
+                              currency: props.bidCurrency,
+                              usdConversion: ApiPriceConversion[props.bidCurrency.toLowerCase()]
+                            }}
+                            timeIcon="schedule"
+                          />
+                        )
+                      })}
+                    </TabPanel>
+                  </Slide>
 
                   {/* TRAITS TAB 
-                  <TabPanel value="properties">Traits, rarity, etc.</TabPanel> */}
+                  <Slide direction="up" in={tabValue == 'properties'} mountOnEnter unmountOnExit>
+                  <TabPanel value="properties">Traits, rarity, etc.</TabPanel>
+                  </Slide>
+                  */}
 
                   {/* ACTIVITY TAB */}
-                  <TabPanel value="activity">Past sales activity</TabPanel>
+                  <Slide direction="up" in={tabValue == 'activity'} mountOnEnter unmountOnExit>
+                    <TabPanel value="activity">Past sales activity</TabPanel>
+                  </Slide>
 
                 </TabContext>
               </Box>
