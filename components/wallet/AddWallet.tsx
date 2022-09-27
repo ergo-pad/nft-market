@@ -19,7 +19,9 @@ import {
   Avatar,
   Box,
   Chip,
-  Typography
+  Typography,
+  Fade,
+  useMediaQuery
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckIcon from "@mui/icons-material/CheckCircle";
@@ -33,23 +35,7 @@ const WALLET_ADDRESS_LIST = 'wallet_address_list_1283';
 const DAPP_CONNECTED = 'dapp_connected_6329';
 const DAPP_NAME = 'dapp_name_8930';
 
-const wallets = [
-  {
-    name: 'Nautilus',
-    icon: '/images/wallets/nautilus-128.png',
-    description: 'Connect automatically signing with your wallet'
-  },
-  {
-    name: 'SAFEW',
-    icon: '/images/wallets/safew_icon_128.png',
-    description: 'Connect automatically signing with your wallet'
-  },
-  {
-    name: 'Mobile',
-    icon: '/images/wallets/mobile.webp',
-    description: 'Enter your wallet address manually'
-  },
-]
+
 
 /**
  * Note on es-lint disable lines:
@@ -90,10 +76,20 @@ export const AddWallet = () => {
   const [dAppError, setDAppError] = useState(false);
   const [dAppAddressTableData, setdAppAddressTableData] = useState([{}]); // table data
 
-  const handleAccordionChange =
-    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false);
-      if (panel === 'nautilus' && isExpanded === true) dAppConnect('nautilus')
+  useEffect(() => {
+    const isModalOpen = localStorage.getItem('modalOpen')
+    if (isModalOpen === 'true') { 
+      setAddWalletModalOpen(true)
+    }
+    localStorage.setItem('modalOpen', 'false');
+  }, [])
+
+  const handleWalletChange =
+    (wallet: string | false) => {
+      setExpanded(typeof wallet === 'string' ? wallet : false);
+      if (wallet === 'nautilus') dAppConnect('nautilus')
+      if (wallet === 'safew') dAppConnect('safew')
+      if (wallet === 'mobile') setMobileAdd(!mobileAdd)
     };
 
   useEffect(() => {
@@ -188,7 +184,10 @@ export const AddWallet = () => {
       name: '',
       addresses: [],
     });
-    if (hardRefresh) router.reload();
+    if (hardRefresh) {
+      router.reload();
+      localStorage.setItem('modalOpen', 'true');
+    }
   };
 
   const handleWalletFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -279,12 +278,36 @@ export const AddWallet = () => {
     setLoading(false);
   };
 
+  const wallets = [
+    {
+      name: 'Nautilus',
+      icon: '/images/wallets/nautilus-128.png',
+      description: 'Connect automatically signing with your wallet',
+    },
+    {
+      name: 'SAFEW',
+      icon: '/images/wallets/safew_icon_128.png',
+      description: 'Connect automatically signing with your wallet',
+    },
+    {
+      name: 'Mobile',
+      icon: '/images/wallets/mobile.webp',
+      description: 'Enter your wallet address manually',
+    },
+  ]
+
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <>
       <Button onClick={() => setAddWalletModalOpen(true)}>
         Wallet
       </Button>
-      <Dialog open={addWalletModalOpen} onClose={handleClose}>
+      <Dialog
+        open={addWalletModalOpen}
+        onClose={handleClose}
+        fullScreen={fullScreen}
+      >
         <DialogTitle
           sx={{
             textAlign: 'center',
@@ -294,182 +317,85 @@ export const AddWallet = () => {
             fontSize: '32px',
           }}
         >
-          {dAppWallet.connected ? 'DApp Connected' : 'Connect Wallet'}
+          {walletAddress != '' ? 'Wallet Connected' : 'Connect Wallet'}
         </DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ textAlign: 'center', mb: '24px' }}>
             Your wallet info will never be stored on our server.
           </DialogContentText>
-
           {wallets.map((props, i) => {
             return (
-              <Button
-                fullWidth
-                sx={{
-                  borderRadius: '6px',
-                  display: 'flex',
-                  p: '0.5rem',
-                  justifyContent: 'space-between',
-                  mb: '12px'
-                }}
-                key={i}
-              >
-                <Box
+              <Collapse in={expanded === props.name.toLowerCase() || expanded === false} mountOnEnter unmountOnExit>
+                <Button
+                  fullWidth
+                  disabled={walletAddress != ''}
                   sx={{
-                    fontSize: "1.2rem",
-                    color: "text.primary",
-                    fontWeight: '400',
-                    textAlign: 'left',
+                    borderRadius: '6px',
+                    p: '0.5rem',
+                    justifyContent: 'space-between',
+                    mb: '12px',
                     display: 'flex',
+                    width: fullScreen ? '90vw' : '500px',
                   }}
+                  key={i}
+                  onClick={expanded === false ? () => handleWalletChange(props.name.toLowerCase()) : () => handleWalletChange(false)}
                 >
-                  <Avatar
-                    src={props.icon}
-                    variant={props.name === "SAFEW" ? 'square' : 'circular'}
+                  <Box
                     sx={{
-                      height: "3rem",
-                      width: "3rem",
-                      mr: "1rem",
+                      fontSize: "1.2rem",
+                      color: "text.primary",
+                      fontWeight: '400',
+                      textAlign: 'left',
+                      display: 'flex',
                     }}
-                  />
-                  <Box>
-                    <Typography
+                  >
+                    <Avatar
+                      src={props.icon}
+                      variant={props.name === "SAFEW" ? 'square' : 'circular'}
                       sx={{
-                        fontSize: "1.1rem",
-                        color: "text.secondary",
-                        fontWeight: '400'
+                        height: "3rem",
+                        width: "3rem",
+                        mr: "1rem",
                       }}
-                    >
-                      {props.name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: ".9rem",
-                        color: "text.secondary",
-                        fontWeight: '400'
-                      }}
-                    >
-                      {props.description}
-                    </Typography>
+                    />
+                    <Box>
+                      <Typography
+                        sx={{
+                          fontSize: "1.1rem",
+                          color: "text.secondary",
+                          fontWeight: '400'
+                        }}
+                      >
+                        {props.name}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: ".9rem",
+                          color: "text.secondary",
+                          fontWeight: '400'
+                        }}
+                      >
+                        {props.description}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-                <Box sx={{
-                  transform: 'rotate(-90deg)',
-                  textAlign: 'right',
-                  lineHeight: '0',
-                  mr: '-0.5rem'
-                }}>
-                  <ExpandMoreIcon />
-                </Box>
-              </Button>
+                  <Box sx={{
+                    transform: expanded === props.name.toLowerCase() ? 'rotate(0deg)' : 'rotate(-90deg)',
+                    transition: 'transform 100ms ease-in-out',
+                    textAlign: 'right',
+                    lineHeight: '0',
+                    mr: '-0.5rem'
+                  }}>
+                    <ExpandMoreIcon />
+                  </Box>
+                </Button>
+              </Collapse>
             )
           })}
 
-
-
-
-
-
-          {!dAppWallet.connected && (
-            <Grid container spacing={2} sx={{ py: 2 }}>
-              <Grid item xs={4}>
-                <Button
-                  // disabled={loading || wallet}
-                  onClick={() => dAppConnect('nautilus')}
-                  sx={{
-                    color: '#fff',
-                    textTransform: 'none',
-                    backgroundColor: theme.palette.primary.main,
-                    '&:hover': {
-                      boxShadow: 'none',
-                    },
-                    '&:active': {
-
-                    },
-                    width: '100%',
-                  }}
-                >
-                  Nautilus
-                  {loading && (
-                    <CircularProgress
-                      sx={{ ml: 2, color: 'white' }}
-                      size={'1.2rem'}
-                    />
-                  )}
-                </Button>
-              </Grid>
-              <Grid item xs={4}>
-                <Button
-                  // disabled={loading || wallet}
-                  onClick={() => dAppConnect('safew')}
-                  sx={{
-                    color: '#fff',
-                    textTransform: 'none',
-                    backgroundColor: theme.palette.secondary.main,
-                    '&:hover': {
-
-                      boxShadow: 'none',
-                    },
-                    '&:active': {
-                      // backgroundColor: theme.palette.secondary.active,
-                    },
-                    width: '100%',
-                  }}
-                >
-                  SafeW
-                  {loading && (
-                    <CircularProgress
-                      sx={{ ml: 2, color: 'white' }}
-                      size={'1.2rem'}
-                    />
-                  )}
-                </Button>
-              </Grid>
-              <Grid item xs={4}>
-                <Button
-                  onClick={() => setMobileAdd(!mobileAdd)}
-                  sx={{
-                    color: '#fff',
-                    textTransform: 'none',
-
-                    '&:hover': {
-
-                      boxShadow: 'none',
-                    },
-                    '&:active': {
-
-                    },
-                    width: '100%',
-                  }}
-                >
-                  Mobile
-                </Button>
-              </Grid>
-            </Grid>
-          )}
-          <FormHelperText error={true}>
-            {dAppError
-              ? 'Failed to connect to wallet. Please retry after refreshing page.'
-              : ''}
-          </FormHelperText>
-          {/* {dAppWallet.connected && (
-            <Accordion sx={{ mt: 1 }}>
-              <AccordionSummary onClick={loadAddresses}>
-                <strong>Change Address</strong>
-              </AccordionSummary>
-              <AccordionDetails>
-                <PaginatedTable
-                  rows={dAppAddressTableData}
-                  onClick={(index) =>
-                    changeWalletAddress(dAppAddressTableData[index].name)
-                  }
-                />
-              </AccordionDetails>
-            </Accordion>
-          )} */}
-          {/* <Collapse in={mobileAdd || dAppWallet.connected}>
+          <Collapse in={expanded === 'mobile'}>
             <TextField
-              disabled={dAppWallet.connected}
+              disabled={walletAddress != ''}
               autoFocus
               margin="dense"
               id="name"
@@ -489,19 +415,53 @@ export const AddWallet = () => {
             <FormHelperText error={true}>
               {!isAddressValid(walletInput) ? 'Invalid ergo address.' : ''}
             </FormHelperText>
-          </Collapse> */}
+          </Collapse>
+
+
+          {loading && (
+            <CircularProgress
+              sx={{ ml: 2, color: 'white' }}
+              size={'1.2rem'}
+            />
+          )}
+
+          {/* 
+          <FormHelperText error={true}>
+            {dAppError
+              ? 'Failed to connect to wallet. Please retry after refreshing page.'
+              : ''}
+          </FormHelperText> 
+          
+          */}
+
+
+          {/* 
+          
+          {dAppWallet.connected && (
+            <Accordion sx={{ mt: 1 }}>
+              <AccordionSummary onClick={loadAddresses}>
+                <strong>Change Address</strong>
+              </AccordionSummary>
+              <AccordionDetails>
+                <PaginatedTable
+                  rows={dAppAddressTableData}
+                  onClick={(index) =>
+                    changeWalletAddress(dAppAddressTableData[index].name)
+                  }
+                />
+              </AccordionDetails>
+            </Accordion>
+          )} 
+          
+          */}
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'space-around', pb: 2 }}>
-          <Button sx={{ width: '150px' }} onClick={handleClose}>Close Window</Button>
-          <Button sx={{ width: '150px' }} disabled={!walletAddress} onClick={() => clearWallet(true)}>
-            Remove Wallet
-          </Button>
+        <DialogActions>
+          <Button onClick={handleClose}>Close Window</Button>
           <Button
-            sx={{ width: '150px' }}
-            onClick={handleSubmitWallet}
-            disabled={!isAddressValid(walletInput) || dAppWallet.connected}
+            onClick={walletAddress == '' ? handleSubmitWallet : () => clearWallet(true)}
+            disabled={!isAddressValid(walletInput)}
           >
-            Connect
+            {walletAddress == '' ? 'Connect' : 'Remove Wallet'}
           </Button>
         </DialogActions>
       </Dialog>
