@@ -26,11 +26,30 @@ import CheckIcon from "@mui/icons-material/CheckCircle";
 import { WalletContext } from '@contexts/WalletContext'
 import { Address } from '@nautilus-wallet/ergo-ts';
 import Nautilus from '@components/wallet/Nautilus';
+import { ExpandMore } from '@mui/icons-material';
 
 const WALLET_ADDRESS = 'wallet_address_7621';
 const WALLET_ADDRESS_LIST = 'wallet_address_list_1283';
 const DAPP_CONNECTED = 'dapp_connected_6329';
 const DAPP_NAME = 'dapp_name_8930';
+
+const wallets = [
+  {
+    name: 'Nautilus',
+    icon: '/images/wallets/nautilus-128.png',
+    description: 'Connect automatically signing with your wallet'
+  },
+  {
+    name: 'SAFEW',
+    icon: '/images/wallets/safew_icon_128.png',
+    description: 'Connect automatically signing with your wallet'
+  },
+  {
+    name: 'Mobile',
+    icon: '/images/wallets/mobile.webp',
+    description: 'Enter your wallet address manually'
+  },
+]
 
 /**
  * Note on es-lint disable lines:
@@ -69,7 +88,7 @@ export const AddWallet = () => {
    */
   const [loading, setLoading] = useState(false);
   const [dAppError, setDAppError] = useState(false);
-  const [dAppAddressTableData, setdAppAddressTableData] = useState([]); // table data
+  const [dAppAddressTableData, setdAppAddressTableData] = useState([{}]); // table data
 
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -242,9 +261,9 @@ export const AddWallet = () => {
     setLoading(true);
     try {
       // @ts-ignore
-      const address_used = await ergo.get_used_addresses(); // eslint-disable-line
+      const address_used: string[] = await ergo.get_used_addresses();
       // @ts-ignore
-      const address_unused = await ergo.get_unused_addresses(); // eslint-disable-line
+      const address_unused: string[] = await ergo.get_unused_addresses();
       const addresses = [...address_used, ...address_unused];
       const addressData = addresses.map((address, index) => {
         return { id: index, name: address };
@@ -253,7 +272,6 @@ export const AddWallet = () => {
         ...dAppWallet,
         addresses: addresses,
       });
-      // @ts-ignore
       setdAppAddressTableData(addressData);
     } catch (e) {
       console.log(e);
@@ -283,57 +301,72 @@ export const AddWallet = () => {
             Your wallet info will never be stored on our server.
           </DialogContentText>
 
-
-          <Accordion
-            expanded={expanded === 'nautilus'}
-            onChange={handleAccordionChange('nautilus')}
-            sx={{
-              borderRadius: ".5rem !important",
-              border: "1px solid",
-              borderColor: "primary.main",
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="nautilus-connect"
-              id="nautilus-header"
-            >
-              <Avatar
-                src="/images/wallets/nautilus-128.png"
-                sx={{ height: "3rem", width: "3rem", mr: "1rem" }}
-              />
-              <Box sx={{ fontSize: "1.2rem", color: "text.primary" }}>
-                Nautilus
+          {wallets.map((props, i) => {
+            return (
+              <Button
+                fullWidth
+                sx={{
+                  borderRadius: '6px',
+                  display: 'flex',
+                  p: '0.5rem',
+                  justifyContent: 'space-between',
+                  mb: '12px'
+                }}
+                key={i}
+              >
                 <Box
                   sx={{
-                    fontSize: ".9rem",
-                    color: "text.secondary",
-                    mt: "-.25rem",
+                    fontSize: "1.2rem",
+                    color: "text.primary",
+                    fontWeight: '400',
+                    textAlign: 'left',
+                    display: 'flex',
                   }}
                 >
-                  Connect automatically signing with your wallet
+                  <Avatar
+                    src={props.icon}
+                    variant={props.name === "SAFEW" ? 'square' : 'circular'}
+                    sx={{
+                      height: "3rem",
+                      width: "3rem",
+                      mr: "1rem",
+                    }}
+                  />
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontSize: "1.1rem",
+                        color: "text.secondary",
+                        fontWeight: '400'
+                      }}
+                    >
+                      {props.name}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: ".9rem",
+                        color: "text.secondary",
+                        fontWeight: '400'
+                      }}
+                    >
+                      {props.description}
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
-              <Button
-                sx={{ ml: "auto" }}
-                size="small"
-              // onClick={() => props.set()}
-              >
-                Disconnect
+                <Box sx={{
+                  transform: 'rotate(-90deg)',
+                  textAlign: 'right',
+                  lineHeight: '0',
+                  mr: '-0.5rem'
+                }}>
+                  <ExpandMoreIcon />
+                </Box>
               </Button>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Nautilus
-                connect={dAppConnect}
-                setLoading={setLoading}
-                setDAppWallet={setDAppWallet}
-                dAppWallet={dAppWallet}
-                loading={loading}
-                clear={clearWallet}
-                wallet={walletAddress}
-              />
-            </AccordionDetails>
-          </Accordion>
+            )
+          })}
+
+
+
 
 
 
