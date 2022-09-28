@@ -1,11 +1,18 @@
-import { Avatar, Box, Button, InputAdornment, TextField } from "@mui/material";
 import { useState, FC, useEffect } from "react";
+import {
+  Avatar,
+  Box,
+  Button,
+  InputAdornment,
+  TextField,
+  Typography,
+  Link,
+} from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { isAddressValid } from "./AddWallet";
+import { isAddressValid } from "@components/wallet/AddWallet";
 import { LoadingButton } from "@mui/lab";
 
 const Nautilus: FC<{
-  // set: Function;
   connect: Function;
   setLoading: Function;
   setDAppWallet: Function;
@@ -17,27 +24,27 @@ const Nautilus: FC<{
   const [changeLoading, setChangeLoading] = useState<number>(0);
   const [loggedIn, setLoggedIn] = useState(true)
 
-  useEffect(() => {
-    const wrapper = async () => {
-      props.setLoading(true);
-      await props.connect();
-      props.setLoading(false);
-    };
-    if (!props.dAppWallet.connected || !isAddressValid(props.wallet)) {
-      wrapper();
-    }
-  }, []);
+  // useEffect(() => {
+  //   const wrapper = async () => {
+  //     props.setLoading(true);
+  //     await props.connect('nautilus');
+  //     props.setLoading(false);
+  //   };
+  //   if (!props.dAppWallet.connected) {
+  //     wrapper();
+  //   }
+  // }, []);
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <>
       {props.dAppWallet.connected && isAddressValid(props.wallet) ? (
         <>
-          <Box sx={{ mt: ".5rem", fontSize: ".9rem", mb: ".5rem" }}>
+          <Typography sx={{ mb: "1rem", fontSize: ".9rem" }}>
             Select which address you want to use as as the default.
-          </Box>
+          </Typography>
           <TextField
             label="Default Wallet Address"
-            sx={{ width: "100%", mt: ".75rem" }}
+            fullWidth
             value={props.wallet}
             disabled
             InputProps={{
@@ -51,7 +58,7 @@ const Nautilus: FC<{
 
           <Box
             sx={{
-              width: "100%",
+              // width: "100%",
               border: "1px solid",
               borderColor: "border.main",
               borderRadius: ".3rem",
@@ -67,7 +74,7 @@ const Nautilus: FC<{
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      width: "100%",
+                      // width: "100%",
                       fontSize: ".7rem",
                       pl: ".5rem",
                       mt: ".5rem",
@@ -107,12 +114,9 @@ const Nautilus: FC<{
           </Box>
         </>
       ) : (
-        <>
-          <Box sx={{ mt: ".5rem", fontSize: ".9rem" }}>
-            Follow the instructions in your Nautilus Wallet to confirm and you
-            will connect your wallet instantly. If a popup box is not appearing
-            or if you accidentally closed it, please{" "}
-            <Box
+        <Typography sx={{ fontSize: ".9rem", maxWidth: '450px' }}>
+            Follow the instructions in Nautilus Wallet to confirm and you will connect your wallet instantly. If a popup box is not appearing or if you accidentally closed it, please{" "}
+            <Link
               sx={{
                 cursor: "pointer",
                 display: "inline",
@@ -120,16 +124,14 @@ const Nautilus: FC<{
                 color: "primary.main",
               }}
               onClick={async () => {
-                await props.connect();
+                await props.connect('nautilus');
               }}
             >
               click here
-            </Box>{" "}
-            to open it again
-          </Box>
-        </>
+            </Link>{" "} to open it again. 
+        </Typography>
       )}
-    </Box>
+    </>
   );
 };
 

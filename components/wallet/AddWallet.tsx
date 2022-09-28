@@ -35,8 +35,6 @@ const WALLET_ADDRESS_LIST = 'wallet_address_list_1283';
 const DAPP_CONNECTED = 'dapp_connected_6329';
 const DAPP_NAME = 'dapp_name_8930';
 
-
-
 /**
  * Note on es-lint disable lines:
  *
@@ -78,7 +76,7 @@ export const AddWallet = () => {
 
   useEffect(() => {
     const isModalOpen = localStorage.getItem('modalOpen')
-    if (isModalOpen === 'true') { 
+    if (isModalOpen === 'true') {
       setAddWalletModalOpen(true)
     }
     localStorage.setItem('modalOpen', 'false');
@@ -197,19 +195,19 @@ export const AddWallet = () => {
   /**
    * dapp connector
    */
-  const dAppConnect = async (walletAddress: string) => {
+  const dAppConnect = async (wallet: string) => {
     const walletMapper: { [index: string]: any } = {
       nautilus: window.ergoConnector?.nautilus,
       safew: window.ergoConnector?.safew,
     };
     setLoading(true);
     try {
-      if (await walletMapper[walletAddress].isConnected()) {
-        await dAppLoad(walletAddress);
+      if (await walletMapper[wallet].isConnected()) {
+        await dAppLoad(wallet);
         setLoading(false);
         return;
-      } else if (await walletMapper[walletAddress].connect()) {
-        await dAppLoad(walletAddress);
+      } else if (await walletMapper[wallet].connect()) {
+        await dAppLoad(wallet);
         setLoading(false);
         return;
       }
@@ -221,7 +219,7 @@ export const AddWallet = () => {
     setLoading(false);
   };
 
-  const dAppLoad = async (walletAddress: string) => {
+  const dAppLoad = async (wallet: string) => {
     try {
       // @ts-ignore
       const address_used = await ergo.get_used_addresses(); // eslint-disable-line
@@ -235,7 +233,7 @@ export const AddWallet = () => {
       // update dApp state
       setDAppWallet({
         connected: true,
-        name: walletAddress,
+        name: wallet,
         addresses: addresses,
       });
       setDAppError(false);
@@ -260,9 +258,9 @@ export const AddWallet = () => {
     setLoading(true);
     try {
       // @ts-ignore
-      const address_used: string[] = await ergo.get_used_addresses();
+      const address_used = await ergo.get_used_addresses();
       // @ts-ignore
-      const address_unused: string[] = await ergo.get_unused_addresses();
+      const address_unused = await ergo.get_unused_addresses();
       const addresses = [...address_used, ...address_unused];
       const addressData = addresses.map((address, index) => {
         return { id: index, name: address };
@@ -320,12 +318,12 @@ export const AddWallet = () => {
           {walletAddress != '' ? 'Wallet Connected' : 'Connect Wallet'}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ textAlign: 'center', mb: '24px' }}>
+          {/* <DialogContentText sx={{ textAlign: 'center', mb: '24px' }}>
             Your wallet info will never be stored on our server.
-          </DialogContentText>
+          </DialogContentText> */}
           {wallets.map((props, i) => {
             return (
-              <Collapse in={expanded === props.name.toLowerCase() || expanded === false} mountOnEnter unmountOnExit>
+              <Collapse in={expanded === props.name.toLowerCase() || expanded === false} mountOnEnter unmountOnExit key={i}>
                 <Button
                   fullWidth
                   disabled={walletAddress != ''}
@@ -335,9 +333,9 @@ export const AddWallet = () => {
                     justifyContent: 'space-between',
                     mb: '12px',
                     display: 'flex',
-                    width: fullScreen ? '90vw' : '500px',
+                    minWidth: fullScreen ? '90vw' : '500px',
                   }}
-                  key={i}
+
                   onClick={expanded === false ? () => handleWalletChange(props.name.toLowerCase()) : () => handleWalletChange(false)}
                 >
                   <Box
@@ -393,7 +391,7 @@ export const AddWallet = () => {
             )
           })}
 
-          <Collapse in={expanded === 'mobile'}>
+          <Collapse in={expanded === 'mobile'} mountOnEnter unmountOnExit>
             <TextField
               disabled={walletAddress != ''}
               autoFocus
@@ -417,13 +415,24 @@ export const AddWallet = () => {
             </FormHelperText>
           </Collapse>
 
+          <Collapse in={expanded === 'nautilus'}  mountOnEnter unmountOnExit>
+            <Nautilus
+              connect={dAppConnect}
+              setLoading={setLoading}
+              setDAppWallet={setDAppWallet}
+              dAppWallet={dAppWallet}
+              loading={loading}
+              clear={clearWallet}
+              wallet={walletAddress}
+            />
+          </Collapse>
 
-          {loading && (
+          {/* {loading && (
             <CircularProgress
               sx={{ ml: 2, color: 'white' }}
               size={'1.2rem'}
             />
-          )}
+          )} */}
 
           {/* 
           <FormHelperText error={true}>
