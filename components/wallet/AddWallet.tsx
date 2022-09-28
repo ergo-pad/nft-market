@@ -27,7 +27,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckIcon from "@mui/icons-material/CheckCircle";
 import { WalletContext } from '@contexts/WalletContext'
 import { Address } from '@nautilus-wallet/ergo-ts';
-import Nautilus from '@components/wallet/Nautilus';
+import DappWallet from '@components/wallet/DappWallet';
 import { ExpandMore } from '@mui/icons-material';
 
 const WALLET_ADDRESS = 'wallet_address_7621';
@@ -93,24 +93,29 @@ export const AddWallet = () => {
   useEffect(() => {
     // load primary address
     const address = localStorage.getItem(WALLET_ADDRESS)
-    if (address !== null) {
-      setWalletAddress(address);
-      setWalletInput(address);
-    }
     // load dApp state
     const dappConnected = localStorage.getItem(DAPP_CONNECTED);
     const dappName = localStorage.getItem(DAPP_NAME);
     const walletAddressList = localStorage.getItem(WALLET_ADDRESS_LIST);
+    if (address !== null && address !== '' && (dappName === null || dappName === '')) {
+      setWalletAddress(address);
+      setWalletInput(address);
+      handleWalletChange('mobile')
+    }
     if (
       dappConnected !== null &&
       dappName !== null &&
-      walletAddressList !== null
+      walletAddressList !== null &&
+      dappConnected !== '' &&
+      dappName !== '' &&
+      walletAddressList !== ''
     ) {
       setDAppWallet({
         connected: dappConnected === 'true' ? true : false,
         name: dappName,
         addresses: JSON.parse(walletAddressList),
       });
+      handleWalletChange(dappName.toLowerCase())
     }
     // refresh connection
     try {
@@ -295,7 +300,6 @@ export const AddWallet = () => {
   ]
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
   return (
     <>
       <Button onClick={() => setAddWalletModalOpen(true)}>
@@ -335,7 +339,6 @@ export const AddWallet = () => {
                     display: 'flex',
                     minWidth: fullScreen ? '90vw' : '500px',
                   }}
-
                   onClick={expanded === false ? () => handleWalletChange(props.name.toLowerCase()) : () => handleWalletChange(false)}
                 >
                   <Box
@@ -415,8 +418,8 @@ export const AddWallet = () => {
             </FormHelperText>
           </Collapse>
 
-          <Collapse in={expanded === 'nautilus'}  mountOnEnter unmountOnExit>
-            <Nautilus
+          <Collapse in={expanded !== 'mobile' && expanded !== false} mountOnEnter unmountOnExit>
+            <DappWallet
               connect={dAppConnect}
               setLoading={setLoading}
               setDAppWallet={setDAppWallet}
@@ -424,6 +427,7 @@ export const AddWallet = () => {
               loading={loading}
               clear={clearWallet}
               wallet={walletAddress}
+              changeWallet={changeWalletAddress}
             />
           </Collapse>
 

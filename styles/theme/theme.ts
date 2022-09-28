@@ -122,6 +122,18 @@ const mainTheme = [{
           }
         }
       }
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          '&:-webkit-autofill': {
+            boxShadow: '0 0 0 100px rgba(144,144,144,0.001) inset !important',
+          },
+          '&:-internal-autofill-selected': {
+            backgroundColor: 'none !important',
+          }
+        }
+      }
     }
   }
 }];
