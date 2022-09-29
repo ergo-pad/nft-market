@@ -8,10 +8,10 @@ export interface IUserNotification {
 }
 
 export interface IUserInfo {
-  userWallet: string;
-  userName: string;
-  pfpUrl: string;
-  notifications: IUserNotification[];
+  address: string;
+  name?: string;
+  pfpUrl?: string;
+  notifications?: IUserNotification[];
 }
 
 export interface IUserContext {

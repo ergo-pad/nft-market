@@ -11,6 +11,7 @@ import { AnimatePresence } from "framer-motion";
 import { ColorizeSharp } from "@mui/icons-material";
 import { ThemeContext } from "@contexts/ThemeContext";
 import { WalletContext } from '@contexts/WalletContext'
+import { UserContext } from "@contexts/UserContext";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -22,6 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     addresses: [''],
   })
   const [addWalletModalOpen, setAddWalletModalOpen] = useState(false)
+  const [userInfo, setUserInfo] = useState({ address: '' })
 
   useEffect(() => {
     setTheme(localStorage.getItem('darkToggle') === 'dark' ? DarkTheme : LightTheme)
@@ -47,12 +49,14 @@ function MyApp({ Component, pageProps }: AppProps) {
               setAddWalletModalOpen
             }}
           >
-            <CssBaseline enableColorScheme />
-            <AnimatePresence exitBeforeEnter>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </AnimatePresence>
+            <UserContext.Provider value={{ userInfo, setUserInfo }}>
+              <CssBaseline enableColorScheme />
+              <AnimatePresence exitBeforeEnter>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </AnimatePresence>
+            </UserContext.Provider>
           </WalletContext.Provider>
         </ThemeContext.Provider>
       </ThemeProvider>
