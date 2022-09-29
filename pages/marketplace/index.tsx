@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
-// @ts-ignore
 import FilterOptions from "@components/FilterOptions";
 import { SxProps } from "@mui/material";
 import NftCard from '@components/NftCard';

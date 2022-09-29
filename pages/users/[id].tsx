@@ -484,9 +484,6 @@ const Nft: NextPage<INftProps> = (props) => {
                           </Typography>
                         </>
                       )}
-                      {((props.salesCard.auction && ((props.salesCard.auction.endTime.getTime() - (Date.now() / 1000)) > 0)) || props.salesCard.sale) &&
-                        <SalesCard {...props.salesCard} />
-                      }
                     </TabPanel>
                   </Slide>
 
@@ -510,9 +507,6 @@ const Nft: NextPage<INftProps> = (props) => {
                           />
                         )
                       })}
-                      {((props.salesCard.auction && ((props.salesCard.auction.endTime.getTime() - (Date.now() / 1000)) > 0)) || props.salesCard.sale) &&
-                        <SalesCard {...props.salesCard} />
-                      }
                     </TabPanel>
                   </Slide>
 
@@ -524,20 +518,14 @@ const Nft: NextPage<INftProps> = (props) => {
 
                   {/* ACTIVITY TAB */}
                   <Slide direction="up" in={tabValue == 'activity'} mountOnEnter unmountOnExit>
-                    <TabPanel value="activity">
-                      <Typography sx={{ mb: '24px' }}>
-                      Past sales activity
-                      </Typography>
-                      
-                      {((props.salesCard.auction && ((props.salesCard.auction.endTime.getTime() - (Date.now() / 1000)) > 0)) || props.salesCard.sale) &&
-                        <SalesCard {...props.salesCard} />
-                      }
-                    </TabPanel>
+                    <TabPanel value="activity">Past sales activity</TabPanel>
                   </Slide>
 
                 </TabContext>
               </Box>
-
+              {((props.salesCard.auction && ((props.salesCard.auction.endTime.getTime() - (Date.now() / 1000)) > 0)) || props.salesCard.sale) &&
+                <SalesCard {...props.salesCard} />
+              }
             </Box>
           </Grid>
         </Grid>

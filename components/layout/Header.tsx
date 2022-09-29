@@ -30,18 +30,9 @@ const pages = [
     link: "/collections",
   },
   {
-    name: "Mint",
-    link: "/mint",
+    name: "Create",
+    link: "/create",
   },
-  {
-    name: "Dashboard",
-    link: "/dashboard",
-  },
-  // {
-  //   name: "Disabled",
-  //   link: "/disabled",
-  //   disabled: true,
-  // },
 ];
 
 interface INavItemProps {
@@ -125,9 +116,10 @@ const Header: FC<IHeaderProps> = ({ }) => {
           zIndex: "24",
           borderBottom: theme.palette.mode == 'dark' ? "1px solid #1d242f" : "1px solid rgba(140,140,140,0.2)",
           backdropFilter: `${trigger ? "blur(25px)" : ""}`,
+          borderRadius: '0px',
           background:
             //`${trigger ? 
-            theme.palette.mode == 'dark' ? "rgba(60,80,140,0.02)" : "rgba(140,140,140,0.05)",
+            theme.palette.mode == 'dark' ? "rgba(8,12,20,0.8)" : "rgba(245,245,245,0.8)",
           //: ""}`,
         }}
       >
@@ -136,7 +128,10 @@ const Header: FC<IHeaderProps> = ({ }) => {
             container
             justifyContent="space-between"
             alignItems="center"
-            sx={{ height: "89px" }}
+            sx={{ 
+              height: trigger? "60px" : "89px",
+              transition: 'height 0.2s linear'
+            }}
           >
             <Grid
               item
@@ -189,7 +184,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
                     sx={{
                       zIndex: "25",
                       position: "relative",
-                      width: "40px",
+                      width: "26px",
                       height: "40px",
                       color: theme.palette.text.primary,
                       // focus: 'outline-none',
@@ -199,18 +194,19 @@ const Header: FC<IHeaderProps> = ({ }) => {
                     <Box
                       sx={{
                         position: "absolute",
-                        width: "20px",
+                        width: "24px",
                         transform: "translate(-50%, -50%)",
                         left: "50%",
                         top: "50%",
+                        mt: '-2px'
                       }}
                     >
                       <Box
                         sx={{
                           position: "absolute",
-                          height: "3px",
-                          width: "28px",
-                          borderRadius: "2px",
+                          height: "4px",
+                          width: "20px",
+                          borderRadius: "4px",
                           background: theme.palette.text.primary,
                           transition: "transform 100ms ease-in-out",
                           transform: `${navbarOpen ? "rotate(45deg)" : "translateY(6px)"
@@ -220,9 +216,9 @@ const Header: FC<IHeaderProps> = ({ }) => {
                       <Box
                         sx={{
                           position: "absolute",
-                          height: "3px",
-                          width: "28px",
-                          borderRadius: "2px",
+                          height: "4px",
+                          width: "20px",
+                          borderRadius: "4px",
                           background: theme.palette.text.primary,
                           transition: "transform 100ms ease-in-out",
                           transform: `${navbarOpen ? "rotate(-45deg)" : "translateY(-6px)"
@@ -242,10 +238,10 @@ const Header: FC<IHeaderProps> = ({ }) => {
           sx={{
             zIndex: "35",
             position: "fixed",
-            width: "40px",
+            width: "26px",
             height: "40px",
-            top: "14px",
-            right: "24px",
+            top: trigger ? "11px" : "25px",
+            right: "26px",
             color: theme.palette.text.primary,
           }}
           onClick={() => setNavbarOpen(!navbarOpen)}
@@ -257,13 +253,14 @@ const Header: FC<IHeaderProps> = ({ }) => {
               transform: "translate(-50%, -50%)",
               left: "50%",
               top: "50%",
+              mt: '-2px'
             }}
           >
             <Box
               sx={{
                 position: "absolute",
                 height: "3px",
-                width: "28px",
+                width: "20px",
                 borderRadius: "2px",
                 background: theme.palette.text.primary,
                 transition: "transform 100ms ease-in-out",
@@ -275,7 +272,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
               sx={{
                 position: "absolute",
                 height: "3px",
-                width: "28px",
+                width: "20px",
                 borderRadius: "2px",
                 background: theme.palette.text.primary,
                 transition: "transform 100ms ease-in-out",

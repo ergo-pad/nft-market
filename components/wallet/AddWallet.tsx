@@ -21,7 +21,9 @@ import {
   Chip,
   Typography,
   Fade,
-  useMediaQuery
+  useMediaQuery,
+  IconButton,
+  Icon
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckIcon from "@mui/icons-material/CheckCircle";
@@ -302,9 +304,11 @@ export const AddWallet = () => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <>
-      <Button onClick={() => setAddWalletModalOpen(true)}>
-        Wallet
-      </Button>
+      <IconButton sx={{ color: theme.palette.text.primary }} onClick={() => setAddWalletModalOpen(true)}>
+        <Icon color="inherit">
+          account_balance_wallet
+        </Icon>
+      </IconButton>
       <Dialog
         open={addWalletModalOpen}
         onClose={handleClose}
