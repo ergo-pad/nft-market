@@ -20,6 +20,8 @@ import {
   DialogContent,
   DialogTitle,
   Paper,
+  IconButton,
+  Divider
 } from '@mui/material'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
@@ -44,6 +46,7 @@ const user = {
   address: '9asdfgEGZKHfKCUasdfvreqK6s6KiALNCFxojUa4Tbibw2Ajw1JFo',
   name: 'Eelon Musk',
   pfpUrl: '/images/users/eelon-musk.png',
+  tagline: 'A psychological phenomenon known as the mere exposure effect is where we develop a preference just because we are familiar with things.',
   notifications: [
     {
       title: '',
@@ -144,16 +147,23 @@ const User: NextPage = () => {
     }
   };
 
-  const [tabValue, setTabValue] = React.useState('info');
+  const [tabValue, setTabValue] = React.useState('on-sale');
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
 
   const [scrollY, setScrollY] = useState(0)
+  const userProfileCard = useRef<HTMLDivElement>(null)
+  const userProfileContainer = useRef<HTMLDivElement>(null)
   const handleScroll = () => {
-    const scrollPos = window.scrollY - 200
-    if (scrollPos > 0) {
-      setScrollY(scrollPos)
+    const scrollPos = window.scrollY - 216
+    if (scrollPos > 0 && (userProfileCard.current !== null && userProfileContainer.current !== null)) {
+      if (scrollPos < (userProfileContainer.current.clientHeight - userProfileCard.current.clientHeight)) {
+        setScrollY(scrollPos)
+      }
+      else {
+        setScrollY(userProfileContainer.current.clientHeight - userProfileCard.current.clientHeight)
+      }
     }
     else {
       setScrollY(0)
@@ -182,7 +192,7 @@ const User: NextPage = () => {
             lg={3}
             sx={{ pr: "24px", display: { xs: "none", lg: "block" } }}
           >
-            <Box sx={{ position: 'relative', height: 'calc(100% + 100px)' }}>
+            <Box sx={{ position: 'relative', height: 'calc(100% + 100px)' }} ref={userProfileContainer}>
               <motion.div
                 animate={{
                   y: scrollY
@@ -191,13 +201,14 @@ const User: NextPage = () => {
               >
                 <Box sx={{ position: 'absolute', top: -100, height: '100%', width: '100%' }}>
                   <Paper
+                    ref={userProfileCard}
                     sx={{
                       p: '24px',
-                      // position: 'sticky',
                       top: 84,
                       width: '100%',
                       border: '1px solid',
-                      borderColor: theme.palette.divider
+                      borderColor: theme.palette.divider,
+                      zIndex: '100'
                     }}
                   >
                     <Avatar
@@ -214,11 +225,85 @@ const User: NextPage = () => {
                     {user.name && <Typography
                       sx={{
                         fontSize: '1.2rem',
-                        fontWeight: '700'
+                        fontWeight: '700',
+                        mb: '3px',
+                        textAlign: 'center'
                       }}
                     >
                       {user.name}
                     </Typography>}
+
+                    <Box
+                      sx={{
+                        display: 'inline-block',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        overflowWrap: 'break-word',
+                        wordBreak: 'break-word',
+                        maxWidth: '100%',
+                        mb: '16px'
+                      }}>
+                      <Link
+                        sx={{
+                          color: theme.palette.primary.main,
+                          lineHeight: 1.5,
+                          mb: '16px',
+                          '&:hover': {
+                            color: theme.palette.text.primary,
+                          }
+                        }}
+                        href={'https://explorer.ergoplatform.com/en/addresses/' + user.address}
+                      >
+                        {user.address}
+                      </Link>
+                    </Box>
+
+                    <Grid container sx={{ textAlign: 'center', width: '100%' }}>
+                      <Grid item xs>
+                        <Typography
+                          sx={{
+                            fontSize: '1.5rem',
+                            fontWeight: '700'
+                          }}
+                        >
+                          12
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '0.8rem',
+                            color: theme.palette.text.secondary
+                          }}
+                        >
+                          NFTs Owned
+                        </Typography>
+                      </Grid>
+                      <Grid item xs>
+                        <Typography
+                          sx={{
+                            fontSize: '1.5rem',
+                            fontWeight: '700'
+                          }}
+                        >
+                          6
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '0.8rem',
+                            color: theme.palette.text.secondary
+                          }}
+                        >
+                          NFTs Sold
+                        </Typography>
+                      </Grid>
+                    </Grid>
+
+                    <Divider sx={{ my: '24px' }} />
+                    {user.tagline &&
+                      <Typography>
+                        {user.tagline}
+                      </Typography>
+                    }
 
                   </Paper>
                 </Box>
@@ -238,8 +323,9 @@ const User: NextPage = () => {
                   scrollButtons="auto"
                   allowScrollButtonsMobile
                 >
-                  <Tab label="Information" value="info" />
-                  <Tab label="Auction Info" value="auction" />
+                  <Tab label="On Sale" value="on-sale" />
+                  <Tab label="Owned" value="owned" />
+                  <Tab label="Watch List" value="watch-list" />
                   <Tab label="Activity" value="activity" />
                 </TabList>
               </Box>
@@ -278,9 +364,9 @@ const User: NextPage = () => {
                   </>
                 )}
               </Grid>
-              {/* INFO TAB */}
-              <Slide direction="up" in={tabValue == 'info'} mountOnEnter unmountOnExit>
-                <TabPanel value="info" sx={customTabPanelSx}>
+              {/* ON SALE TAB */}
+              <Slide direction="up" in={tabValue == 'on-sale'} mountOnEnter unmountOnExit>
+                <TabPanel value="on-sale" sx={customTabPanelSx}>
                   <Grid
                     container
                     spacing={4}
@@ -314,10 +400,76 @@ const User: NextPage = () => {
                 </TabPanel>
               </Slide>
 
-              {/* AUCTION TAB */}
-              <Slide direction="up" in={tabValue == 'auction'} mountOnEnter unmountOnExit>
-                <TabPanel value="auction" sx={customTabPanelSx}>
+              {/* OWNED TAB */}
+              <Slide direction="up" in={tabValue == 'owned'} mountOnEnter unmountOnExit>
+                <TabPanel value="owned" sx={customTabPanelSx}>
+                <Grid
+                    container
+                    spacing={4}
+                    columns={{ xs: 1, sm: 2, md: 3 }}
+                    sx={{ mb: "24px" }}
+                  >
+                    {recentNfts.map((props, i) => {
+                      return (
+                        <Grid key={i} item xs={1}>
+                          <NftCard
+                            key={i}
+                            link={props.link}
+                            imgUrl={props.imgUrl}
+                            name={props.name}
+                            price={props.price}
+                            rarity={props.rarity}
+                            time={props.time}
+                            collection={props.collection}
+                            collectionLink={props.collectionLink}
+                            artist={props.artist}
+                            artistLink={props.artistLink}
+                            artistLogo={props.artistLogo}
+                          />
+                        </Grid>
+                      )
+                    })}
+                  </Grid>
+                  <Box sx={{ width: '100%', textAlign: 'center' }}>
+                    <Button variant="contained" sx={{}}>Load more...</Button>
+                  </Box>
+                </TabPanel>
+              </Slide>
 
+              {/* WATCH LIST TAB */}
+              <Slide direction="up" in={tabValue == 'watch-list'} mountOnEnter unmountOnExit>
+                <TabPanel value="watch-list" sx={customTabPanelSx}>
+                  <Typography sx={{ mb: '24px' }}>
+                  <Grid
+                    container
+                    spacing={4}
+                    columns={{ xs: 1, sm: 2, md: 3 }}
+                    sx={{ mb: "24px" }}
+                  >
+                    {recentNfts.map((props, i) => {
+                      return (
+                        <Grid key={i} item xs={1}>
+                          <NftCard
+                            key={i}
+                            link={props.link}
+                            imgUrl={props.imgUrl}
+                            name={props.name}
+                            price={props.price}
+                            rarity={props.rarity}
+                            time={props.time}
+                            collection={props.collection}
+                            collectionLink={props.collectionLink}
+                            artist={props.artist}
+                            artistLink={props.artistLink}
+                            artistLogo={props.artistLogo}
+                          />
+                        </Grid>
+                      )
+                    })}
+                  </Grid>
+                  <Box sx={{ width: '100%', textAlign: 'center' }}>
+                    <Button variant="contained" sx={{}}>Load more...</Button>
+                  </Box>                  </Typography>
                 </TabPanel>
               </Slide>
 
@@ -333,7 +485,7 @@ const User: NextPage = () => {
             </TabContext>
           </Grid>
         </Grid>
-      </Container>
+      </Container >
     </>
   )
 }

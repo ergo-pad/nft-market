@@ -121,7 +121,7 @@ const Footer: FC = () => {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <Container sx={{ display: 'block', position: 'relative' }}>
+    <Container sx={{ display: 'block', position: 'relative', zIndex: 0 }}>
       <Grid
         container
         spacing={{ xs: 3, md: 1 }}

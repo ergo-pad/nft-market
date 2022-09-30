@@ -11,6 +11,7 @@ export interface IUserInfo {
   address: string;
   name?: string;
   pfpUrl?: string;
+  tagline?: string;
   notifications?: IUserNotification[];
 }
 
