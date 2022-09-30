@@ -122,7 +122,7 @@ const Footer: FC = () => {
 
   return (
     <Container sx={{ display: 'block', position: 'relative', zIndex: 0 }}>
-      <Grid
+      {/* <Grid
         container
         spacing={{ xs: 3, md: 1 }}
         sx={{
@@ -149,7 +149,7 @@ const Footer: FC = () => {
             {fourthPages.links.length != 0 && linkList(fourthPages)}
           </Grid>
         </Grid>
-      </Grid>
+      </Grid> */}
       <Grid container justifyContent="space-between" sx={{ py: 2 }} spacing={1}>
         <Grid item xs={12} md sx={{ textAlign: { xs: 'center', md: 'left' } }}>
           <Typography>

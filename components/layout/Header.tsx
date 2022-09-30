@@ -15,6 +15,7 @@ import { ThemeContext } from "@contexts/ThemeContext";
 import { useRouter } from 'next/router';
 import Logo from '@components/svgs/Logo';
 import AddWallet from '@components/wallet/AddWallet';
+import UserAvatar from '@components/UserAvatar';
 
 const pages = [
   {
@@ -67,26 +68,39 @@ const Header: FC<IHeaderProps> = ({ }) => {
         <Box
           sx={{
             display: 'inline-block',
-            // mt: '6px',
+            "&::after": {
+              content: '""',
+              display: 'block',
+              mt: '4px',
+              height: '2px',
+              background: router.pathname === page.link ? theme.palette.primary.main : '',
+              width: '100%',
+            },
+
           }}
         >
           {page.disabled ? (
             <Typography
               sx={{
                 color: theme.palette.text.secondary,
+                px: '8px',
               }}
             >
               {page.name}
             </Typography>
           ) : (
-            <Typography
+            <Box
               onClick={() => setNavbarOpen(false)}
             >
               <Link
                 href={page.link}
                 sx={{
                   color: router.pathname === page.link ? theme.palette.primary.main : theme.palette.text.primary,
-                  textDecoration: router.pathname === page.link ? "underline" : "none",
+                  fontWeight: '700',
+                  fontFamily: '"Inter", sans-serif',
+                  fontSize: '14px',
+                  textDecoration: "none",
+                  px: '8px',
                   "&:hover": {
                     color: theme.palette.primary.main,
                   },
@@ -94,7 +108,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
               >
                 {page.name}
               </Link>
-            </Typography>
+            </Box>
           )}
         </Box>
       </Grid>
@@ -128,8 +142,8 @@ const Header: FC<IHeaderProps> = ({ }) => {
             container
             justifyContent="space-between"
             alignItems="center"
-            sx={{ 
-              height: trigger? "60px" : "89px",
+            sx={{
+              height: trigger ? "60px" : "89px",
               transition: 'height 0.2s linear'
             }}
           >
@@ -164,7 +178,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
                 <Grid item sx={{ display: { xs: "none", md: "flex" } }}>
                   <Grid
                     container
-                    spacing={3}
+                    spacing={2}
                   >
                     {pages.map((page, i) => (
                       <NavigationListItem size={13} key={i} page={page} />
@@ -177,6 +191,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
                   <IconButton onClick={toggleTheme} sx={{ color: theme.palette.text.primary }}>
                     {(theme === DarkTheme) ? <Brightness7Icon /> : <Brightness4Icon />}
                   </IconButton>
+                  <UserAvatar />
                   <AddWallet />
                 </Grid>
                 <Grid item sx={{ display: { xs: "flex", md: "none" } }}>

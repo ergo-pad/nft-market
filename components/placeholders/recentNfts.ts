@@ -9,7 +9,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
   {
@@ -22,7 +22,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
   {
@@ -35,7 +35,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
   {
@@ -48,7 +48,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
   {
@@ -61,7 +61,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
   {
@@ -74,7 +74,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
   {
@@ -87,7 +87,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
   {
@@ -100,7 +100,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
   {
@@ -113,7 +113,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
   {
@@ -126,7 +126,7 @@ export const recentNfts = [
     collection: 'Wrath of Gods',
     collectionLink: '/',
     artist: 'Paideia',
-    artistLink: '/',
+    artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
 ]
