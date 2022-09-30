@@ -129,53 +129,42 @@ const customTabPanelSx = {
 }
 
 const User: NextPage = () => {
+  const theme = useTheme()
+  const upSm = useMediaQuery(theme.breakpoints.up('sm'))
+
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [filterDialogvalue, setFilterDialogValue] = React.useState("Dione");
-
   const handleDialogClick = () => {
     setFilterDialogOpen(true);
   };
-
   const handleDialogClose = (newValue?: string) => {
     setFilterDialogOpen(false);
-
     if (newValue) {
       setFilterDialogValue(newValue);
     }
   };
 
-  const theme = useTheme()
   const [tabValue, setTabValue] = React.useState('info');
-
-  const upSm = useMediaQuery(theme.breakpoints.up('sm'))
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
 
   const [scrollY, setScrollY] = useState(0)
-  const [positionFromTop, setPositionFromTop] = useState(0)
-  const positionTop = useRef<HTMLInputElement>();
-
-  useEffect(() => {
-    positionTop.current && setPositionFromTop(positionTop.current.offsetTop)
-    console.log(positionTop.current.getBoundingClientRect().offsetTop)
-  }, [])
-
   const handleScroll = () => {
-    const scrollPos = window.scrollY - positionFromTop
-    console.log(scrollPos)
-    console.log(positionFromTop)
-    setScrollY(scrollPos)
+    const scrollPos = window.scrollY - 200
+    if (scrollPos > 0) {
+      setScrollY(scrollPos)
+    }
+    else {
+      setScrollY(0)
+    }
   }
-
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  
 
   return (
     <>
@@ -200,11 +189,11 @@ const User: NextPage = () => {
                 }}
                 transition={{ type: "spring" }}
               >
-                <Box sx={{ position: 'absolute', top: -100, height: '100%', width: '100%' }} ref={positionTop}>
+                <Box sx={{ position: 'absolute', top: -100, height: '100%', width: '100%' }}>
                   <Paper
                     sx={{
                       p: '24px',
-                      position: 'sticky',
+                      // position: 'sticky',
                       top: 84,
                       width: '100%',
                       border: '1px solid',
