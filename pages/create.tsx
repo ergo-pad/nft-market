@@ -8,6 +8,8 @@ import {
   Card,
   CardContent,
   Avatar,
+  Select,
+  MenuItem,
   useTheme,
   useMediaQuery,
   Icon,
@@ -29,33 +31,70 @@ import {
   InputLabel,
   InputAdornment,
   FilledInput,
+  TextField,
+  ToggleButtonGroup,
+  Switch,
+  ToggleButton,
+  SelectChangeEvent
 } from '@mui/material'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
 import Image from 'next/image';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import { UserContext } from '@contexts/UserContext'
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import FilterOptions from "@components/FilterOptions";
-import { SxProps } from "@mui/material";
-import NftCard from '@components/NftCard';
-import { recentNfts } from '@components/placeholders/recentNfts'
-import SearchBar from '@components/SearchBar'
-import SortBy from '@components/SortBy'
 import { motion } from 'framer-motion'
-import NextLink from 'next/link'
 import { WalletContext } from '@contexts/WalletContext'
 
 interface IFormData {
-  address: string;
+  artist: {
+    address: string;
+    name?: string;
+    website?: string;
+    tagline?: string;
+    social?: {
+      socialNetwork: string;
+      address: string;
+    }[];
+  }
+  collection?: {
 
+  }
+  sale: {
+
+  }
+  tokens: {
+
+  }
 }
 
+///////////////////////////////////////////////////////////////////
+// BEGIN PLACEHOLDER DATA /////////////////////////////////////////
+const formData = {
+  artist: {
+    address: '',
+    name: '',
+    website: '',
+    tagline: '',
+    social: [
+      {
+        socialNetwork: '',
+        address: '',
+      }
+    ]
+  },
+  collection: {
+
+  },
+  sale: {
+
+  },
+  tokens: {
+
+  }
+}
+// END PLACEHOLDER DATA ///////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
 const steps = [
-  'Initiate',
+  'Artist',
   'Collection Details',
   'Sale Info',
   'Token Details'
@@ -70,9 +109,9 @@ const Create: NextPage = () => {
     addWalletModalOpen,
     setAddWalletModalOpen
   } = useContext(WalletContext);
-
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
+
 
   const [scrollY, setScrollY] = useState(0)
   const userProfileCard = useRef<HTMLDivElement>(null)
@@ -98,27 +137,23 @@ const Create: NextPage = () => {
     };
   }, []);
 
+
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepperCompleted, setStepperCompleted] = React.useState<{
     [k: number]: boolean;
   }>({});
-
   const totalSteps = () => {
     return steps.length;
   };
-
   const completedSteps = () => {
     return Object.keys(stepperCompleted).length;
   };
-
   const isLastStep = () => {
     return activeStep === totalSteps() - 1;
   };
-
   const allStepsCompleted = () => {
     return completedSteps() === totalSteps();
   };
-
   const handleStepperNext = () => {
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
@@ -128,26 +163,28 @@ const Create: NextPage = () => {
         : activeStep + 1;
     setActiveStep(newActiveStep);
   };
-
   const handleStepperBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
   const handleStep = (step: number) => () => {
     setActiveStep(step);
   };
-
   const handleStepperComplete = () => {
     const newCompleted = stepperCompleted;
     newCompleted[activeStep] = true;
     setStepperCompleted(newCompleted);
     handleStepperNext();
   };
-
   const handleStepperReset = () => {
     setActiveStep(0);
     setStepperCompleted({});
   };
+
+  const [packToggle, setPackToggle] = useState(false)
+  const handlePackToggle = () => {
+    setPackToggle(!packToggle);
+  };
+
 
   return (
     <Container sx={{ my: '50px' }}>
@@ -158,6 +195,35 @@ const Create: NextPage = () => {
         <Typography variant="body2" sx={{ mb: '24px' }}>
           You can mint a single NFT, create your own collections, and even set up your own sales platform through this page.
         </Typography>
+      </Box>
+
+      <Box sx={{
+        display: { xs: "block", lg: "none" }
+      }}>
+        <Stepper nonLinear activeStep={activeStep} sx={{ mb: '24px' }}>
+          {steps.map((label, i) => (
+            <Step key={label} completed={stepperCompleted[i]}>
+              <StepButton
+                color="inherit"
+                onClick={handleStep(i)}
+                sx={{
+                  '& .MuiStepLabel-root .MuiStepLabel-labelContainer .MuiStepLabel-label': {
+                    mb: 0
+                  }
+                }}
+              >
+                <Collapse orientation="horizontal" in={activeStep === i}
+                  sx={{
+                    maxHeight: '28px',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {label}
+                </Collapse>
+              </StepButton>
+            </Step>
+          ))}
+        </Stepper>
       </Box>
 
       <Grid container>
@@ -186,7 +252,12 @@ const Create: NextPage = () => {
 
                 <Stepper nonLinear activeStep={activeStep} orientation="vertical">
                   {steps.map((label, index) => (
-                    <Step key={label} completed={stepperCompleted[index]}>
+                    <Step key={label} completed={stepperCompleted[index]}
+                      sx={{
+                        '& .MuiStepLabel-root .MuiStepLabel-labelContainer .MuiStepLabel-label': {
+                          mb: 0
+                        }
+                      }}>
                       <StepButton color="inherit" onClick={handleStep(index)}>
                         {label}
                       </StepButton>
@@ -212,31 +283,173 @@ const Create: NextPage = () => {
             <>
               <Collapse in={activeStep === 0} mountOnEnter unmountOnExit>
                 <Box>
-                  <FormControl fullWidth variant="filled">
-                    <InputLabel htmlFor="component-filled">Wallet</InputLabel>
-                    <FilledInput
-                      id="search"
-                    // endAdornment={
-                    //   <InputAdornment position="start">
-                    //     <SearchIcon />
-                    //   </InputAdornment>
-                    // }
-                    />
-                  </FormControl>
-                  
-                  <Box>
-                    Sell packs or just NFTs
-                  </Box>
+                  <Typography variant="h4">
+                    Artist Info
+                  </Typography>
+                  <Grid container spacing={3} sx={{ mb: '24px' }}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        id="wallet-address"
+                        label="Wallet Address"
+                        value={walletAddress}
+                        onClick={() => {
+                          setAddWalletModalOpen(true)
+                        }}
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        id="artist-name"
+                        label="Artist Name"
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        id="artist-website"
+                        label="Website"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        id="artist-tagline"
+                        label="Tagline"
+                        multiline
+                        minRows={3}
+                      />
+                    </Grid>
+                  </Grid>
+
+
+
+                  <Typography variant="h6">
+                    Social Links
+                  </Typography>
+                  <Grid container spacing={2} sx={{
+                    mb: '24px',
+                  }}>
+                    <Grid item sm={4} xs={12}>
+                      <Grid
+                        container
+                        spacing={1}
+                        alignItems="center"
+                      >
+                        <Grid item xs>
+                          <SocialMenu id={'test'} />
+                        </Grid>
+                        <Grid item xs="auto">
+                          <IconButton sx={{ display: upSm ? 'none' : 'flex' }}>
+                            <Icon>
+                              delete
+                            </Icon>
+                          </IconButton>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <Grid item sm={8} xs={12}>
+                      <Grid
+                        container
+                        spacing={1}
+                        alignItems="center"
+                      >
+                        <Grid item xs>
+                          <TextField
+                            fullWidth
+                            variant="filled"
+                            id="social-network-link"
+                            label="Profile Link"
+                          />
+                        </Grid>
+                        <Grid item xs="auto">
+                          <IconButton sx={{ display: upSm ? 'flex' : 'none' }}>
+                            <Icon>
+                              delete
+                            </Icon>
+                          </IconButton>
+                        </Grid>
+                      </Grid>
+
+
+                    </Grid>
+                  </Grid>
+
+
+                  {/* 
+                  <ToggleButtonGroup
+                    color="primary"
+                    value={packToggle}
+                    exclusive
+                    onChange={handlePackToggle}
+                    aria-label="Platform"
+                    fullWidth
+                  >
+                    <ToggleButton value="none">No Packs</ToggleButton>
+                    <ToggleButton value="packs">Pack Tokens</ToggleButton>
+                  </ToggleButtonGroup> */}
                 </Box>
               </Collapse>
               <Collapse in={activeStep === 1} mountOnEnter unmountOnExit>
                 <Box>
-                  Collection? (more than one)
-                  - collection info
+                  <Typography variant="h4">
+                    Collection Details
+                  </Typography>
+                  <Grid
+                    container
+                    alignItems="center"
+                    sx={{
+                      width: '100%',
+                      mb: '0px',
+                      '&:hover': {
+                        cursor: 'pointer'
+                      }
+                    }}
+                    onClick={() => handlePackToggle()}
+                  >
+                    <Grid item xs>
+                      <Typography variant="h5" sx={{ verticalAlign: 'middle', mb: 0 }}>
+                        Pack tokens
+                      </Typography>
+                    </Grid>
+                    <Grid item xs="auto">
+                      <Switch
+                        focusVisibleClassName=".Mui-focusVisible"
+                        disableRipple
+                        checked={packToggle}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
+                    If you want to sell or give away tokens that represent "packs" of NFTs, such as for card packs or other bundles, select this box to create them. If you choose not to now, you won't be able to make them later for this collection.
+                  </Typography>
+
+                  <Collapse in={packToggle}>
+
+
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      id="pack-name"
+                      label="Pack Name"
+                      // value=""
+                      sx={{
+                        mb: '12px',
+                      }}
+                    />
+
+
+                  </Collapse>
                 </Box>
               </Collapse>
               <Collapse in={activeStep === 2} mountOnEnter unmountOnExit>
                 <Box>
+                  
                   Sale info
                   - send to yourself
                   - sell on marketplace
@@ -287,6 +500,31 @@ const Create: NextPage = () => {
       </Grid>
 
     </Container>
+  )
+}
+
+
+const SocialMenu: FC<{ id: string; }> = (props) => {
+  const [sortOption, setSortOption] = useState("");
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setSortOption(event.target.value as string);
+  };
+  return (
+    <FormControl fullWidth variant="filled">
+      <InputLabel id={'social-network-name-' + props.id}>Social Network</InputLabel>
+      <Select
+        labelId="sort-select-box-label"
+        id="sort-select-box"
+        value={sortOption}
+        label="Sort By"
+        onChange={handleChange}
+      >
+        <MenuItem value={"telegram"}>Telegram</MenuItem>
+        <MenuItem value={"discord"}>Discord</MenuItem>
+        <MenuItem value={"twitter"}>Twitter</MenuItem>
+      </Select>
+    </FormControl>
   )
 }
 

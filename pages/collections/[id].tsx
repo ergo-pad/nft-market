@@ -412,14 +412,7 @@ const Collection: NextPage<IDataTypeProps> = (props) => {
 
         {/* GENERAL INFO */}
         <Paper sx={{ p: '24px', maxWidth: '650px', mx: 'auto' }}>
-          <Typography
-            sx={{
-              textTransform: 'uppercase',
-              fontSize: '0.75rem',
-              display: 'inline-block',
-              mb: '16px',
-            }}
-          >
+          <Typography variant="h6">
             General Information
           </Typography>
           <Box

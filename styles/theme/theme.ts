@@ -54,6 +54,17 @@ const mainTheme = [{
       hyphens: "manual",
     },
     h6: {
+      fontSize: "1.3rem",
+      fontWeight: "600",
+      lineHeight: 1.3,
+      letterSpacing: "0.0075em",
+      marginBottom: "0.5rem",
+      fontFamily: '"Inter", sans-serif',
+      // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
+      overflowWrap: "break-word",
+      hyphens: "manual",
+    },
+    overline: {
       textTransform: 'uppercase',
       fontSize: '0.75rem',
       display: 'inline-block',
@@ -134,7 +145,57 @@ const mainTheme = [{
           }
         }
       }
-    }
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          width: 42,
+          height: 26,
+          padding: 0,
+          '& .MuiSwitch-switchBase': {
+            padding: 0,
+            margin: 2,
+            transitionDuration: '300ms',
+            '&.Mui-checked': {
+              transform: 'translateX(16px)',
+              color: '#fff',
+              '& + .MuiSwitch-track': {
+                // backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
+                opacity: 1,
+                border: 0,
+              },
+              '&.Mui-disabled + .MuiSwitch-track': {
+                opacity: 0.5,
+              },
+            },
+            '&.Mui-focusVisible .MuiSwitch-thumb': {
+              color: '#33cf4d',
+              border: '6px solid #fff',
+            },
+            '&.Mui-disabled .MuiSwitch-thumb': {
+              // color:
+              //   theme.palette.mode === 'light'
+              //     ? theme.palette.grey[100]
+              //     : theme.palette.grey[600],
+            },
+            '&.Mui-disabled + .MuiSwitch-track': {
+              // opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
+            },
+          },
+          '& .MuiSwitch-thumb': {
+            boxSizing: 'border-box',
+            width: 22,
+            height: 22,
+          },
+          '& .MuiSwitch-track': {
+            borderRadius: 26 / 2,
+            // backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
+            opacity: 1,
+            transition: 'background-color 500ms',
+          }
+        }
+      }
+    },
   }
 }];
 
@@ -168,7 +229,29 @@ let lightTheme = createTheme({
           }
         }
       }
-    }
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          '& .MuiSwitch-switchBase': {
+            '&.Mui-checked': {
+              '& + .MuiSwitch-track': {
+                backgroundColor: '#00868F',
+              },
+            },
+            '&.Mui-disabled .MuiSwitch-thumb': {
+              color: "#ddd"
+            },
+            '&.Mui-disabled + .MuiSwitch-track': {
+              opacity: 0.7,
+            },
+          },
+          '& .MuiSwitch-track': {
+            backgroundColor: '#E9E9EA',
+          }
+        }
+      }
+    },
   }
 }, ...mainTheme);
 
@@ -191,7 +274,7 @@ let darkTheme = createTheme({
   },
   typography: {
     body2: {
-      color: 'rgba(255,255,255,0.87)',
+      color: 'rgba(255,255,255,0.75)',
     }
   },
   components: {
@@ -210,7 +293,29 @@ let darkTheme = createTheme({
           }
         }
       }
-    }
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          '& .MuiSwitch-switchBase': {
+            '&.Mui-checked': {
+              '& + .MuiSwitch-track': {
+                backgroundColor: '#9FD2DB',
+              },
+            },
+            '&.Mui-disabled .MuiSwitch-thumb': {
+              color: "#666"
+            },
+            '&.Mui-disabled + .MuiSwitch-track': {
+              opacity: 0.3,
+            },
+          },
+          '& .MuiSwitch-track': {
+            backgroundColor: 'rgba(255, 255, 255, 0.09)',
+          }
+        }
+      }
+    },
   }
 }, ...mainTheme);
 

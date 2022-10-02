@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Link from "@components/Link"
 import SocialGrid from "@components/layout/SocialGrid";
 import Logo from "@components/svgs/Logo";
-import { ThemeContext } from "@contexts/ThemeContext";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 const titleFont = {
   fontFamily: ['"Space Grotesk"', "sans-serif"].join(","),
@@ -92,7 +92,7 @@ const fourthPages = {
 };
 
 const linkList: FC<IPageLinkList> = ({ title, links }) => {
-  const { theme } = useContext(ThemeContext);
+  const theme = useTheme()
   return (
     <Grid item xs={6} md={3} sx={{}} zeroMinWidth>
       <Typography sx={titleFont}>{title}</Typography>
@@ -118,8 +118,8 @@ const linkList: FC<IPageLinkList> = ({ title, links }) => {
 }
 
 const Footer: FC = () => {
-  const { theme } = useContext(ThemeContext);
-
+  const theme = useTheme()
+  const upMd = useMediaQuery(theme.breakpoints.up('md'))
   return (
     <Container sx={{ display: 'block', position: 'relative', zIndex: 0 }}>
       {/* <Grid
@@ -150,7 +150,7 @@ const Footer: FC = () => {
           </Grid>
         </Grid>
       </Grid> */}
-      <Grid container justifyContent="space-between" sx={{ py: 2 }} spacing={1}>
+      <Grid container direction={upMd ? 'row' : 'column-reverse'} justifyContent="space-between" sx={{ py: 2 }} spacing={1}>
         <Grid item xs={12} md sx={{ textAlign: { xs: 'center', md: 'left' } }}>
           <Typography>
             &copy; 2022 Template. All rights reserved.
