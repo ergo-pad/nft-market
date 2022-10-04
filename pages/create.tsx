@@ -35,13 +35,16 @@ import {
   ToggleButtonGroup,
   Switch,
   ToggleButton,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Input,
+  FormHelperText
 } from '@mui/material'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
 import Image from 'next/image';
 import { motion } from 'framer-motion'
 import { WalletContext } from '@contexts/WalletContext'
+import FileUploadArea from '@components/FileUploadArea'
 
 interface IFormData {
   artist: {
@@ -185,7 +188,11 @@ const Create: NextPage = () => {
     setPackToggle(!packToggle);
   };
 
-
+  const [uploadData, setUploadData] = useState({} as File)
+  useEffect(() => {
+    console.log(uploadData)
+  }, [uploadData]);
+  
   return (
     <Container sx={{ my: '50px' }}>
       <Box>
@@ -400,6 +407,26 @@ const Create: NextPage = () => {
                   <Typography variant="h4">
                     Collection Details
                   </Typography>
+
+                  <Typography>
+                  Name
+
+                  Description
+                  </Typography>
+
+                  <FileUploadArea 
+                    fileData={uploadData}
+                    setFileData={setUploadData}
+                  />
+
+                  <Typography>
+                  Banner Image
+
+                  Featured Iamge
+
+                  NFT Traits
+                  </Typography>
+
                   <Grid
                     container
                     alignItems="center"
@@ -449,7 +476,7 @@ const Create: NextPage = () => {
               </Collapse>
               <Collapse in={activeStep === 2} mountOnEnter unmountOnExit>
                 <Box>
-                  
+
                   Sale info
                   - send to yourself
                   - sell on marketplace
