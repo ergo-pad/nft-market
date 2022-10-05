@@ -5,16 +5,9 @@ import {
   Typography,
   Box,
   FormControl,
-  InputLabel,
-  InputAdornment,
-  FilledInput,
-  TextField,
-  ToggleButtonGroup,
-  Switch,
-  ToggleButton,
-  SelectChangeEvent,
   Input,
-  FormHelperText
+  useTheme,
+  InputLabel
 } from '@mui/material'
 
 interface IFileUploadAreaProps {
@@ -23,31 +16,76 @@ interface IFileUploadAreaProps {
 }
 
 const FileUploadArea: FC<IFileUploadAreaProps> = ({ fileData, setFileData }) => {
+  const theme = useTheme()
+
   const onFileChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
-    if ('files' in event.target) {
-      setFileData({ selectedFile: event.target.files?.[0] });
+    if ('files' in event.target && event.target.files != undefined) {
+      setFileData(event.target.files?.[0]);
     }
   }
 
   return (
-    <>
-      <FormControl sx={{ background: '#000' }}>
+    <Box sx={{
+      background: theme.palette.background.paper,
+      borderRadius: '12px',
+      p: '12px',
+      display: 'block',
+      position: 'relative',
+      // border: `1px solid ${theme.palette.divider}`,
+      mb: '24px',
+    }}>
+      <FormControl
+        sx={{
+          // m: '12px',
+          borderRadius: '12px',
+          width: '100%',
+          border: `2px dashed ${theme.palette.divider}`,
+          '&:hover': {
+            background: theme.palette.action.hover,
+          }
+        }}
+      >
         <Input
           type="file"
-          id="collection-logo-upload"
-          aria-describedby="collection-logo-upload-helper-text"
+          id="file"
+          title=""
           onChange={onFileChange}
+          inputProps={{
+            accept: "image/*"
+          }}
           sx={{
-            background: '#000',
+            zIndex: 10,
             opacity: 0,
-            '&: hover': {
-              opacity: 1
+            '& input': {
+              width: '100%',
+              height: '100px',
+              '& title': {
+                display: 'none',
+              }
+            },
+            '&::before': {
+              display: 'none',
+            },
+            '&::after': {
+              display: 'none',
             }
           }}
         />
-        {/* <FormHelperText id="collection-logo-upload-helper-text">Upload Logo</FormHelperText> */}
+        
       </FormControl>
-    </>
+      <Typography
+          sx={{
+            textAlign: 'center',
+            position: 'absolute', 
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1
+          }}
+        >
+          Drag and drop an image or click to choose.
+        </Typography>
+    </Box>
   );
 };
 
