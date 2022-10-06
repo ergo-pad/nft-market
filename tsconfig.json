@@ -23,9 +23,10 @@
       "@theme/*": ["styles/theme/*"],
       "@public/*": ["public/*"],
       "@pages/*": ["pages/*"],
-      "@utils/*": ["utils/*"],
+      "@utils/*": ["utilities/*"],
       "@hooks/*": ["hooks/*"],
-      "@contexts/*": ["contexts/*"]
+      "@contexts/*": ["contexts/*"],
+      "@utilities/*": ["utilities/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "additional.d.ts"],
