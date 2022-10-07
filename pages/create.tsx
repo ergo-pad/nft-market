@@ -189,18 +189,17 @@ const Create: NextPage = () => {
     setPackToggle(!packToggle);
   };
 
-  const fileInit = {
+  const fileInit = [{
     currentFile: {} as File,
     previewImage: '',
     progress: 0,
     message: ""
-  }
+  }]
 
   const [artistAvatarImg, setArtistAvatarImg] = useState(fileInit)
   const [artistBannerImg, setArtistBannerImg] = useState(fileInit)
   const [collectionFeaturedImg, setCollectionFeaturedImg] = useState(fileInit)
   const [collectionBannerImg, setCollectionBannerImg] = useState(fileInit)
-  const [rarityImgArray, setRarityImgArray] = useState([fileInit])
 
   return (
     <>
@@ -353,6 +352,7 @@ const Create: NextPage = () => {
                       </Grid>
                       <Grid item xs={12}>
                         <FileUploadArea
+                        multiple
                           title="Artist Profile Image"
                           fileData={artistAvatarImg}
                           setFileData={setArtistAvatarImg}
