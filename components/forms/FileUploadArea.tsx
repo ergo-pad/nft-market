@@ -25,8 +25,6 @@ interface IFileUploadAreaProps {
   fileData: IFileData[];
   setFileData: React.Dispatch<React.SetStateAction<IFileData[]>>;
   title?: string;
-  boxWidth?: string;
-  boxMaxWidth?: string;
   expectedImgHeight?: number;
   expectedImgWidth?: number;
   placeholderImgUrl?: string;
@@ -39,8 +37,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   fileData,
   setFileData,
   title,
-  boxWidth,
-  boxMaxWidth,
   expectedImgHeight,
   expectedImgWidth,
   placeholderImgUrl,
@@ -50,30 +46,68 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
 }) => {
   const theme = useTheme()
 
+  const [dropHover, setDropHover] = useState('')
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDropHover('#f00')
+    e.stopPropagation();
+  };
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDropHover('')
+    e.stopPropagation();
+  };
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    e.stopPropagation();
+  };
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    // onFileChange(e)
+    e.stopPropagation();
+  };
+
+  const clearFiles = () => {
+    setFileData([{
+      currentFile: {} as File,
+      previewImage: "",
+      progress: 0,
+      message: ""
+    }])
+  }
+
+  const checkExists = (name: string) => {
+    const truth = fileData.some(value => value.currentFile.name === name)
+    return truth
+  }
+
   const onFileChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
+    setDropHover('')
     if ('files' in event.target && event.target.files?.[0] != undefined) {
       Array.from(event.target.files).forEach((file: File, i: number) => {
-        if (i === 0) {
+        if (i === 0 && (fileData?.[0].previewImage === "" || !multiple)) { // make sure to erase the existing empty object first
           setFileData([{
             currentFile: file,
             previewImage: URL.createObjectURL(file),
             progress: 0,
             message: ""
           }])
-          console.log('hello')
         }
         else {
-          setFileData(files => [...files, {
-            currentFile: file,
-            previewImage: URL.createObjectURL(file),
-            progress: 0,
-            message: ""
-          }])
-          console.log('or else')
+          if (!checkExists(file.name)) {
+            setFileData(files => [...files, {
+              currentFile: file,
+              previewImage: URL.createObjectURL(file),
+              progress: 0,
+              message: ""
+            }])
+          }
         }
       })
     }
-    else {
+    else if (!multiple) {
       setFileData([{
         currentFile: {} as File,
         previewImage: "",
@@ -88,8 +122,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   const inputFileRef = React.useRef<HTMLInputElement | null>(null);
 
   const handleOnClick = async () => {
-
-    console.log('hello')
 
     /* If file is not selected, then show alert message */
     if (fileData[0].currentFile.name == undefined) {
@@ -127,27 +159,37 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
 
   return (
     <Box sx={sx && sx}>
-      <Box sx={{
-        background: theme.palette.background.paper,
-        borderRadius: '12px',
-        p: '12px',
-        display: 'block',
-        position: 'relative',
-        width: boxWidth ? boxWidth : '100%',
-        maxWidth: boxMaxWidth ? boxMaxWidth : '100%',
-      }}>
-        {title && <InputLabel htmlFor="file" sx={{ mb: '12px' }}>
-          {title}
-        </InputLabel>}
+      <Box
+        sx={{
+          background: theme.palette.background.paper,
+          borderRadius: '12px',
+          p: '12px',
+        }}
+      >
+        {title &&
+          <InputLabel
+            htmlFor="file"
+            sx={{ mb: '12px' }}
+            onClick={e => e.preventDefault()}
+          >
+            {title}
+          </InputLabel>}
         <FormControl
           sx={{
             borderRadius: '12px',
             width: '100%',
+            height: '100%',
+            position: 'relative',
             border: `2px dashed ${theme.palette.divider}`,
             '&:hover': {
+              cursor: 'pointer',
               background: theme.palette.action.hover,
             }
           }}
+          // onDragOver={e => handleDragOver(e)}
+          onDragEnter={e => handleDragEnter(e)}
+          onDragLeave={e => handleDragLeave(e)}
+        // onDrop={e => handleDrop(e)}
         >
           <Input
             ref={inputFileRef}
@@ -161,13 +203,18 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
             }}
             sx={{
               zIndex: 10,
+              cursor: 'pointer !important',
               opacity: 0,
+              width: '100%',
+              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              flexGrow: '1',
               '& input': {
                 width: '100%',
-                height: '160px',
-                '&:hover': {
-                  cursor: 'pointer',
-                },
+                height: '100%',
+                cursor: 'pointer !important',
               },
               '&::before': {
                 display: 'none',
@@ -180,54 +227,74 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
           <Box
             sx={{
               textAlign: 'center',
-              position: 'absolute',
+              position: 'relative',
+              background: dropHover ? dropHover : 'none',
               width: '100%',
+              cursor: 'pointer',
               p: '24px',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
               zIndex: 1,
             }}
           >
             {multiple && fileData[1]?.currentFile.name != undefined ? ( // if there are multiple files
               <>
-                {/* {fileData.map((file: File, i: number) => {
-
-              })} */}
-                <Typography>Hello</Typography>
-                
+                {/* {fileData.map((file: File, i: number) => {})} */}
+                <Typography>Add more (Unique filenames only)</Typography>
+                <Typography sx={{ color: theme.palette.text.secondary, }}>
+                      Recommended dimensions: {' ' + expectedImgWidth + 'px Wide by ' + expectedImgHeight + 'px High'}
+                    </Typography>
               </>
             ) : (
-              <>
-                {fileData?.[0]?.previewImage != '' && fileData?.[0]?.currentFile?.name != undefined ? ( 
-                  <Box sx={{ width: '90%', textAlign: 'left', mx: 'auto' }}>
-                    <Box
-                      sx={{
-                        width: '120px',
-                        height: '120px',
-                        position: 'relative',
-                        display: 'inline-block',
-                        verticalAlign: 'middle',
-                        borderRadius: type === 'avatar' ? '500px' : '12px',
-                        overflow: 'hidden'
-                      }}
-                    >
-                      <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" />
-                    </Box>
-                    <Box sx={{
-                      display: 'inline-block',
-                      verticalAlign: 'middle',
-                      textAlign: 'left',
-                      ml: '12px'
-                    }}>
-                      <Typography>
-                        {fileData[0].currentFile.name}
-                      </Typography>
-                      <Typography>
-                        {bytesToSize(fileData[0].currentFile.size)}
-                      </Typography>
-                    </Box>
-                  </Box>
+              <Box sx={{ width: '100%', textAlign: 'center', mx: 'auto' }}>
+                {fileData?.[0]?.previewImage != '' && fileData?.[0]?.currentFile?.name != undefined ? (
+                  <>
+                    {type === 'avatar' ? (
+                      <Box sx={{ width: '90%', textAlign: 'left', mx: 'auto' }}>
+                        <Box
+                          sx={{
+                            width: '120px',
+                            height: '120px',
+                            position: 'relative',
+                            display: 'inline-block',
+                            verticalAlign: 'middle',
+                            borderRadius: type === 'avatar' ? '500px' : '12px',
+                            overflow: 'hidden'
+                          }}
+                        >
+                          <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" />
+                        </Box>
+                        <Box sx={{
+                          display: 'inline-block',
+                          verticalAlign: 'middle',
+                          textAlign: 'left',
+                          ml: '12px'
+                        }}>
+                          <Typography>
+                            {fileData[0].currentFile.name}
+                          </Typography>
+                          <Typography>
+                            {bytesToSize(fileData[0].currentFile.size)}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    ) : (
+                      <>
+                        <Box
+                          sx={{
+                            borderRadius: '12px',
+                            overflow: 'hidden',
+                            mx: 'auto',
+                          }}
+                        >
+                          <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" />
+                        </Box>
+                        <Box>
+                          <Typography>
+                            {fileData[0].currentFile.name + ' - ' + bytesToSize(fileData[0].currentFile.size)}
+                          </Typography>
+                        </Box>
+                      </>
+                    )}
+                  </>
                 ) : (
                   <>
                     <Typography sx={{ color: theme.palette.text.secondary, }}>
@@ -238,13 +305,22 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                     </Typography>
                   </>
                 )}
-              </>
+              </Box>
             )}
           </Box>
         </FormControl>
       </Box >
       <Button onClick={() => handleOnClick()} disabled={isLoading}>
         Upload
+      </Button>
+      <Button
+        onClick={() => { console.log(fileData) }}>
+        FIle Data
+      </Button>
+      <Button
+        onClick={clearFiles}
+      >
+        Clear Data
       </Button>
     </Box >
   );

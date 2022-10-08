@@ -45,6 +45,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion'
 import { WalletContext } from '@contexts/WalletContext'
 import FileUploadArea from '@components/forms/FileUploadArea'
+import FileUploadArea2 from '@components/forms/FileUploadArea2'
 import InputSlider from '@components/forms/InputSlider'
 
 interface IFormData {
@@ -352,10 +353,11 @@ const Create: NextPage = () => {
                       </Grid>
                       <Grid item xs={12}>
                         <FileUploadArea
+                        
                         multiple
-                          title="Artist Profile Image"
-                          fileData={artistAvatarImg}
-                          setFileData={setArtistAvatarImg}
+                           title="Artist Profile Image"
+                           fileData={artistAvatarImg}
+                           setFileData={setArtistAvatarImg}
                           expectedImgHeight={120}
                           expectedImgWidth={120}
                           type="avatar"
@@ -372,8 +374,6 @@ const Create: NextPage = () => {
                         />
                       </Grid>
                     </Grid>
-
-
                     <Typography variant="h6">
                       Social Links
                     </Typography>
