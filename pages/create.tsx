@@ -42,10 +42,9 @@ import {
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
 import Image from 'next/image';
-import { motion } from 'framer-motion'
+// import { motion } from 'framer-motion'
 import { WalletContext } from '@contexts/WalletContext'
 import FileUploadArea from '@components/forms/FileUploadArea'
-import FileUploadArea2 from '@components/forms/FileUploadArea2'
 import InputSlider from '@components/forms/InputSlider'
 
 interface IFormData {
@@ -118,30 +117,29 @@ const Create: NextPage = () => {
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
 
 
-  const [scrollY, setScrollY] = useState(0)
-  const userProfileCard = useRef<HTMLDivElement>(null)
-  const userProfileContainer = useRef<HTMLDivElement>(null)
-  const handleScroll = () => {
-    const scrollPos = window.scrollY - 216
-    if (scrollPos > 0 && (userProfileCard.current !== null && userProfileContainer.current !== null)) {
-      if (scrollPos < (userProfileContainer.current.clientHeight - userProfileCard.current.clientHeight)) {
-        setScrollY(scrollPos)
-      }
-      else {
-        setScrollY(userProfileContainer.current.clientHeight - userProfileCard.current.clientHeight)
-      }
-    }
-    else {
-      setScrollY(0)
-    }
-  }
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
+  // const [scrollY, setScrollY] = useState(0)
+  // const userProfileCard = useRef<HTMLDivElement>(null)
+  // const userProfileContainer = useRef<HTMLDivElement>(null)
+  // const handleScroll = () => {
+  //   const scrollPos = window.scrollY - 216
+  //   if (scrollPos > 0 && (userProfileCard.current !== null && userProfileContainer.current !== null)) {
+  //     if (scrollPos < (userProfileContainer.current.clientHeight - userProfileCard.current.clientHeight)) {
+  //       setScrollY(scrollPos)
+  //     }
+  //     else {
+  //       setScrollY(userProfileContainer.current.clientHeight - userProfileCard.current.clientHeight)
+  //     }
+  //   }
+  //   else {
+  //     setScrollY(0)
+  //   }
+  // }
+  // useEffect(() => {
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, []);
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepperCompleted, setStepperCompleted] = React.useState<{
@@ -201,6 +199,7 @@ const Create: NextPage = () => {
   const [artistBannerImg, setArtistBannerImg] = useState(fileInit)
   const [collectionFeaturedImg, setCollectionFeaturedImg] = useState(fileInit)
   const [collectionBannerImg, setCollectionBannerImg] = useState(fileInit)
+  const [multipleTest, setMultipleTest] = useState(fileInit)
 
   return (
     <>
@@ -251,23 +250,28 @@ const Create: NextPage = () => {
           ))}
         </Stepper>
       </Box>
-      <Container>
+      <Container sx={{ mb: '50px' }}>
         <Grid container>
           <Grid
             item
             lg={3}
             sx={{ pr: "24px", display: { xs: "none", lg: "flex" } }}
           >
-            <Box sx={{ position: 'relative', height: 'calc(100% + 100px)' }} ref={userProfileContainer}>
-              <motion.div
+            <Box sx={{ position: 'relative', 
+            //height: 'calc(100% + 100px)' 
+          }} 
+            // ref={userProfileContainer}
+            >
+              {/* <motion.div
                 animate={{
                   y: scrollY
                 }}
-                transition={{ type: "spring" }}
-              >
+                transition={{ type: "spring", bounce: 0.1  }}
+              > */}
                 <Paper
-                  ref={userProfileCard}
+                  // ref={userProfileCard}
                   sx={{
+                    position: 'sticky',
                     p: '24px',
                     top: 84,
                     width: '100%',
@@ -291,7 +295,7 @@ const Create: NextPage = () => {
                     ))}
                   </Stepper>
                 </Paper>
-              </motion.div>
+              {/* </motion.div> */}
             </Box>
           </Grid>
           <Grid item lg={9} xs={12} sx={{ flex: '1 1 auto' }}>
@@ -353,11 +357,9 @@ const Create: NextPage = () => {
                       </Grid>
                       <Grid item xs={12}>
                         <FileUploadArea
-                        
-                        multiple
-                           title="Artist Profile Image"
-                           fileData={artistAvatarImg}
-                           setFileData={setArtistAvatarImg}
+                          title="Artist Profile Image"
+                          fileData={artistAvatarImg}
+                          setFileData={setArtistAvatarImg}
                           expectedImgHeight={120}
                           expectedImgWidth={120}
                           type="avatar"
@@ -371,6 +373,39 @@ const Create: NextPage = () => {
                           expectedImgHeight={260}
                           expectedImgWidth={3840}
                           type="banner"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FileUploadArea
+                          title="Test Height higher"
+                          fileData={artistBannerImg}
+                          setFileData={setArtistBannerImg}
+                          expectedImgHeight={600}
+                          expectedImgWidth={400}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FileUploadArea
+                          title="Test Width higher"
+                          fileData={artistBannerImg}
+                          setFileData={setArtistBannerImg}
+                          expectedImgHeight={260}
+                          expectedImgWidth={400}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FileUploadArea
+                          title="Test no aspect"
+                          fileData={artistBannerImg}
+                          setFileData={setArtistBannerImg}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FileUploadArea
+                          title="Test multiple"
+                          multiple
+                          fileData={multipleTest}
+                          setFileData={setMultipleTest}
                         />
                       </Grid>
                     </Grid>
