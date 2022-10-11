@@ -34,9 +34,10 @@ interface IFileUploadAreaProps {
   title?: string;
   expectedImgHeight?: number;
   expectedImgWidth?: number;
-  type?: 'banner' | 'avatar';
+  type?: 'avatar';
   multiple?: boolean;
   sx?: SxProps;
+  imgFill?: boolean;
 }
 
 const FileUploadArea: FC<IFileUploadAreaProps> = ({
@@ -47,17 +48,15 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   expectedImgWidth,
   type,
   multiple,
-  sx
+  sx,
+  imgFill
 }) => {
   const theme = useTheme()
   const [aspect, setAspect] = useState({})
 
   useEffect(() => {
-    if (type == 'banner') {
-      setAspect(aspectRatioResize(1000, 200, 1000, 200))
-    }
-    else if (expectedImgHeight && expectedImgWidth) {
-      setAspect(aspectRatioResize(expectedImgWidth, expectedImgHeight, 500, 400))
+    if (expectedImgHeight && expectedImgWidth) {
+      setAspect(aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350))
     }
   }, [])
 
@@ -112,7 +111,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
             let img = document.createElement("img");
             img.src = URL.createObjectURL(file)
             img.onload = () => {
-              setAspect(aspectRatioResize(img.naturalWidth, img.naturalHeight, 800, 400))
+              setAspect(aspectRatioResize(img.naturalWidth, img.naturalHeight, 800, 300))
             }
           }
         }
@@ -140,7 +139,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   }
 
   const deleteFile = (fileNumber: number) => {
-    setFileData(fileData.filter((data, idx) => idx !== fileNumber ))
+    setFileData(fileData.filter((data, idx) => idx !== fileNumber))
   }
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -189,6 +188,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
           background: theme.palette.background.paper,
           borderRadius: '12px',
           p: '12px',
+          height: '100%',
         }}
       >
         {title &&
@@ -281,7 +281,8 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
               position: 'relative',
               background: dropHover ? dropHover : 'none',
               width: '100%',
-              p: '24px',
+              height: '100%',
+              p: imgFill ? '6px' : '24px',
               zIndex: 1,
             }}
           >
@@ -295,103 +296,121 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                 }
               </>
             ) : ( // for single file upload areas only: 
-              <Box sx={{ width: '100%', height: '100%', textAlign: 'center', mx: 'auto' }}>
-                {fileData?.[0]?.previewImage != '' && fileData?.[0]?.currentFile?.name != undefined ? (
-                  <>
-                    {type === 'avatar' ? (
-                      <Box sx={{ mx: 'auto' }}>
-                        <Box
-                          sx={{
-                            width: expectedImgWidth ? expectedImgWidth.toString() + 'px' : '120px',
-                            height: expectedImgHeight ? expectedImgHeight.toString() + 'px' : '120px',
-                            maxWidth: '240px',
-                            maxHeight: '240px',
-                            position: 'relative',
-                            display: 'inline-block',
-                            verticalAlign: 'middle',
-                            borderRadius: '240px',
-                            overflow: 'hidden'
-                          }}
-                        >
-                          <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" />
+              
+                <Box sx={{
+                  width: '100%',
+                  height: '100%',
+                  textAlign: 'center',
+                  mx: 'auto',
+                  //     position: 'absolute',
+                  // left: '50%',
+                  // top: '50%',
+                  // transform: 'translate(-50%,-50%)',
+                }}
+                >
+                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+                  {fileData?.[0]?.previewImage != '' && fileData?.[0]?.currentFile?.name != undefined ? (
+                    <>
+                      {type === 'avatar' ? (
+                        <Box sx={{ mx: 'auto' }}>
+                          <Box
+                            sx={{
+                              width: expectedImgWidth ? expectedImgWidth.toString() + 'px' : '120px',
+                              height: expectedImgHeight ? expectedImgHeight.toString() + 'px' : '120px',
+                              maxWidth: '240px',
+                              maxHeight: '240px',
+                              position: 'relative',
+                              display: 'inline-block',
+                              verticalAlign: 'middle',
+                              borderRadius: '240px',
+                              overflow: 'hidden'
+                            }}
+                          >
+                            <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" />
+                          </Box>
+                          {imgFill ? ('') : (
+                            <Box sx={{
+                              display: 'inline-block',
+                              verticalAlign: 'middle',
+                              textAlign: 'left',
+                              ml: '12px'
+                            }}>
+                              <Typography>
+                                {fileData[0].currentFile.name}
+                              </Typography>
+                              <Typography>
+                                {bytesToSize(fileData[0].currentFile.size)}
+                              </Typography>
+                            </Box>
+                          )}
                         </Box>
-                        <Box sx={{
-                          display: 'inline-block',
-                          verticalAlign: 'middle',
-                          textAlign: 'left',
-                          ml: '12px'
-                        }}>
-                          <Typography>
-                            {fileData[0].currentFile.name}
-                          </Typography>
-                          <Typography>
-                            {bytesToSize(fileData[0].currentFile.size)}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    ) : (
-                      <>
-                        <Box
-                          sx={{
-                            borderRadius: '12px',
-                            overflow: 'hidden',
-                            display: 'block',
-                            position: 'relative',
-                            maxWidth: '100%',
-                            mb: '12px',
-                            mx: 'auto',
-                            ...aspect
-                          }}
-                        >
-                          <Image src={fileData[0].previewImage} layout="fill" objectFit="cover" />
-                        </Box>
-                        <Box>
-                          <Typography>
-                            {fileData[0].currentFile.name + ' - ' + bytesToSize(fileData[0].currentFile.size)}
-                          </Typography>
-                        </Box>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <Typography sx={{ color: theme.palette.text.secondary, }}>
-                      Drag and drop an image or click to choose.
-                    </Typography>
-                    {expectedImgWidth && expectedImgHeight &&
+                      ) : (
+                        <>
+                          <Box
+                            sx={{
+                              borderRadius: '12px',
+                              overflow: 'hidden',
+                              display: 'block',
+                              position: 'relative',
+                              maxWidth: '100%',
+                              mb: imgFill ? 0 : '12px',
+                              mx: 'auto',
+                              ...aspect
+                            }}
+                          >
+                            <Image src={fileData[0].previewImage} layout="fill" objectFit="cover" />
+                          </Box>
+                          {imgFill ? ('') : (
+                            <Box>
+                              <Typography>
+                                {fileData[0].currentFile.name + ' - ' + bytesToSize(fileData[0].currentFile.size)}
+                              </Typography>
+                            </Box>
+                          )}
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
                       <Typography sx={{ color: theme.palette.text.secondary, }}>
-                        Recommended dimensions: {' ' + expectedImgWidth + 'px Wide by ' + expectedImgHeight + 'px High'}
+                        Drag and drop an image or click to choose.
                       </Typography>
-                    }
-                  </>
-                )}
+                      {expectedImgWidth && expectedImgHeight &&
+                        <Typography sx={{ color: theme.palette.text.secondary, }}>
+                          Recommended dimensions: {' ' + expectedImgWidth + 'px Wide by ' + expectedImgHeight + 'px High'}
+                        </Typography>
+                      }
+                    </>
+                  )}
+                </Box>
               </Box>
             )}
+
           </Box>
         </FormControl>
         {multiple && fileData[0]?.currentFile.name != undefined &&
           <List>
             {fileData.map((file: IFileData, i: number) => {
               return <ListItem key={i}
-              secondaryAction={
-                <IconButton edge="end" aria-label="delete" onClick={() => deleteFile(i)}>
-                  <DeleteIcon />
-                </IconButton>
-              }
-            >
-              <ListItemAvatar>
-                <Avatar src={fileData[i].previewImage} variant="rounded" />
-              </ListItemAvatar>
-              <ListItemText
-                primary={file.currentFile.name}
-                secondary={bytesToSize(fileData[i].currentFile.size)}
-                sx={{ 
-                  '& .MuiTypography-body2': {
-                    mb: 0
-                  }
-                }}
-              />
-            </ListItem>
+                secondaryAction={
+                  <IconButton edge="end" aria-label="delete" onClick={() => deleteFile(i)}>
+                    <DeleteIcon />
+                  </IconButton>
+                }
+              >
+                <ListItemAvatar>
+                  <Avatar src={fileData[i].previewImage} variant="rounded" />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={file.currentFile.name}
+                  secondary={bytesToSize(fileData[i].currentFile.size)}
+                  sx={{
+                    '& .MuiTypography-body2': {
+                      mb: 0
+                    }
+                  }}
+                />
+              </ListItem>
             })}
           </List>
         }

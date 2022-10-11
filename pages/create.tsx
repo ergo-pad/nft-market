@@ -104,6 +104,22 @@ const steps = [
   'Token Details'
 ];
 
+interface IFileData {
+  currentFile: File;
+  previewImage: string;
+  progress: number;
+  message: string;
+}
+
+const fileInitObject = {
+  currentFile: {} as File,
+  previewImage: '',
+  progress: 0,
+  message: ""
+}
+
+const fileInit = [fileInitObject]
+
 const Create: NextPage = () => {
   const {
     walletAddress,
@@ -188,18 +204,11 @@ const Create: NextPage = () => {
     setPackToggle(!packToggle);
   };
 
-  const fileInit = [{
-    currentFile: {} as File,
-    previewImage: '',
-    progress: 0,
-    message: ""
-  }]
-
   const [artistAvatarImg, setArtistAvatarImg] = useState(fileInit)
   const [artistBannerImg, setArtistBannerImg] = useState(fileInit)
   const [collectionFeaturedImg, setCollectionFeaturedImg] = useState(fileInit)
   const [collectionBannerImg, setCollectionBannerImg] = useState(fileInit)
-  const [multipleTest, setMultipleTest] = useState(fileInit)
+  const [imgDataArray, setImgDataArray] = useState(fileInit)
 
   return (
     <>
@@ -257,9 +266,10 @@ const Create: NextPage = () => {
             lg={3}
             sx={{ pr: "24px", display: { xs: "none", lg: "flex" } }}
           >
-            <Box sx={{ position: 'relative', 
-            //height: 'calc(100% + 100px)' 
-          }} 
+            <Box sx={{
+              position: 'relative',
+              //height: 'calc(100% + 100px)' 
+            }}
             // ref={userProfileContainer}
             >
               {/* <motion.div
@@ -268,33 +278,33 @@ const Create: NextPage = () => {
                 }}
                 transition={{ type: "spring", bounce: 0.1  }}
               > */}
-                <Paper
-                  // ref={userProfileCard}
-                  sx={{
-                    position: 'sticky',
-                    p: '24px',
-                    top: 84,
-                    width: '100%',
-                    zIndex: '100'
-                  }}
-                >
-                  {/* STEPPER DESKTOP */}
+              <Paper
+                // ref={userProfileCard}
+                sx={{
+                  position: 'sticky',
+                  p: '24px',
+                  top: 84,
+                  width: '100%',
+                  zIndex: '100'
+                }}
+              >
+                {/* STEPPER DESKTOP */}
 
-                  <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-                    {steps.map((label, index) => (
-                      <Step key={label} completed={stepperCompleted[index]}
-                        sx={{
-                          '& .MuiStepLabel-root .MuiStepLabel-labelContainer .MuiStepLabel-label': {
-                            mb: 0
-                          }
-                        }}>
-                        <StepButton color="inherit" onClick={handleStep(index)}>
-                          {label}
-                        </StepButton>
-                      </Step>
-                    ))}
-                  </Stepper>
-                </Paper>
+                <Stepper nonLinear activeStep={activeStep} orientation="vertical">
+                  {steps.map((label, index) => (
+                    <Step key={label} completed={stepperCompleted[index]}
+                      sx={{
+                        '& .MuiStepLabel-root .MuiStepLabel-labelContainer .MuiStepLabel-label': {
+                          mb: 0
+                        }
+                      }}>
+                      <StepButton color="inherit" onClick={handleStep(index)}>
+                        {label}
+                      </StepButton>
+                    </Step>
+                  ))}
+                </Stepper>
+              </Paper>
               {/* </motion.div> */}
             </Box>
           </Grid>
@@ -372,40 +382,6 @@ const Create: NextPage = () => {
                           setFileData={setArtistBannerImg}
                           expectedImgHeight={260}
                           expectedImgWidth={3840}
-                          type="banner"
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FileUploadArea
-                          title="Test Height higher"
-                          fileData={artistBannerImg}
-                          setFileData={setArtistBannerImg}
-                          expectedImgHeight={600}
-                          expectedImgWidth={400}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FileUploadArea
-                          title="Test Width higher"
-                          fileData={artistBannerImg}
-                          setFileData={setArtistBannerImg}
-                          expectedImgHeight={260}
-                          expectedImgWidth={400}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FileUploadArea
-                          title="Test no aspect"
-                          fileData={artistBannerImg}
-                          setFileData={setArtistBannerImg}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FileUploadArea
-                          title="Test multiple"
-                          multiple
-                          fileData={multipleTest}
-                          setFileData={setMultipleTest}
                         />
                       </Grid>
                     </Grid>
@@ -491,7 +467,6 @@ const Create: NextPage = () => {
                           setFileData={setCollectionBannerImg}
                           expectedImgHeight={320}
                           expectedImgWidth={564}
-                          type="banner"
                         />
                       </Grid>
                       <Grid item xs={12}>
@@ -504,35 +479,25 @@ const Create: NextPage = () => {
                         />
                       </Grid>
                     </Grid>
+
+                    {/* ///////////////// BEGIN RARITY SECTION ///////////////// */}
                     <Typography variant="h5">
                       Rarity
                     </Typography>
                     <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
                       You can create rarity presets. If you choose to have token packs, there will be an option to set the probability of receiving more rare NFTs depending on the pack settings.
                     </Typography>
-                    <Grid container spacing={3} sx={{ mb: '32px' }}>
-                      <Grid item xs={12} sm={3}>
-                        {/* <FileUploadArea 
-                          fileData={rarityImgArray[0]}
-                          setFileData={setRarityImgArray}
-                        /> */}
-                      </Grid>
-                      <Grid item xs={12} sm={9}>
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="rarity-title"
-                          label="Rarity"
-                          sx={{ mb: '12px' }}
-                        />
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="rarity-description"
-                          label="Description"
-                        />
-                      </Grid>
-                    </Grid>
+                    {imgDataArray.map((item, i) => {
+                      return <RarityItem imgDataArray={imgDataArray} setImgDataArray={setImgDataArray} i={i} key={i} />
+                    })}
+                    <Box sx={{ width: '100%', textAlign: 'center' }}>
+                      <Button onClick={() => {
+                        setImgDataArray(imgDataArray.concat([fileInitObject]))
+                      }}>
+                        Add another
+                      </Button>
+                    </Box>
+                    {/* ///////////////// END RARITY SECTION ///////////////// */}
 
                     <Grid
                       container
@@ -682,6 +647,87 @@ const SocialMenu: FC<{ id: string; }> = (props) => {
         <MenuItem value={"twitter"}>Twitter</MenuItem>
       </Select>
     </FormControl>
+  )
+}
+
+const RarityItem: FC<{
+  imgDataArray: IFileData[];
+  setImgDataArray: React.Dispatch<React.SetStateAction<IFileData[]>>;
+  i: number;
+}> = ({ imgDataArray, setImgDataArray, i }) => {
+  const [rarityImg, setRarityImg] = useState(fileInit)
+  // const theme = useTheme()
+  // const upSm = useMediaQuery(theme.breakpoints.up('sm'))
+
+  useEffect(() => {
+    const newArray = imgDataArray.map((item, index) => {
+      if (index === i) {
+        return rarityImg[0]
+      }
+      return item
+    })
+    setImgDataArray(newArray)
+  }, [rarityImg[0]])
+
+  const removeItem = () => {
+    
+  }
+
+  return (
+    <Grid container spacing={3} sx={{ mb: '32px' }} alignItems="stretch">
+      <Grid item xs={12} sm={3}>
+        <FileUploadArea
+          fileData={rarityImg}
+          setFileData={setRarityImg}
+          imgFill
+          sx={{
+            height: '100%'
+          }}
+        />
+      </Grid>
+      <Grid item container direction="column" justifyContent="space-between" spacing={3} xs={12} sm={9}>
+        <Grid item>
+          <Grid
+            container
+            spacing={1}
+            alignItems="center"
+          >
+            <Grid item xs>
+              <TextField
+                fullWidth
+                variant="filled"
+                id="rarity-title"
+                label="Rarity"
+              />
+            </Grid>
+            <Grid item xs="auto" sx={{ display: i === 0 ? 'none' : 'flex' }}>
+              <IconButton>
+                <Icon>
+                  delete
+                </Icon>
+              </IconButton>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item sx={{ flexGrow: 1 }}>
+          <TextField
+            fullWidth
+            variant="filled"
+            id="rarity-description"
+            label="Description"
+            multiline
+            minRows={2}
+            sx={{
+              flex: '0 1 100%',
+              height: '100%',
+              '& .MuiInputBase-root': {
+                flex: '0 1 100%',
+              }
+            }}
+          />
+        </Grid>
+      </Grid>
+    </Grid>
   )
 }
 
