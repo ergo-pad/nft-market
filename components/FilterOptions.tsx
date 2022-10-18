@@ -124,6 +124,7 @@ const FilterOptions = () => {
 
   return (
     <Paper
+    elevation={0}
       sx={{
         p: "24px",
       }}

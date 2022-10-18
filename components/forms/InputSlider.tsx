@@ -4,14 +4,16 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Slider from '@mui/material/Slider';
 import TextField from '@mui/material/TextField';
+import { IDataObject } from '@components/create/PackTokenSection';
 
 interface IInputSliderProps {
-  label: string;
-  min: number;
-  max: number;
-  id: string;
   step?: number;
+  name: string;
+  min?: number;
+  max?: number;
+  value: number;
   variant?: "filled" | "standard" | "outlined";
+  data: IDataObject[];
 }
 
 const InputSlider: FC<IInputSliderProps> = (props) => {
@@ -20,7 +22,13 @@ const InputSlider: FC<IInputSliderProps> = (props) => {
   );
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setValue(newValue);
+    const e = {
+      ...props,
+      target: {
+        value: newValue,
+      },
+    }
+    // props.onChange(e);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,10 +50,11 @@ const InputSlider: FC<IInputSliderProps> = (props) => {
           <TextField
             fullWidth
             variant={props.variant ? props.variant : "filled"}
-            value={value}
-            id={props.id}
-            label={props.label}
-            onChange={handleInputChange}
+            value={props.value}
+            // id={props.id}
+            // label={props.label}
+            name={props.name}
+            // onChange={props.onChange}
             onBlur={handleBlur}
             inputProps={{
               inputMode: 'numeric',
@@ -58,7 +67,7 @@ const InputSlider: FC<IInputSliderProps> = (props) => {
         </Grid>
         <Grid item xs={5} sx={{ pr: '5px' }}>
           <Slider
-            value={typeof value === 'number' ? value : 1}
+            value={props.value}
             onChange={handleSliderChange}
             min={props.min}
             max={props.max}

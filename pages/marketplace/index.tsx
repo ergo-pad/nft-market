@@ -150,6 +150,7 @@ const Marketplace: NextPage = () => {
               return (
                 <Grid item md={3} key={i}>
                   <Paper
+                  elevation={0}
                     sx={{
                       px: '24px',
                       py: '16px',

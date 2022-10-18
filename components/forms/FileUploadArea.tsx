@@ -49,7 +49,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   type,
   multiple,
   sx,
-  imgFill
+  imgFill,
 }) => {
   const theme = useTheme()
   const [aspect, setAspect] = useState({})
@@ -59,6 +59,21 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       setAspect(aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350))
     }
   }, [])
+
+  useEffect(() => {
+    if (!multiple) {
+      if (expectedImgHeight && expectedImgWidth) {
+        setAspect(aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350))
+      }
+      else {
+        let img = document.createElement("img");
+        img.src = fileData[0].previewImage
+        img.onload = () => {
+          setAspect(aspectRatioResize(img.naturalWidth, img.naturalHeight, 800, 300))
+        }
+      }
+    }
+  }, [fileData[0].previewImage])
 
   const [dropHover, setDropHover] = useState('')
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
@@ -74,11 +89,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   // const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
   //   e.preventDefault();
   //   e.dataTransfer.dropEffect = 'copy';
-  //   e.stopPropagation();
-  // };
-  // const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-  //   e.preventDefault();
-  //   // onFileChange(e)
   //   e.stopPropagation();
   // };
 
@@ -186,7 +196,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       <Box
         sx={{
           background: theme.palette.background.paper,
-          borderRadius: '12px',
+          borderRadius: '6px',
           p: '12px',
           height: '100%',
         }}
@@ -228,7 +238,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
           </InputLabel>}
         <FormControl
           sx={{
-            borderRadius: '12px',
+            borderRadius: '6px',
             width: '100%',
             height: '100%',
             position: 'relative',
@@ -296,19 +306,19 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                 }
               </>
             ) : ( // for single file upload areas only: 
-              
-                <Box sx={{
-                  width: '100%',
-                  height: '100%',
-                  textAlign: 'center',
-                  mx: 'auto',
-                  //     position: 'absolute',
-                  // left: '50%',
-                  // top: '50%',
-                  // transform: 'translate(-50%,-50%)',
-                }}
-                >
-                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+
+              <Box sx={{
+                width: '100%',
+                height: '100%',
+                textAlign: 'center',
+                mx: 'auto',
+                //     position: 'absolute',
+                // left: '50%',
+                // top: '50%',
+                // transform: 'translate(-50%,-50%)',
+              }}
+              >
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%', minHeight: '100px' }}>
                   {fileData?.[0]?.previewImage != '' && fileData?.[0]?.currentFile?.name != undefined ? (
                     <>
                       {type === 'avatar' ? (
@@ -348,7 +358,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                         <>
                           <Box
                             sx={{
-                              borderRadius: '12px',
+                              borderRadius: '6px',
                               overflow: 'hidden',
                               display: 'block',
                               position: 'relative',

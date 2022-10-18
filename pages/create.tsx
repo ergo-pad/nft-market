@@ -1,43 +1,19 @@
-import React, { FC, useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import type { NextPage } from 'next'
 import {
   Grid,
   Container,
   Typography,
   Box,
-  Card,
-  CardContent,
-  Avatar,
-  Select,
-  MenuItem,
   useTheme,
   useMediaQuery,
-  Icon,
-  Fade,
-  Tooltip,
   Collapse,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Paper,
-  IconButton,
-  Divider,
   Stepper,
   Step,
   StepButton,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  FilledInput,
   TextField,
-  ToggleButtonGroup,
-  Switch,
-  ToggleButton,
-  SelectChangeEvent,
-  Input,
-  FormHelperText
 } from '@mui/material'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
@@ -46,6 +22,12 @@ import Image from 'next/image';
 import { WalletContext } from '@contexts/WalletContext'
 import FileUploadArea from '@components/forms/FileUploadArea'
 import InputSlider from '@components/forms/InputSlider'
+import { TransitionGroup } from 'react-transition-group';
+import { v4 as uuidv4 } from 'uuid';
+import SocialItem from '@components/create/SocialItem'
+import RaritySection from '@components/create/RaritySection'
+import PackTokenSection from '@components/create/PackTokenSection';
+import SocialSection from '@components/create/SocialSection';
 
 interface IFormData {
   artist: {
@@ -132,31 +114,6 @@ const Create: NextPage = () => {
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
 
-
-  // const [scrollY, setScrollY] = useState(0)
-  // const userProfileCard = useRef<HTMLDivElement>(null)
-  // const userProfileContainer = useRef<HTMLDivElement>(null)
-  // const handleScroll = () => {
-  //   const scrollPos = window.scrollY - 216
-  //   if (scrollPos > 0 && (userProfileCard.current !== null && userProfileContainer.current !== null)) {
-  //     if (scrollPos < (userProfileContainer.current.clientHeight - userProfileCard.current.clientHeight)) {
-  //       setScrollY(scrollPos)
-  //     }
-  //     else {
-  //       setScrollY(userProfileContainer.current.clientHeight - userProfileCard.current.clientHeight)
-  //     }
-  //   }
-  //   else {
-  //     setScrollY(0)
-  //   }
-  // }
-  // useEffect(() => {
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => {
-  //     window.removeEventListener("scroll", handleScroll);
-  //   };
-  // }, []);
-
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepperCompleted, setStepperCompleted] = React.useState<{
     [k: number]: boolean;
@@ -199,16 +156,27 @@ const Create: NextPage = () => {
     setStepperCompleted({});
   };
 
-  const [packToggle, setPackToggle] = useState(false)
-  const handlePackToggle = () => {
-    setPackToggle(!packToggle);
-  };
-
   const [artistAvatarImg, setArtistAvatarImg] = useState(fileInit)
   const [artistBannerImg, setArtistBannerImg] = useState(fileInit)
   const [collectionFeaturedImg, setCollectionFeaturedImg] = useState(fileInit)
   const [collectionBannerImg, setCollectionBannerImg] = useState(fileInit)
-  const [imgDataArray, setImgDataArray] = useState(fileInit)
+  const [artistSocials, setArtistSocials] = useState([{
+    id: uuidv4(),
+    network: '',
+    url: '',
+  }])
+  const [rarityData, setRarityData] = useState([{
+    id: uuidv4(),
+    name: '',
+    description: '',
+    img: fileInitObject
+  }])
+  const [packTokenData, setPackTokenData] = useState([{
+    id: uuidv4(),
+    name: '',
+    packAmount: 1,
+    nftAmount: 1,
+  }])
 
   return (
     <>
@@ -280,6 +248,7 @@ const Create: NextPage = () => {
               > */}
               <Paper
                 // ref={userProfileCard}
+                elevation={0}
                 sx={{
                   position: 'sticky',
                   p: '24px',
@@ -326,7 +295,7 @@ const Create: NextPage = () => {
                     <Typography variant="h4">
                       Artist Info
                     </Typography>
-                    <Grid container spacing={3} sx={{ mb: '24px' }}>
+                    <Grid container spacing={2} sx={{ mb: '24px' }}>
                       <Grid item xs={12}>
                         <TextField
                           fullWidth
@@ -385,54 +354,7 @@ const Create: NextPage = () => {
                         />
                       </Grid>
                     </Grid>
-                    <Typography variant="h6">
-                      Social Links
-                    </Typography>
-                    <Grid container spacing={2} sx={{
-                      mb: '24px',
-                    }}>
-                      <Grid item sm={4} xs={12}>
-                        <Grid
-                          container
-                          spacing={1}
-                          alignItems="center"
-                        >
-                          <Grid item xs>
-                            <SocialMenu id={'test'} />
-                          </Grid>
-                          <Grid item xs="auto">
-                            <IconButton sx={{ display: upSm ? 'none' : 'flex' }}>
-                              <Icon>
-                                delete
-                              </Icon>
-                            </IconButton>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                      <Grid item sm={8} xs={12}>
-                        <Grid
-                          container
-                          spacing={1}
-                          alignItems="center"
-                        >
-                          <Grid item xs>
-                            <TextField
-                              fullWidth
-                              variant="filled"
-                              id="social-network-link"
-                              label="Profile Link"
-                            />
-                          </Grid>
-                          <Grid item xs="auto">
-                            <IconButton sx={{ display: upSm ? 'flex' : 'none' }}>
-                              <Icon>
-                                delete
-                              </Icon>
-                            </IconButton>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </Grid>
+                    <SocialSection data={artistSocials} setData={setArtistSocials} />
                   </Box>
                 </Collapse>
                 <Collapse in={activeStep === 1} mountOnEnter unmountOnExit>
@@ -441,7 +363,7 @@ const Create: NextPage = () => {
                       Collection Details
                     </Typography>
 
-                    <Grid container spacing={3} sx={{ mb: '32px' }}>
+                    <Grid container spacing={2} sx={{ mb: '24px' }}>
                       <Grid item xs={12}>
                         <TextField
                           fullWidth
@@ -480,91 +402,12 @@ const Create: NextPage = () => {
                       </Grid>
                     </Grid>
 
-                    {/* ///////////////// BEGIN RARITY SECTION ///////////////// */}
-                    <Typography variant="h5">
-                      Rarity
-                    </Typography>
-                    <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-                      You can create rarity presets. If you choose to have token packs, there will be an option to set the probability of receiving more rare NFTs depending on the pack settings.
-                    </Typography>
-                    {imgDataArray.map((item, i) => {
-                      return <RarityItem imgDataArray={imgDataArray} setImgDataArray={setImgDataArray} i={i} key={i} />
-                    })}
-                    <Box sx={{ width: '100%', textAlign: 'center' }}>
-                      <Button onClick={() => {
-                        setImgDataArray(imgDataArray.concat([fileInitObject]))
-                      }}>
-                        Add another
-                      </Button>
-                    </Box>
-                    {/* ///////////////// END RARITY SECTION ///////////////// */}
+                    <RaritySection data={rarityData} setData={setRarityData} />
 
-                    <Grid
-                      container
-                      alignItems="center"
-                      sx={{
-                        width: '100%',
-                        mb: '0px',
-                        '&:hover': {
-                          cursor: 'pointer'
-                        }
-                      }}
-                      onClick={() => handlePackToggle()}
-                    >
-                      <Grid item xs>
-                        <Typography variant="h5" sx={{ verticalAlign: 'middle', mb: 0 }}>
-                          Pack tokens
-                        </Typography>
-                      </Grid>
-                      <Grid item xs="auto">
-                        <Switch
-                          focusVisibleClassName=".Mui-focusVisible"
-                          disableRipple
-                          checked={packToggle}
-                        />
-                      </Grid>
-                    </Grid>
-                    <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-                      If you want to sell or give away tokens that represent "packs" of NFTs, such as for card packs or other bundles, select this box to create them. If you choose not to now, you won't be able to make them later for this collection.
-                    </Typography>
+                    <PackTokenSection data={packTokenData} setData={setPackTokenData} rarityData={rarityData} />
 
-                    <Collapse in={packToggle}>
-                      <Grid container spacing={3} sx={{ mb: '32px' }}>
-                        <Grid item xs={12}>
-                          <TextField
-                            fullWidth
-                            variant="filled"
-                            id="pack-name"
-                            label="Pack Name"
-                          // value=""
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                          <TextField
-                            fullWidth
-                            variant="filled"
-                            id="pack-amount"
-                            label="Number of Packs"
-                            inputProps={{
-                              inputMode: 'numeric',
-                            }}
-                          // value=""
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                          <InputSlider
-                            variant="filled"
-                            id="nfts-per-pack"
-                            label="NFTs Per Pack"
-                            min={1}
-                            max={24}
-                          // value=""
-                          />
-                        </Grid>
-                      </Grid>
-                    </Collapse>
                     <Typography variant="h5">
-                      Traits
+                      Additional Traits
                     </Typography>
                   </Box>
                 </Collapse>
@@ -622,112 +465,6 @@ const Create: NextPage = () => {
 
       </Container>
     </>
-  )
-}
-
-
-const SocialMenu: FC<{ id: string; }> = (props) => {
-  const [sortOption, setSortOption] = useState("");
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setSortOption(event.target.value as string);
-  };
-  return (
-    <FormControl fullWidth variant="filled">
-      <InputLabel id={'social-network-name-' + props.id}>Social Network</InputLabel>
-      <Select
-        labelId="sort-select-box-label"
-        id="sort-select-box"
-        value={sortOption}
-        label="Sort By"
-        onChange={handleChange}
-      >
-        <MenuItem value={"telegram"}>Telegram</MenuItem>
-        <MenuItem value={"discord"}>Discord</MenuItem>
-        <MenuItem value={"twitter"}>Twitter</MenuItem>
-      </Select>
-    </FormControl>
-  )
-}
-
-const RarityItem: FC<{
-  imgDataArray: IFileData[];
-  setImgDataArray: React.Dispatch<React.SetStateAction<IFileData[]>>;
-  i: number;
-}> = ({ imgDataArray, setImgDataArray, i }) => {
-  const [rarityImg, setRarityImg] = useState(fileInit)
-  // const theme = useTheme()
-  // const upSm = useMediaQuery(theme.breakpoints.up('sm'))
-
-  useEffect(() => {
-    const newArray = imgDataArray.map((item, index) => {
-      if (index === i) {
-        return rarityImg[0]
-      }
-      return item
-    })
-    setImgDataArray(newArray)
-  }, [rarityImg[0]])
-
-  const removeItem = () => {
-    
-  }
-
-  return (
-    <Grid container spacing={3} sx={{ mb: '32px' }} alignItems="stretch">
-      <Grid item xs={12} sm={3}>
-        <FileUploadArea
-          fileData={rarityImg}
-          setFileData={setRarityImg}
-          imgFill
-          sx={{
-            height: '100%'
-          }}
-        />
-      </Grid>
-      <Grid item container direction="column" justifyContent="space-between" spacing={3} xs={12} sm={9}>
-        <Grid item>
-          <Grid
-            container
-            spacing={1}
-            alignItems="center"
-          >
-            <Grid item xs>
-              <TextField
-                fullWidth
-                variant="filled"
-                id="rarity-title"
-                label="Rarity"
-              />
-            </Grid>
-            <Grid item xs="auto" sx={{ display: i === 0 ? 'none' : 'flex' }}>
-              <IconButton>
-                <Icon>
-                  delete
-                </Icon>
-              </IconButton>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item sx={{ flexGrow: 1 }}>
-          <TextField
-            fullWidth
-            variant="filled"
-            id="rarity-description"
-            label="Description"
-            multiline
-            minRows={2}
-            sx={{
-              flex: '0 1 100%',
-              height: '100%',
-              '& .MuiInputBase-root': {
-                flex: '0 1 100%',
-              }
-            }}
-          />
-        </Grid>
-      </Grid>
-    </Grid>
   )
 }
 

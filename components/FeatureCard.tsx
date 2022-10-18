@@ -23,6 +23,7 @@ const FeatureCard: FC<IFeatureCardProps> = (props) => {
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
   return (
     <Card
+    elevation={0}
       sx={{
         width: '270px',
       }}
