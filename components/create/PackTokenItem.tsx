@@ -5,7 +5,8 @@ import {
   TextField,
   useTheme,
   Button,
-  Slider
+  Slider,
+  IconButton
 } from '@mui/material'
 import InputSlider from '@components/forms/InputSlider';
 import { IRarityItem } from '@components/create/RaritySection';
@@ -91,19 +92,37 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
     })
     setData(newArray)
   }
+  const removeItem = (i: number) => {
+    setData(current => current.filter((_item, idx) => idx !== i))
+  }
   return (
     <>
       <Grid container spacing={1} sx={{ mb: '16px' }}>
         <Grid item xs={12}>
-          <TextField
-            fullWidth
-            variant="filled"
-            id="pack-name"
-            label="Pack Name"
-            name="name"
-            value={data[index].name}
-            onChange={handleChange}
-          />
+          <Grid
+            container
+            spacing={1}
+            alignItems="center"
+          >
+            <Grid item xs>
+              <TextField
+                fullWidth
+                variant="filled"
+                id="pack-name"
+                label="Pack Name"
+                name="name"
+                value={data[index].name}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs="auto" sx={{ display: index === 0 ? 'none' : 'flex' }}>
+              <IconButton onClick={() => removeItem(index)}>
+                <Icon>
+                  delete
+                </Icon>
+              </IconButton>
+            </Grid>
+          </Grid>
         </Grid>
         <Grid item xs={12} md={6}>
           <TextField
@@ -183,7 +202,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
           {/* <InputSlider 
           name=""
           data={data} 
-          // setData={setData} 
+          setData={setData} 
           /> */}
         </Grid>
       </Grid>

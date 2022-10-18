@@ -11,19 +11,14 @@ interface IInputSliderProps {
   name: string;
   min?: number;
   max?: number;
-  value: number;
   variant?: "filled" | "standard" | "outlined";
   data: IDataObject[];
+  setData: React.Dispatch<React.SetStateAction<IDataObject[]>>;
 }
 
-const InputSlider: FC<IInputSliderProps> = (props) => {
-  const [value, setValue] = React.useState<number | string | Array<number | string>>(
-    1,
-  );
-
+const InputSlider: FC<IInputSliderProps> = ({step, name, min, max, variant, data, setData}) => {
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     const e = {
-      ...props,
       target: {
         value: newValue,
       },
@@ -49,8 +44,8 @@ const InputSlider: FC<IInputSliderProps> = (props) => {
         <Grid item xs={7}>
           <TextField
             fullWidth
-            variant={props.variant ? props.variant : "filled"}
-            value={props.value}
+            variant={variant ? variant : "filled"}
+            value={data[index].probabilities}
             // id={props.id}
             // label={props.label}
             name={props.name}
