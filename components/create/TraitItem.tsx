@@ -7,7 +7,6 @@ import {
   Collapse,
   useTheme,
   useMediaQuery,
-  Divider
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
 
@@ -18,20 +17,20 @@ interface IFileData {
   message: string;
 }
 
-interface IRarityData {
+interface ITraitData {
   id: string;
   name: string;
   description: string;
   img: IFileData;
 }
 
-const RarityItem: FC<{
-  data: IRarityData[];
-  setData: React.Dispatch<React.SetStateAction<IRarityData[]>>;
+const TraitItem: FC<{
+  data: ITraitData[];
+  setData: React.Dispatch<React.SetStateAction<ITraitData[]>>;
   images?: boolean;
   i: number;
 }> = ({ data, setData, i, images }) => {
-  const [rarityImg, setRarityImg] = useState([data[i].img])
+  const [traitImg, setTraitImg] = useState([data[i].img])
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
 
@@ -40,20 +39,20 @@ const RarityItem: FC<{
       if (index === i) {
         return {
           ...item,
-          img: rarityImg[0]
+          img: traitImg[0]
         }
       }
       return item
     })
     setData(newArray)
-  }, [rarityImg[0]])
+  }, [traitImg[0]])
 
   const removeItem = (index: number) => {
     setData(current => current.filter((_item, idx) => idx !== index))
   }
 
   useEffect(() => {
-    setRarityImg([data[i].img])
+    setTraitImg([data[i].img])
   }, [data[i].img.previewImage])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,8 +74,8 @@ const RarityItem: FC<{
         <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="stretch">
           <Grid item xs={12} sm={3}>
             <FileUploadArea
-              fileData={rarityImg}
-              setFileData={setRarityImg}
+              fileData={traitImg}
+              setFileData={setTraitImg}
               imgFill
               sx={{
                 height: '100%'
@@ -94,9 +93,9 @@ const RarityItem: FC<{
                   <TextField
                     fullWidth
                     variant="filled"
-                    id="rarity-name"
+                    id="trait-name"
                     name="name"
-                    label="Rarity"
+                    label="Trait"
                     value={data[i].name}
                     onChange={handleChange}
                   />
@@ -114,7 +113,7 @@ const RarityItem: FC<{
               <TextField
                 fullWidth
                 variant="filled"
-                id="rarity-description"
+                id="trait-description"
                 name="description"
                 label="Description"
                 value={data[i].description}
@@ -145,9 +144,9 @@ const RarityItem: FC<{
                 <TextField
                   fullWidth
                   variant="filled"
-                  id="rarity-name"
+                  id="trait-name"
                   name="name"
-                  label="Rarity"
+                  label="Trait"
                   value={data[i].name}
                   onChange={handleChange}
                 />
@@ -173,7 +172,7 @@ const RarityItem: FC<{
                 <TextField
                   fullWidth
                   variant="filled"
-                  id="rarity-description"
+                  id="trait-description"
                   name="description"
                   label="Description"
                   value={data[i].description}
@@ -195,4 +194,4 @@ const RarityItem: FC<{
   )
 }
 
-export default RarityItem;
+export default TraitItem;

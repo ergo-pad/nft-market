@@ -21,13 +21,11 @@ import Image from 'next/image';
 // import { motion } from 'framer-motion'
 import { WalletContext } from '@contexts/WalletContext'
 import FileUploadArea from '@components/forms/FileUploadArea'
-import InputSlider from '@components/forms/InputSlider'
-import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
-import SocialItem from '@components/create/SocialItem'
 import RaritySection from '@components/create/RaritySection'
 import PackTokenSection from '@components/create/PackTokenSection';
 import SocialSection from '@components/create/SocialSection';
+import TraitSection from '@components/create/TraitSection';
 
 interface IFormData {
   artist: {
@@ -166,6 +164,12 @@ const Create: NextPage = () => {
     url: '',
   }])
   const [rarityData, setRarityData] = useState([{
+    id: uuidv4(),
+    name: '',
+    description: '',
+    img: fileInitObject
+  }])
+  const [traitData, setTraitData] = useState([{
     id: uuidv4(),
     name: '',
     description: '',
@@ -403,8 +407,9 @@ const Create: NextPage = () => {
                     </Grid>
 
                     <RaritySection data={rarityData} setData={setRarityData} />
+                    <TraitSection data={traitData} setData={setTraitData} />
 
-                    <PackTokenSection data={packTokenData} setData={setPackTokenData} rarityData={rarityData} />
+
 
                     <Typography variant="h5">
                       Additional Traits
@@ -426,6 +431,7 @@ const Create: NextPage = () => {
                     - upload images
                     - provide metadata (csv)
                     - provide metadata (form-based)
+                    <PackTokenSection data={packTokenData} setData={setPackTokenData} rarityData={rarityData} />
                   </Box>
                 </Collapse>
                 <Box sx={{ pt: 2, textAlign: 'center' }}>

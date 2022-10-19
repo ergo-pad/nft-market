@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
-import RarityItem from '@components/create/RarityItem'
+import TraitItem from '@components/create/TraitItem'
 
 interface IFileData {
   currentFile: File;
@@ -18,16 +18,16 @@ interface IFileData {
   message: string;
 }
 
-export interface IRarityItem {
+export interface ITraitItem {
   id: string;
   name: string;
   description: string;
   img: IFileData;
 }
 
-interface IRaritySectionProps {
-  data: IRarityItem[];
-  setData: React.Dispatch<React.SetStateAction<IRarityItem[]>>;
+interface ITraitSectionProps {
+  data: ITraitItem[];
+  setData: React.Dispatch<React.SetStateAction<ITraitItem[]>>;
 }
 
 const fileInitObject = {
@@ -37,7 +37,7 @@ const fileInitObject = {
   message: ""
 }
 
-const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
+const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
   const [images, setImages] = useState(false)
   const toggleImages = () => {
     setImages(!images)
@@ -45,10 +45,10 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
   return (
     <>
       <Typography variant="h5">
-        Rarity
+        Additional Traits
       </Typography>
       <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-        You can create rarity presets. If you choose to have token packs, there will be an option to set the probability of receiving more rare NFTs depending on the pack settings.
+        Add traits that you will exist across all the NFTs in this collection. You may create presets to specifically limit traits with dropdown menus. Additional traits can be added later when you add NFT data. 
       </Typography>
       <Grid
         container
@@ -79,7 +79,7 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
       <TransitionGroup>
         {data.map((item, i) => (
           <Collapse key={item.id}>
-            <RarityItem data={data} setData={setData} i={i} images={images} />
+            <TraitItem data={data} setData={setData} i={i} images={images} />
           </Collapse>
         ))}
       </TransitionGroup>
@@ -99,4 +99,4 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
   );
 };
 
-export default RaritySection;
+export default TraitSection;
