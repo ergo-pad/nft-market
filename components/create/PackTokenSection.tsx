@@ -20,6 +20,7 @@ export interface IDataObject {
   probabilities?: {
     rarity: string;
     probability: number;
+    locked?: boolean;
   }[];
 }
 
