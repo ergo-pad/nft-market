@@ -21,22 +21,46 @@ interface IPackTokenItemProps {
 
 const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityData }) => {
   const theme = useTheme()
+
+  useEffect(() => {
+    if (rarityData.length === 1 && rarityData[0].name === '') {
+      const newArray = data.map((item, i) => {
+        if (index === i) {
+          return {
+            ...item,
+            probabilities: undefined
+          }
+        }
+        return item
+      })
+      setData(newArray)
+    }
+    else {
+      const rarityArray = rarityData.map((item, i) => {
+        return {
+          rarity: item.name,
+          probability: 0,
+        }
+      })
+      const newArray = data.map((item, i) => {
+        if (index === i) {
+          return {
+            ...item,
+            probabilities: rarityArray
+          }
+        }
+        return item
+      })
+      setData(newArray)
+    }
+  }, [rarityData])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newArray = data.map((item, i) => {
       if (i === index) {
-        var regex = /^[0-9]+$/;
-        if (!e.target.value.match(regex)) {
-          console.log('string')
-          return {
-            ...item,
-            [e.target.name]: e.target.value
-          }
-        }
-        else {
-          return {
-            ...item,
-            [e.target.name]: Number(e.target.value)
-          }
+        return {
+          ...item,
+          [e.target.name]: e.target.value
         }
       }
       return item
@@ -198,13 +222,26 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
             </Grid>
           </Grid>
         </Grid>
-        <Grid item>
-          {/* <InputSlider 
-          name=""
-          data={data} 
-          setData={setData} 
-          /> */}
-        </Grid>
+
+        {data[index].probabilities?.map((item, i) => {
+          return (
+            <Grid item key={i}>
+              <InputSlider
+                name={item.rarity}
+                data={data}
+                setData={setData}
+                id={data[index].name + '-' + item.rarity}
+                label={item.rarity}
+                dataIndex={index}
+                index={i}
+                max={1}
+                min={0}
+                step={0.01}
+              />
+            </Grid>
+          )
+        })}
+
       </Grid>
     </>
   );

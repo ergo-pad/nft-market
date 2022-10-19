@@ -27,9 +27,9 @@ const SocialSection: FC<ISocialSectionProps> = ({ data, setData }) => {
         Social Links
       </Typography>
       <TransitionGroup>
-        {data.map((c, i) => (
-          <Collapse key={c.id}>
-            <SocialItem socialData={data} setSocialData={setData} index={i} id={c.id} />
+        {data.map((item, i) => (
+          <Collapse key={item.id}>
+            <SocialItem socialData={data} setSocialData={setData} index={i} id={item.id} />
           </Collapse>
         ))}
       </TransitionGroup>

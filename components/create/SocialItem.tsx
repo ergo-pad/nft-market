@@ -72,7 +72,7 @@ const SocialItem: FC<{
         >
           <Grid item xs>
             <FormControl fullWidth variant="filled">
-              <InputLabel id={'social-network-name-' + id}>Social Network</InputLabel>
+              <InputLabel id={'social-network-' + index}>Social Network</InputLabel>
               <Select
                 labelId="sort-select-box-label"
                 id="sort-select-box"

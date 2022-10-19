@@ -81,6 +81,7 @@ const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityDat
                   name: '',
                   packAmount: 1,
                   nftAmount: 1,
+                  probabilities: []
                 }
               ]
             ))
