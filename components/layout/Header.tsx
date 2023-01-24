@@ -22,10 +22,10 @@ const pages = [
     name: "Home",
     link: "/",
   },
-  {
-    name: "Marketplace",
-    link: "/marketplace",
-  },
+  // {
+  //   name: "Marketplace",
+  //   link: "/marketplace",
+  // },
   {
     name: "Collections",
     link: "/collections",
