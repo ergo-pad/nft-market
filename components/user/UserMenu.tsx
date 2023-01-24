@@ -1,0 +1,135 @@
+import React, { FC, useContext } from 'react';
+import {
+  IconButton,
+  Icon,
+  useTheme,
+  Avatar
+} from '@mui/material'
+import { WalletContext } from '@contexts/WalletContext';
+import { useRouter } from 'next/router';
+import AddWallet from '@components/wallet/AddWallet';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Divider from '@mui/material/Divider';
+import Settings from '@mui/icons-material/Settings';
+import Logout from '@mui/icons-material/Logout';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+
+interface IUserMenuProps {
+
+}
+
+const UserMenu: FC<IUserMenuProps> = ({ }) => {
+  const theme = useTheme()
+  const router = useRouter();
+  const {
+    walletAddress,
+    setWalletAddress,
+    dAppWallet,
+    setDAppWallet,
+    addWalletModalOpen,
+    setAddWalletModalOpen
+  } = useContext(WalletContext);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const clearWallet = (hardRefresh = false) => {
+    setWalletAddress('');
+    setDAppWallet({
+      connected: false,
+      name: '',
+      addresses: [],
+    });
+    if (hardRefresh) {
+      router.reload();
+      // localStorage.setItem('modalOpen', 'true');
+    }
+  }
+  return (
+    <>
+      {walletAddress ? (
+        <>
+          <IconButton sx={{ color: theme.palette.text.primary }} onClick={handleClick}>
+            <Icon color="inherit">
+              account_circle
+            </Icon>
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            id="account-menu"
+            open={open}
+            onClose={handleClose}
+            onClick={handleClose}
+            PaperProps={{
+              elevation: 1,
+              sx: {
+                overflow: 'visible',
+                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                minWidth: '230px',
+                mt: 0,
+                '& .MuiAvatar-root': {
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1,
+                },
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 15,
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'background.paper',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              },
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={() => router.push('/users/' + walletAddress)}>
+              <Avatar /> View Profile
+            </MenuItem>
+            <Divider />
+            <MenuItem onClick={() => setAddWalletModalOpen(true)}>
+              <ListItemIcon>
+                <AccountBalanceWalletIcon fontSize="small" />
+              </ListItemIcon>
+              Change Wallet
+            </MenuItem>
+            <MenuItem>
+              <ListItemIcon>
+                <Settings fontSize="small" />
+              </ListItemIcon>
+              User Settings
+            </MenuItem>
+            <MenuItem onClick={() => clearWallet(true)}>
+              <ListItemIcon>
+                <Logout fontSize="small" />
+              </ListItemIcon>
+              Logout
+            </MenuItem>
+          </Menu>
+        </>
+      ) : (
+        <IconButton sx={{ color: theme.palette.text.primary }} onClick={() => setAddWalletModalOpen(true)}>
+          <Icon color="inherit">
+            account_balance_wallet
+          </Icon>
+        </IconButton>
+      )}
+      <AddWallet />
+    </>
+  );
+};
+
+export default UserMenu;

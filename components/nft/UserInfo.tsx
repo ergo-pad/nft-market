@@ -104,7 +104,7 @@ const UserInfo: FC<IUserInfoProps> = (props) => {
               sx={{
                 mb: 0,
                 fontSize: props.saleSize ? '1.5rem' : '1rem',
-                fontWeight: '500',
+                fontWeight: '600',
                 lineHeight: props.saleSize ? 1.3 : 1.5
               }}
             >

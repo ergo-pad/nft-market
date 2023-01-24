@@ -7,8 +7,8 @@ export const recentNfts = [
     rarity: 'Cube',
     time: '6 hours ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
-    artist: 'Paideia',
+    collectionLink: '/collections/test',
+    artist: 'Blitz Trading Cards',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
   },
@@ -20,7 +20,7 @@ export const recentNfts = [
     rarity: 'Common',
     time: '12 hours ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
+    collectionLink: '/collections/test',
     artist: 'Paideia',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
@@ -33,7 +33,7 @@ export const recentNfts = [
     rarity: 'Ultra Rare',
     time: '1 day ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
+    collectionLink: '/collections/test',
     artist: 'Paideia',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
@@ -46,7 +46,7 @@ export const recentNfts = [
     rarity: 'Cube',
     time: '6 hours ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
+    collectionLink: '/collections/test',
     artist: 'Paideia',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
@@ -59,7 +59,7 @@ export const recentNfts = [
     rarity: 'Cube',
     time: '6 hours ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
+    collectionLink: '/collections/test',
     artist: 'Paideia',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
@@ -72,7 +72,7 @@ export const recentNfts = [
     rarity: 'Cube',
     time: '6 hours ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
+    collectionLink: '/collections/test',
     artist: 'Paideia',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
@@ -85,7 +85,7 @@ export const recentNfts = [
     rarity: 'Cube',
     time: '6 hours ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
+    collectionLink: '/collections/test',
     artist: 'Paideia',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
@@ -98,7 +98,7 @@ export const recentNfts = [
     rarity: 'Cube',
     time: '6 hours ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
+    collectionLink: '/collections/test',
     artist: 'Paideia',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
@@ -111,7 +111,7 @@ export const recentNfts = [
     rarity: 'Uncommon',
     time: '6 hours ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
+    collectionLink: '/collections/test',
     artist: 'Paideia',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'
@@ -124,7 +124,7 @@ export const recentNfts = [
     rarity: 'Cube',
     time: '6 hours ago',
     collection: 'Wrath of Gods',
-    collectionLink: '/',
+    collectionLink: '/collections/test',
     artist: 'Paideia',
     artistLink: '/users/abc',
     artistLogo: '/images/paideia-circle-logo.png'

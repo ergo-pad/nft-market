@@ -6,7 +6,7 @@ const mainTheme = [{
       fontSize: "4.5rem",
       fontWeight: "800",
       lineHeight: 1.167,
-      marginBottom: "1.75rem",
+      marginBottom: "12px",
       fontFamily: '"Playfair Display", serif',
       textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
       overflowWrap: "break-word",
@@ -290,7 +290,8 @@ let darkTheme = createTheme({
     mode: "dark",
     background: {
       default: "#0E141F",
-      paper: 'rgba(255, 255, 255, 0.09)'
+      paper: '#1c212b' 
+      // color for text area #242932
     },
     text: {
       primary: '#fff',

@@ -192,122 +192,136 @@ const User: NextPage = () => {
             lg={3}
             sx={{ pr: "24px", display: { xs: "none", lg: "block" } }}
           >
-            <Box sx={{ position: 'relative', height: 'calc(100% + 100px)' }} ref={userProfileContainer}>
-              <motion.div
+            <Box
+              sx={{
+                position: 'relative',
+                height: 'calc(100% + 100px)',
+                mt: '-100px'
+              }}
+            // ref={userProfileContainer}
+            >
+              {/* <motion.div
                 animate={{
                   y: scrollY
                 }}
                 transition={{ type: "spring" }}
+              > */}
+              <Box
+                sx={{
+                  position: 'sticky',
+                  top: '100px',
+                  // height: '100%',
+                  width: '100%'
+                }}
               >
-                <Box sx={{ position: 'absolute', top: -100, height: '100%', width: '100%' }}>
-                  <Paper
-                    ref={userProfileCard}
+                <Paper
+                  ref={userProfileCard}
+                  sx={{
+                    p: '24px',
+                    top: 84,
+                    width: '100%',
+                    border: '1px solid',
+                    borderColor: theme.palette.divider,
+                    zIndex: '100'
+                  }}
+                >
+                  <Avatar
+                    alt={user.name ? user.name : user.address}
+                    src={user.pfpUrl ? user.pfpUrl : ''}
                     sx={{
-                      p: '24px',
-                      top: 84,
-                      width: '100%',
-                      border: '1px solid',
-                      borderColor: theme.palette.divider,
-                      zIndex: '100'
+                      width: 120,
+                      height: 120,
+                      mx: 'auto',
+                      mb: '24px',
+                      bgcolor: theme.palette.primary.main
+                    }}
+                  />
+                  {user.name && <Typography
+                    sx={{
+                      fontSize: '1.2rem',
+                      fontWeight: '700',
+                      mb: '3px',
+                      textAlign: 'center'
                     }}
                   >
-                    <Avatar
-                      alt={user.name ? user.name : user.address}
-                      src={user.pfpUrl ? user.pfpUrl : ''}
+                    {user.name}
+                  </Typography>}
+
+                  <Box
+                    sx={{
+                      display: 'inline-block',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      overflowWrap: 'break-word',
+                      wordBreak: 'break-word',
+                      maxWidth: '100%',
+                      mb: '16px'
+                    }}>
+                    <Link
                       sx={{
-                        width: 120,
-                        height: 120,
-                        mx: 'auto',
-                        mb: '24px',
-                        bgcolor: theme.palette.primary.main
+                        color: theme.palette.primary.main,
+                        lineHeight: 1.5,
+                        mb: '16px',
+                        '&:hover': {
+                          color: theme.palette.text.primary,
+                        }
                       }}
-                    />
-                    {user.name && <Typography
-                      sx={{
-                        fontSize: '1.2rem',
-                        fontWeight: '700',
-                        mb: '3px',
-                        textAlign: 'center'
-                      }}
+                      href={'https://explorer.ergoplatform.com/en/addresses/' + user.address}
                     >
-                      {user.name}
-                    </Typography>}
+                      {user.address}
+                    </Link>
+                  </Box>
 
-                    <Box
-                      sx={{
-                        display: 'inline-block',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        overflowWrap: 'break-word',
-                        wordBreak: 'break-word',
-                        maxWidth: '100%',
-                        mb: '16px'
-                      }}>
-                      <Link
+                  <Grid container sx={{ textAlign: 'center', width: '100%' }}>
+                    <Grid item xs>
+                      <Typography
                         sx={{
-                          color: theme.palette.primary.main,
-                          lineHeight: 1.5,
-                          mb: '16px',
-                          '&:hover': {
-                            color: theme.palette.text.primary,
-                          }
+                          fontSize: '1.5rem',
+                          fontWeight: '700'
                         }}
-                        href={'https://explorer.ergoplatform.com/en/addresses/' + user.address}
                       >
-                        {user.address}
-                      </Link>
-                    </Box>
-
-                    <Grid container sx={{ textAlign: 'center', width: '100%' }}>
-                      <Grid item xs>
-                        <Typography
-                          sx={{
-                            fontSize: '1.5rem',
-                            fontWeight: '700'
-                          }}
-                        >
-                          12
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: '0.8rem',
-                            color: theme.palette.text.secondary
-                          }}
-                        >
-                          NFTs Owned
-                        </Typography>
-                      </Grid>
-                      <Grid item xs>
-                        <Typography
-                          sx={{
-                            fontSize: '1.5rem',
-                            fontWeight: '700'
-                          }}
-                        >
-                          6
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: '0.8rem',
-                            color: theme.palette.text.secondary
-                          }}
-                        >
-                          NFTs Sold
-                        </Typography>
-                      </Grid>
-                    </Grid>
-
-                    <Divider sx={{ my: '24px' }} />
-                    {user.tagline &&
-                      <Typography>
-                        {user.tagline}
+                        12
                       </Typography>
-                    }
+                      <Typography
+                        sx={{
+                          fontSize: '0.8rem',
+                          color: theme.palette.text.secondary
+                        }}
+                      >
+                        NFTs Owned
+                      </Typography>
+                    </Grid>
+                    <Grid item xs>
+                      <Typography
+                        sx={{
+                          fontSize: '1.5rem',
+                          fontWeight: '700'
+                        }}
+                      >
+                        6
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: '0.8rem',
+                          color: theme.palette.text.secondary
+                        }}
+                      >
+                        NFTs Sold
+                      </Typography>
+                    </Grid>
+                  </Grid>
 
-                  </Paper>
-                </Box>
-              </motion.div>
+                  <Divider sx={{ my: '24px' }} />
+                  {user.tagline &&
+                    <Typography>
+                      {user.tagline}
+                    </Typography>
+                  }
+
+                </Paper>
+              </Box>
+              {/* </motion.div> */}
             </Box>
           </Grid>
           <Grid item lg={9} xs={12}>
@@ -403,7 +417,7 @@ const User: NextPage = () => {
               {/* OWNED TAB */}
               <Slide direction="up" in={tabValue == 'owned'} mountOnEnter unmountOnExit>
                 <TabPanel value="owned" sx={customTabPanelSx}>
-                <Grid
+                  <Grid
                     container
                     spacing={4}
                     columns={{ xs: 1, sm: 2, md: 3 }}
@@ -440,36 +454,36 @@ const User: NextPage = () => {
               <Slide direction="up" in={tabValue == 'watch-list'} mountOnEnter unmountOnExit>
                 <TabPanel value="watch-list" sx={customTabPanelSx}>
                   <Typography sx={{ mb: '24px' }}>
-                  <Grid
-                    container
-                    spacing={4}
-                    columns={{ xs: 1, sm: 2, md: 3 }}
-                    sx={{ mb: "24px" }}
-                  >
-                    {recentNfts.map((props, i) => {
-                      return (
-                        <Grid key={i} item xs={1}>
-                          <NftCard
-                            key={i}
-                            link={props.link}
-                            imgUrl={props.imgUrl}
-                            name={props.name}
-                            price={props.price}
-                            rarity={props.rarity}
-                            time={props.time}
-                            collection={props.collection}
-                            collectionLink={props.collectionLink}
-                            artist={props.artist}
-                            artistLink={props.artistLink}
-                            artistLogo={props.artistLogo}
-                          />
-                        </Grid>
-                      )
-                    })}
-                  </Grid>
-                  <Box sx={{ width: '100%', textAlign: 'center' }}>
-                    <Button variant="contained" sx={{}}>Load more...</Button>
-                  </Box>                  </Typography>
+                    <Grid
+                      container
+                      spacing={4}
+                      columns={{ xs: 1, sm: 2, md: 3 }}
+                      sx={{ mb: "24px" }}
+                    >
+                      {recentNfts.map((props, i) => {
+                        return (
+                          <Grid key={i} item xs={1}>
+                            <NftCard
+                              key={i}
+                              link={props.link}
+                              imgUrl={props.imgUrl}
+                              name={props.name}
+                              price={props.price}
+                              rarity={props.rarity}
+                              time={props.time}
+                              collection={props.collection}
+                              collectionLink={props.collectionLink}
+                              artist={props.artist}
+                              artistLink={props.artistLink}
+                              artistLogo={props.artistLogo}
+                            />
+                          </Grid>
+                        )
+                      })}
+                    </Grid>
+                    <Box sx={{ width: '100%', textAlign: 'center' }}>
+                      <Button variant="contained" sx={{}}>Load more...</Button>
+                    </Box>                  </Typography>
                 </TabPanel>
               </Slide>
 

@@ -13,7 +13,11 @@ import {
   Icon,
   Tooltip,
   Fade,
-  Slide
+  Slide,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
+  Button
 } from '@mui/material'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
@@ -23,7 +27,8 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import dynamic from 'next/dynamic'
-import UserInfo from '@components/nft/UserInfo';
+import NumberIncrement from '@components/forms/NumberIncrement';
+import ConfirmSale from '@components/dialogs/ConfirmSale';
 
 const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
   ssr: false,
@@ -34,21 +39,17 @@ interface ISalesCardProps {
   sellerPfpUrl?: string;
   sellerAddress: string;
   postDate: Date;
-  sale?: { // use if NOT an auction
+  sale: { // use if NOT an auction
     price: number;
     currency: string;
     link: string;
-    discountCurrency?: string;
-    discount?: number;
-  }
-  auction?: {
-    currency: string;
-    currentBidPrice: number;
-    currentBidLink: string;
-    buyNowPrice: number;
-    buyNowLink: string;
-    endTime: Date;
-  }
+    isPack?: boolean;
+  };
+  openNow: boolean;
+  setOpenNow: React.Dispatch<React.SetStateAction<boolean>>;
+  numberSold: number;
+  setNumberSold: React.Dispatch<React.SetStateAction<number>>;
+  apiFormSubmit: Function;
 }
 
 interface INftProps {
@@ -67,27 +68,18 @@ interface INftProps {
   salesCard: ISalesCardProps;
 }
 
-interface IAuctionDetailProps {
-  time: Date;
-  bidderName?: string;
-  bidderAddress: string;
-  bidderLogoUrl?: string;
-  bidPrice: number;
-  bidCurrency: string;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////
 // BEGIN SAMPLE DATA ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 
 const NftType = {
-  title: 'Monk & Fox #0017',
-  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  title: 'Blockheads 3 Pack',
+  description: 'When opened, you will receive 3 Blockhead NFTs. ',
   mintDate: new Date(1663353871000),
   tokenId: '9a8b5be32311f123c4e40f22233da12125c2123dcfd8d6a98e5a3659d38511c8',
   views: 124,
-  category: 'Rare',
-  collectionTitle: 'Wrath of Gods',
+  category: 'Common',
+  collectionTitle: 'Origins',
   collectionUrl: '/collections/wrath-of-gods',
   collectionDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   artistName: 'Paideia',
@@ -102,74 +94,14 @@ const NftType = {
       currency: 'Erg',
       price: 10,
       link: '/',
-      discountCurrency: 'Ergopad',
-      discount: 0.1
-    },
-    // auction: {
-    //   currency: 'Erg',
-    //   currentBidPrice: 10,
-    //   currentBidLink: '/',
-    //   buyNowPrice: 100,
-    //   buyNowLink: '/',
-    //   endTime: new Date(1664348610000),
-    // }
+      isPack: true
+    }
   }
 }
 
-const auctionHistory: IAuctionDetailProps[] = [
-  {
-    time: new Date(1664348610000),
-    bidderName: 'Eelon Musk',
-    bidderAddress: '9cmRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidderLogoUrl: '/images/users/eelon-musk.png',
-    bidPrice: 14,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1664348610000),
-    bidderAddress: '9fdPnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidPrice: 13,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1664348610000),
-    bidderAddress: '9xyZdDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidPrice: 12,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1664348610000),
-    bidderName: 'Alone Musk',
-    bidderAddress: '9abCdDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidderLogoUrl: '/images/users/alone-musk.png',
-    bidPrice: 11,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1664348610000),
-    bidderName: 'Elon Mask',
-    bidderAddress: '9tuVzDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidderLogoUrl: '/images/users/elon-mask.png',
-    bidPrice: 10,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1664348610000),
-    bidderAddress: '9heLlOa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidPrice: 9,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1664348610000),
-    bidderAddress: '9isItMeYoureLookiNgFor8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidPrice: 8,
-    bidCurrency: 'Erg',
-  },
-]
-
 const ApiPriceConversion: { [key: string]: number } = {
-  erg: 2.83,
-  ergopad: 0.032
+  erg: 1.77,
+  ergopad: 0.0112
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -179,124 +111,124 @@ const ApiPriceConversion: { [key: string]: number } = {
 const SalesCard: FC<ISalesCardProps> = (props) => {
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
+
   return (
     <Card>
       <CardContent>
-        <UserInfo
-          name={props.sellerName}
-          pfpUrl={props.sellerPfpUrl}
-          address={props.sellerAddress}
-          date={'List Date: ' + props.postDate.toDateString()}
-          price={props.sale && {
-            price: props.sale.price,
-            currency: props.sale.currency,
-            usdConversion: ApiPriceConversion[props.sale.currency.toLowerCase()]
+        <Grid
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          wrap="nowrap"
+          sx={{
+            mb: '12px',
+            maxWidth: '100%',
           }}
-          timeIcon=""
-          saleSize
-        />
-
-        {props.sale ? (
-          props.sale.discount ?
-            (
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <ButtonLink
-                    href={props.sale.link}
-                    fullWidth
-                    variant="outlined"
-                  >
-                    Buy with {props.sale.currency}
-                  </ButtonLink>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ButtonLink
-                    href={props.sale.link}
-                    fullWidth
-                    variant="contained"
-                  >
-                    {props.sale.discountCurrency + ' (' + props.sale.discount * 100 + '% off)'}
-                  </ButtonLink>
-                </Grid>
-              </Grid>
-            ) : (
-              <ButtonLink
-                href={props.sale.link}
-                fullWidth
-                variant="outlined"
-              >
-                Buy with {props.sale.currency}
-              </ButtonLink>
-            )
-        ) : (
-          props.auction &&
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} sx={{ textAlign: 'center' }}>
+        >
+          <Grid item zeroMinWidth xs>
+            <Box
+              sx={{
+                // mb: '12px'
+              }}
+            >
               <Typography
                 sx={{
-                  color: theme.palette.text.primary,
-                  fontWeight: '700',
+                  mb: 0,
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  lineHeight: 1.3
                 }}
               >
-                {props.auction.currentBidPrice + ' ' + props.auction.currency + ' ($' + (ApiPriceConversion[props.auction.currency.toLowerCase()] * props.auction.currentBidPrice).toFixed(2) + ' USD)'}
-
+                {props.sale.price + ' ' + props.sale.currency}
               </Typography>
               <Typography
                 sx={{
                   color: theme.palette.text.secondary,
-                  fontStyle: 'italic',
                   fontSize: '0.875rem'
                 }}
               >
-                Highest bid
+                ${(ApiPriceConversion['erg'] * props.sale.price).toFixed(2)} USD
               </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} sx={{ textAlign: 'center' }}>
-              <Box
-                sx={{
-                  color: theme.palette.text.primary,
-                  fontWeight: '700',
-                }}
-              >
-                <TimeRemaining endTime={props.auction.endTime} />
-              </Box>
-              <Typography
-                sx={{
-                  color: theme.palette.text.secondary,
-                  fontStyle: 'italic',
-                  fontSize: '0.875rem'
-                }}
-              >
-                Time Remaining
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <ButtonLink
-                href={props.auction.currentBidLink}
-                fullWidth
-                variant="outlined"
-              >
-                Place {props.auction.currency} bid
-              </ButtonLink>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <ButtonLink
-                href={props.auction.buyNowLink}
-                fullWidth
-                variant="contained"
-              >
-                Buy now for {props.auction.buyNowPrice + ' ' + props.auction.currency}
-              </ButtonLink>
-            </Grid>
+            </Box>
           </Grid>
-        )}
+          <Grid item xs="auto" sx={{ textAlign: 'right' }}>
+            <Box
+              sx={{
+                maxWidth: '180px'
+              }}
+            >
+              <NumberIncrement
+                value={props.numberSold}
+                setValue={props.setNumberSold}
+                label="Quantity"
+                name="Quantity"
+              />
+            </Box>
+          </Grid>
+        </Grid>
+        <FormGroup sx={{ mb: '12px' }}>
+          <FormControlLabel control={
+            <Checkbox
+              checked={props.openNow}
+              onChange={() => props.setOpenNow(!props.openNow)}
+              inputProps={{ 'aria-label': "Open right away (I don't need the pack tokens)" }}
+            />
+          } label="Open right away (I don't need the pack tokens)" />
+        </FormGroup>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Button
+              onClick={() => props.apiFormSubmit(false)}
+              fullWidth
+              variant="outlined"
+            >
+              Buy with {props.sale.currency}
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Button
+              onClick={() => props.apiFormSubmit(true)}
+              fullWidth
+              variant="contained"
+            >
+              Buy with SigUSD
+            </Button>
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   )
 }
 
 const Nft: NextPage<INftProps> = (props) => {
-  props = NftType;
+  const [numberSold, setNumberSold] = useState(1)
+  const [openNow, setOpenNow] = useState(false)
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
+  const [totalPrice, setTotalPrice] = useState(0)
+  const [purchaseCurrency, setPurchaseCurrency] = useState('Erg')
+
+  const apiFormSubmit = (isUsd: boolean) => {
+    isUsd ? (
+      setTotalPrice(Number((numberSold * (ApiPriceConversion[props.salesCard.sale.currency.toLowerCase()] * props.salesCard.sale.price)).toFixed(2)))
+    ) : (
+      setTotalPrice(numberSold * props.salesCard.sale.price)
+    )
+    setPurchaseCurrency(isUsd ? 'SigUSD' : props.salesCard.sale.currency)
+    setConfirmationOpen(true)
+  }
+
+  const newPropsObject = {
+    ...NftType,
+    salesCard: {
+      ...NftType.salesCard,
+      openNow: openNow,
+      setOpenNow: setOpenNow,
+      numberSold: numberSold,
+      setNumberSold: setNumberSold,
+      apiFormSubmit: apiFormSubmit,
+    },
+  }
+  props = newPropsObject
   const theme = useTheme()
   const [tabValue, setTabValue] = React.useState('info');
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
@@ -355,7 +287,7 @@ const Nft: NextPage<INftProps> = (props) => {
               {/* SUBTITLE */}
               <Box
                 sx={{
-                  mb: '48px'
+                  mb: '12px'
                 }}
               >
                 {props.artistLogoUrl &&
@@ -413,7 +345,15 @@ const Nft: NextPage<INftProps> = (props) => {
                 </Typography>
               </Box>
 
-              <Box sx={{ width: '100%', typography: 'body1' }}>
+              <Box
+                sx={{
+                  width: '100%',
+                  typography: 'body1',
+                  '& .MuiTabPanel-root': {
+                    pt: '24px'
+                  }
+                }}
+              >
                 <TabContext value={tabValue}>
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList
@@ -424,9 +364,8 @@ const Nft: NextPage<INftProps> = (props) => {
                       allowScrollButtonsMobile
                     >
                       <Tab label="Information" value="info" />
-                      {props.salesCard.auction && <Tab label="Auction Info" value="auction" />}
-                      {/* <Tab label="Properties" value="properties" /> */}
-                      <Tab label="Activity" value="activity" />
+                      <Tab label="Properties" value="properties" />
+                      {/* <Tab label="Activity" value="activity" /> */}
                     </TabList>
                   </Box>
 
@@ -480,61 +419,42 @@ const Nft: NextPage<INftProps> = (props) => {
                         <>
                           <Typography variant="h6" sx={{ mb: '12px' }}>Collection Description</Typography>
                           <Typography variant="body2" sx={{ mb: '32px' }}>
-                            {props.collectionDescription}
+                            {props.collectionDescription} {props.collectionUrl && (
+                              <Link href={props.collectionUrl}>
+                                Learn more...
+                              </Link>
+                            )}
                           </Typography>
+
+
                         </>
                       )}
-                      {((props.salesCard.auction && ((props.salesCard.auction.endTime.getTime() - (Date.now() / 1000)) > 0)) || props.salesCard.sale) &&
-                        <SalesCard {...props.salesCard} />
-                      }
+                      <SalesCard {...props.salesCard} />
                     </TabPanel>
                   </Slide>
 
-                  {/* AUCTION TAB */}
-                  <Slide direction="up" in={tabValue == 'auction'} mountOnEnter unmountOnExit>
-                    <TabPanel value="auction">
-                      {auctionHistory.map((props, i) => {
-                        return (
-                          <UserInfo
-                            name={props.bidderName}
-                            pfpUrl={props.bidderLogoUrl}
-                            address={props.bidderAddress}
-                            date={'17 minutes ago'}
-                            price={{
-                              price: props.bidPrice,
-                              currency: props.bidCurrency,
-                              usdConversion: ApiPriceConversion[props.bidCurrency.toLowerCase()]
-                            }}
-                            timeIcon="schedule"
-                            key={i}
-                          />
-                        )
-                      })}
-                      {((props.salesCard.auction && ((props.salesCard.auction.endTime.getTime() - (Date.now() / 1000)) > 0)) || props.salesCard.sale) &&
-                        <SalesCard {...props.salesCard} />
-                      }
-                    </TabPanel>
-                  </Slide>
-
-                  {/* TRAITS TAB 
+                  {/* TRAITS TAB */}
                   <Slide direction="up" in={tabValue == 'properties'} mountOnEnter unmountOnExit>
-                  <TabPanel value="properties">Traits, rarity, etc.</TabPanel>
-                  </Slide>
-                  */}
+                    <TabPanel value="properties">
+                      <Typography sx={{ mb: '24px' }}>
+                        Traits, rarity, etc.
+                      </Typography>
+                      <SalesCard {...props.salesCard} />
+                    </TabPanel>
 
-                  {/* ACTIVITY TAB */}
+                  </Slide>
+
+                  {/* ACTIVITY TAB  */}
+                  {/*
                   <Slide direction="up" in={tabValue == 'activity'} mountOnEnter unmountOnExit>
                     <TabPanel value="activity">
                       <Typography sx={{ mb: '24px' }}>
-                      Past sales activity
+                        Past sales activity
                       </Typography>
-                      
-                      {((props.salesCard.auction && ((props.salesCard.auction.endTime.getTime() - (Date.now() / 1000)) > 0)) || props.salesCard.sale) &&
-                        <SalesCard {...props.salesCard} />
-                      }
+                      <SalesCard {...props.salesCard} />
                     </TabPanel>
                   </Slide>
-
+                  */}
                 </TabContext>
               </Box>
 
@@ -542,6 +462,15 @@ const Nft: NextPage<INftProps> = (props) => {
           </Grid>
         </Grid>
       </Container >
+      <ConfirmSale
+        open={confirmationOpen}
+        setOpen={setConfirmationOpen}
+        tokenName={props.title}
+        qty={numberSold}
+        openNow={openNow}
+        price={totalPrice}
+        currency={purchaseCurrency}
+      />
     </>
   )
 }

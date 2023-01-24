@@ -195,7 +195,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
     <Box sx={sx && sx}>
       <Box
         sx={{
-          background: theme.palette.background.paper,
+          background: theme.palette.mode == 'dark' ? '#242932' : theme.palette.background.paper,
           borderRadius: '6px',
           p: '12px',
           height: '100%',

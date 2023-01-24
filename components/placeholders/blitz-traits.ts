@@ -1,4 +1,4 @@
-const blitzTraits = [
+export const blitzTraits = [
     {
       category: 'Rarity',
       traits: [

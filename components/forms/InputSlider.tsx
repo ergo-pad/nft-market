@@ -100,7 +100,7 @@ const InputSlider: FC<IInputSliderProps> = ({ step, name, min, max, variant, id,
   }
 
   useEffect(() => {
-    if (data[dataIndex].probabilities![index].probability != NaN) {
+    if (!Number.isNaN(data[dataIndex].probabilities![index].probability)) {
       setValue(data[dataIndex].probabilities![index].probability);
       setSliderValue(data[dataIndex].probabilities![index].probability)
     }
@@ -116,7 +116,7 @@ const InputSlider: FC<IInputSliderProps> = ({ step, name, min, max, variant, id,
     var regex = /^\d*\.?\d*$/;
     if (e.target.value.match(regex)) {
       setValue(e.target.value);
-      if (Number(e.target.value) != NaN && e.target.value !== '.') {
+      if (!Number.isNaN(e.target.value) && e.target.value !== '.') {
         setLocked(true)
         setSliderValue(Number(e.target.value))
         settingData(Number(e.target.value))

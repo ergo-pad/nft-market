@@ -14,8 +14,8 @@ import Link from '@components/Link'
 import { ThemeContext } from "@contexts/ThemeContext";
 import { useRouter } from 'next/router';
 import Logo from '@components/svgs/Logo';
-import AddWallet from '@components/wallet/AddWallet';
-import UserAvatar from '@components/UserAvatar';
+import NotificationsMenu from '@components/notifications/NotificationsMenu'
+import UserMenu from '@components/user/UserMenu';
 
 const pages = [
   {
@@ -31,8 +31,12 @@ const pages = [
     link: "/collections",
   },
   {
-    name: "Create",
-    link: "/create",
+    name: "Sales",
+    link: "/sales",
+  },
+  {
+    name: "Dashboard",
+    link: "/dashboard",
   },
 ];
 
@@ -191,8 +195,8 @@ const Header: FC<IHeaderProps> = ({ }) => {
                   <IconButton onClick={toggleTheme} sx={{ color: theme.palette.text.primary }}>
                     {(theme === DarkTheme) ? <Brightness7Icon /> : <Brightness4Icon />}
                   </IconButton>
-                  <UserAvatar />
-                  <AddWallet />
+                  <NotificationsMenu />
+                  <UserMenu />
                 </Grid>
                 <Grid item sx={{ display: { xs: "flex", md: "none" } }}>
                   <Box

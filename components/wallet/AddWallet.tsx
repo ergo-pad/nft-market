@@ -67,14 +67,14 @@ export const AddWallet = () => {
   /**
    * dapp state
    *
-   * loading: yoroi is slow so need to show a loader for yoroi
+   * DEPRACATED ----> loading: yoroi is slow so need to show a loader for yoroi
    * dAppConnected: true if permission granted (persisted in local storage)
    * dAppError: show error message
    * dAppAddressTableData: list available addresses from wallet
    */
   const [loading, setLoading] = useState(false);
   const [dAppError, setDAppError] = useState(false);
-  const [dAppAddressTableData, setdAppAddressTableData] = useState([{}]); // table data
+  // const [dAppAddressTableData, setdAppAddressTableData] = useState([{}]); // table data
 
   useEffect(() => {
     const isModalOpen = localStorage.getItem('modalOpen')
@@ -191,7 +191,7 @@ export const AddWallet = () => {
     });
     if (hardRefresh) {
       router.reload();
-      localStorage.setItem('modalOpen', 'true');
+      // localStorage.setItem('modalOpen', 'true');
     }
   };
 
@@ -261,27 +261,27 @@ export const AddWallet = () => {
     setWalletInput(address);
   };
 
-  const loadAddresses = async () => {
-    setLoading(true);
-    try {
-      // @ts-ignore
-      const address_used = await ergo.get_used_addresses();
-      // @ts-ignore
-      const address_unused = await ergo.get_unused_addresses();
-      const addresses = [...address_used, ...address_unused];
-      const addressData = addresses.map((address, index) => {
-        return { id: index, name: address };
-      });
-      setDAppWallet({
-        ...dAppWallet,
-        addresses: addresses,
-      });
-      setdAppAddressTableData(addressData);
-    } catch (e) {
-      console.log(e);
-    }
-    setLoading(false);
-  };
+  // const loadAddresses = async () => {
+  //   setLoading(true);
+  //   try {
+  //     // @ts-ignore
+  //     const address_used = await ergo.get_used_addresses();
+  //     // @ts-ignore
+  //     const address_unused = await ergo.get_unused_addresses();
+  //     const addresses = [...address_used, ...address_unused];
+  //     const addressData = addresses.map((address, index) => {
+  //       return { id: index, name: address };
+  //     });
+  //     setDAppWallet({
+  //       ...dAppWallet,
+  //       addresses: addresses,
+  //     });
+  //     setdAppAddressTableData(addressData);
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  //   setLoading(false);
+  // };
 
   const wallets = [
     {
@@ -304,11 +304,6 @@ export const AddWallet = () => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <>
-      <IconButton sx={{ color: theme.palette.text.primary }} onClick={() => setAddWalletModalOpen(true)}>
-        <Icon color="inherit">
-          account_balance_wallet
-        </Icon>
-      </IconButton>
       <Dialog
         open={addWalletModalOpen}
         onClose={handleClose}
@@ -317,15 +312,13 @@ export const AddWallet = () => {
         <DialogTitle
           sx={{
             textAlign: 'center',
-            mb: 0,
-            pb: 0,
             fontWeight: '800',
             fontSize: '32px',
           }}
         >
           {walletAddress != '' ? 'Wallet Connected' : 'Connect Wallet'}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ pb: 0 }}>
           {/* <DialogContentText sx={{ textAlign: 'center', mb: '24px' }}>
             Your wallet info will never be stored on our server.
           </DialogContentText> */}
@@ -435,23 +428,19 @@ export const AddWallet = () => {
             />
           </Collapse>
 
-          {/* {loading && (
+          {loading && (
             <CircularProgress
               sx={{ ml: 2, color: 'white' }}
               size={'1.2rem'}
             />
-          )} */}
+          )}
 
-          {/* 
           <FormHelperText error={true}>
             {dAppError
               ? 'Failed to connect to wallet. Please retry after refreshing page.'
               : ''}
           </FormHelperText> 
           
-          */}
-
-
           {/* 
           
           {dAppWallet.connected && (

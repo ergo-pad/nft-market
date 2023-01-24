@@ -115,7 +115,7 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
   );
 }
 
-const Marketplace: NextPage = () => {
+const Sales: NextPage = () => {
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [filterDialogvalue, setFilterDialogValue] = React.useState("Dione");
 
@@ -138,10 +138,10 @@ const Marketplace: NextPage = () => {
       <Grid container>
         <Grid item md={6}>
           <Typography variant="h1">
-            Marketplace
+            Sales
           </Typography>
           <Typography variant="body2">
-            The marketplace is where third party resellers list their NFT and FT sales. Sales from Sky Harbor and Auction House are also displayed, and you can access their smart contracts directly through this portal. 
+            Here you can find live sales direct from the artists. 
           </Typography>
         </Grid>
         <Grid item md={6}>
@@ -233,7 +233,8 @@ const Marketplace: NextPage = () => {
                 <Grid key={i} item xs={1}>
                   <NftCard
                     key={i}
-                    link={props.link}
+                    // link={props.link}
+                    link={'/sales/test'}
                     imgUrl={props.imgUrl}
                     name={props.name}
                     price={props.price}
@@ -258,4 +259,4 @@ const Marketplace: NextPage = () => {
   )
 }
 
-export default Marketplace
+export default Sales
