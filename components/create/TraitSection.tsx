@@ -47,7 +47,7 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
       <Typography variant="h5">
         Additional Traits
       </Typography>
-      <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
+      <Typography variant="body2" sx={{ lineHeight: 1.3, mb: '12px' }}>
         Add traits that you will exist across all the NFTs in this collection. You may create presets to specifically limit traits with dropdown menus. Additional traits can be added later when you add NFT data. 
       </Typography>
       <Grid
@@ -56,18 +56,24 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
         sx={{
           width: '100%',
           mb: '24px',
-          '&:hover': {
-            cursor: 'pointer'
-          }
         }}
-        onClick={() => toggleImages()}
       >
         <Grid item xs>
-          <Typography sx={{ verticalAlign: 'middle', mb: 0 }}>
+
+        </Grid>
+        <Grid
+          item
+          xs="auto"
+          onClick={() => toggleImages()}
+          sx={{
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }}
+        >
+          <Typography sx={{ verticalAlign: 'middle', mb: 0, mr: '6px', display: 'inline-block' }}>
             Include Images
           </Typography>
-        </Grid>
-        <Grid item xs="auto">
           <Switch
             focusVisibleClassName=".Mui-focusVisible"
             disableRipple
@@ -83,7 +89,7 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
           </Collapse>
         ))}
       </TransitionGroup>
-      <Box sx={{ width: '100%', textAlign: 'center' }}>
+      <Box sx={{ width: '100%', textAlign: 'center', mb: '24px' }}>
         <Button onClick={() => {
           setData(data.concat([{
             id: uuidv4(),

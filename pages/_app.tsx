@@ -22,6 +22,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     name: '',
     addresses: [''],
   })
+  const [expanded, setExpanded] = useState<string | false>(false);
   const [addWalletModalOpen, setAddWalletModalOpen] = useState(false)
   const [userInfo, setUserInfo] = useState({ address: '' })
 
@@ -46,7 +47,9 @@ function MyApp({ Component, pageProps }: AppProps) {
               dAppWallet,
               setDAppWallet,
               addWalletModalOpen,
-              setAddWalletModalOpen
+              setAddWalletModalOpen,
+              expanded,
+              setExpanded
             }}
           >
             <UserContext.Provider value={{ userInfo, setUserInfo }}>

@@ -59,11 +59,12 @@ export const AddWallet = () => {
     dAppWallet,
     setDAppWallet,
     addWalletModalOpen,
-    setAddWalletModalOpen
+    setAddWalletModalOpen,
+    expanded,
+    setExpanded
   } = useContext(WalletContext);
   const [init, setInit] = useState(false);
   const [mobileAdd, setMobileAdd] = useState(false);
-  const [expanded, setExpanded] = useState<string | false>(false);
   /**
    * dapp state
    *
@@ -128,7 +129,7 @@ export const AddWallet = () => {
             console.log(res)
             if (!res)
               window.ergoConnector[String(localStorage.getItem(DAPP_NAME))]
-                .connect()
+                .connect({createErgoObject: false})
                 .then((res: any) => {
                   if (!res) clearWallet();
                 });
@@ -178,7 +179,13 @@ export const AddWallet = () => {
     });
   };
 
-  const clearWallet = (hardRefresh = false) => {
+  const clearWallet = async () => {
+    if (expanded === 'safew' || expanded === 'nautilus') {
+      // @ts-ignore
+      await ergoConnector[expanded].disconnect()
+      // router.reload();
+      // localStorage.setItem('modalOpen', 'true');
+    }
     // clear state and local storage
     setWalletInput('');
     setWalletAddress('');
@@ -189,10 +196,7 @@ export const AddWallet = () => {
       name: '',
       addresses: [],
     });
-    if (hardRefresh) {
-      router.reload();
-      // localStorage.setItem('modalOpen', 'true');
-    }
+    setExpanded(false)
   };
 
   const handleWalletFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -213,7 +217,7 @@ export const AddWallet = () => {
         await dAppLoad(wallet);
         setLoading(false);
         return;
-      } else if (await walletMapper[wallet].connect()) {
+      } else if (await walletMapper[wallet].connect({createErgoObject: false})) {
         await dAppLoad(wallet);
         setLoading(false);
         return;
@@ -228,10 +232,12 @@ export const AddWallet = () => {
 
   const dAppLoad = async (wallet: string) => {
     try {
+      const walletConnector = window.ergoConnector[wallet];
+      const context = await walletConnector.getContext();
       // @ts-ignore
-      const address_used = await ergo.get_used_addresses(); // eslint-disable-line
+      const address_used = await context.get_used_addresses(); // eslint-disable-line
       // @ts-ignore
-      const address_unused = await ergo.get_unused_addresses(); // eslint-disable-line
+      const address_unused = await context.get_unused_addresses(); // eslint-disable-line
       const addresses = [...address_used, ...address_unused];
       // use the first used address if available or the first unused one if not as default
       const address = addresses.length ? addresses[0] : '';
@@ -439,8 +445,8 @@ export const AddWallet = () => {
             {dAppError
               ? 'Failed to connect to wallet. Please retry after refreshing page.'
               : ''}
-          </FormHelperText> 
-          
+          </FormHelperText>
+
           {/* 
           
           {dAppWallet.connected && (
@@ -464,7 +470,7 @@ export const AddWallet = () => {
         <DialogActions>
           <Button onClick={handleClose}>Close Window</Button>
           <Button
-            onClick={walletAddress == '' ? handleSubmitWallet : () => clearWallet(true)}
+            onClick={walletAddress == '' ? handleSubmitWallet : () => clearWallet()}
             disabled={!isAddressValid(walletInput)}
           >
             {walletAddress == '' ? 'Connect' : 'Remove Wallet'}

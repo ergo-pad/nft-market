@@ -5,6 +5,7 @@ import {
   Collapse,
   Button,
   Grid,
+  useTheme,
   Switch,
 } from '@mui/material'
 import { TransitionGroup } from 'react-transition-group';
@@ -31,12 +32,13 @@ interface IPackTokenSectionProps {
 }
 
 const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityData }) => {
+  const theme = useTheme()
   const [packToggle, setPackToggle] = useState(false)
   const handlePackToggle = () => {
     setPackToggle(!packToggle);
   };
   return (
-    <>
+    <Box sx={{ mb: '12px' }}>
       <Grid
         container
         alignItems="center"
@@ -50,11 +52,21 @@ const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityDat
         onClick={() => handlePackToggle()}
       >
         <Grid item xs>
-          <Typography variant="h5" sx={{ verticalAlign: 'middle', mb: 0 }}>
+          <Typography variant="h5" sx={{ verticalAlign: 'middle' }}>
             Pack tokens
           </Typography>
         </Grid>
         <Grid item xs="auto">
+          <Typography
+            sx={{
+              display: 'inline-block',
+              mr: '6px',
+              verticalAlign: 'middle',
+              color: packToggle ? theme.palette.text.primary : theme.palette.text.secondary
+            }}
+          >
+            Enable
+          </Typography>
           <Switch
             focusVisibleClassName=".Mui-focusVisible"
             disableRipple
@@ -97,7 +109,7 @@ const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityDat
         </Box>
       </Collapse>
 
-    </>
+    </Box>
   );
 };
 

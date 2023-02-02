@@ -13,6 +13,8 @@ export interface IWalletContext {
   setDAppWallet: React.Dispatch<React.SetStateAction<IDAppWallet>>;
   addWalletModalOpen: boolean;
   setAddWalletModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  expanded: string | false;
+  setExpanded: React.Dispatch<React.SetStateAction<string | false>>;
 }
 
 export const WalletContext = createContext({} as IWalletContext);

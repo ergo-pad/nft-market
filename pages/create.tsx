@@ -14,6 +14,7 @@ import {
   Step,
   StepButton,
   TextField,
+  Switch
 } from '@mui/material'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
@@ -80,8 +81,8 @@ const formData = {
 const steps = [
   'Artist',
   'Collection Details',
-  'Sale Info',
-  'Token Details'
+  'Token Details',
+  'Sale Info'
 ];
 
 interface IFileData {
@@ -181,6 +182,11 @@ const Create: NextPage = () => {
     packAmount: 1,
     nftAmount: 1,
   }])
+
+  const [createSale, setCreateSale] = useState(true)
+  const toggleCreateSale = () => {
+    setCreateSale(!createSale)
+  }
 
   return (
     <>
@@ -294,7 +300,7 @@ const Create: NextPage = () => {
               </>
             ) : (
               <>
-                <Collapse in={activeStep === 0} mountOnEnter unmountOnExit>
+                <Collapse in={activeStep === 0}>
                   <Box>
                     <Typography variant="h4">
                       Artist Info
@@ -361,7 +367,7 @@ const Create: NextPage = () => {
                     <SocialSection data={artistSocials} setData={setArtistSocials} />
                   </Box>
                 </Collapse>
-                <Collapse in={activeStep === 1} mountOnEnter unmountOnExit>
+                <Collapse in={activeStep === 1}>
                   <Box>
                     <Typography variant="h4">
                       Collection Details
@@ -405,34 +411,95 @@ const Create: NextPage = () => {
                         />
                       </Grid>
                     </Grid>
-
                     <RaritySection data={rarityData} setData={setRarityData} />
                     <TraitSection data={traitData} setData={setTraitData} />
-
-
+                  </Box>
+                </Collapse>
+                <Collapse in={activeStep === 2}>
+                  <Box>
+                    <Typography variant="h4">
+                      Token details
+                    </Typography>
+                    <PackTokenSection data={packTokenData} setData={setPackTokenData} rarityData={rarityData} />
+                    <Typography variant="h5">
+                      Provide CSV for Metadata
+                    </Typography>
+                    <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
+                      You can upload a CSV file to automatically set metadata for the NFTs you will upload. Download a sample CSV below which will include headings for the traits you set previously.
+                    </Typography>
 
                     <Typography variant="h5">
-                      Additional Traits
+                      Upload Images
                     </Typography>
+                    {/* <FileUploadArea
+                        multiple
+                        /> */}
                   </Box>
                 </Collapse>
-                <Collapse in={activeStep === 2} mountOnEnter unmountOnExit>
+                <Collapse in={activeStep === 3}>
                   <Box>
-
-                    Sale info
-                    - send to yourself
-                    - sell on marketplace
-                    - create sales portal
+                    <Typography variant="h4">
+                      Sale info
+                    </Typography>
+                    <Typography variant="body2">
+                      If you choose not to setup a sale, the NFTs will be sent to the artist address as they're minted.
+                    </Typography>
+                    <Grid
+                      container
+                      alignItems="center"
+                      sx={{
+                        width: '100%',
+                        mb: '0px',
+                        '&:hover': {
+                          cursor: 'pointer'
+                        }
+                      }}
+                      onClick={() => toggleCreateSale()}
+                    >
+                      <Grid item xs>
+                        <Typography variant="h5" sx={{ verticalAlign: 'middle' }}>
+                          Create Sales Portal
+                        </Typography>
+                      </Grid>
+                      <Grid item xs="auto">
+                        <Typography
+                          sx={{
+                            display: 'inline-block',
+                            mr: '6px',
+                            verticalAlign: 'middle',
+                            color: createSale ? theme.palette.text.primary : theme.palette.text.secondary
+                          }}
+                        >
+                          Enable
+                        </Typography>
+                        <Switch
+                          focusVisibleClassName=".Mui-focusVisible"
+                          disableRipple
+                          checked={createSale}
+                        />
+                      </Grid>
+                    </Grid>
                   </Box>
-                </Collapse>
-                <Collapse in={activeStep === 3} mountOnEnter unmountOnExit>
-                  <Box>
-                    Token details
-                    - upload images
-                    - provide metadata (csv)
-                    - provide metadata (form-based)
-                    <PackTokenSection data={packTokenData} setData={setPackTokenData} rarityData={rarityData} />
-                  </Box>
+                  <Collapse in={createSale}>
+                  <Grid container spacing={2} sx={{ mb: '24px' }}>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          variant="filled"
+                          id="date-start"
+                          label="Date Start"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          variant="filled"
+                          id="date-end"
+                          label="Date End"
+                        />
+                      </Grid>
+                      </Grid>
+                  </Collapse>
                 </Collapse>
                 <Box sx={{ pt: 2, textAlign: 'center' }}>
                   <Button

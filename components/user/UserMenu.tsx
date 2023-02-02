@@ -29,7 +29,9 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
     dAppWallet,
     setDAppWallet,
     addWalletModalOpen,
-    setAddWalletModalOpen
+    setAddWalletModalOpen,
+    expanded,
+    setExpanded
   } = useContext(WalletContext);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -39,18 +41,23 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const clearWallet = (hardRefresh = false) => {
+
+  const clearWallet = async () => {
+    if (dAppWallet.name === 'safew' || dAppWallet.name === 'nautilus') {
+      // @ts-ignore
+      await ergoConnector[dAppWallet.name].disconnect()
+    }
+    // clear state and local storage
     setWalletAddress('');
+    // clear dApp state
     setDAppWallet({
       connected: false,
       name: '',
       addresses: [],
     });
-    if (hardRefresh) {
-      router.reload();
-      // localStorage.setItem('modalOpen', 'true');
-    }
-  }
+    setExpanded(false)
+  };
+
   return (
     <>
       {walletAddress ? (
@@ -112,7 +119,7 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
               </ListItemIcon>
               User Settings
             </MenuItem>
-            <MenuItem onClick={() => clearWallet(true)}>
+            <MenuItem onClick={() => clearWallet()}>
               <ListItemIcon>
                 <Logout fontSize="small" />
               </ListItemIcon>

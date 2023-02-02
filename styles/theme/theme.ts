@@ -36,7 +36,7 @@ const mainTheme = [{
       fontSize: "2rem",
       fontWeight: "700",
       lineHeight: 1.235,
-      marginBottom: "1rem",
+      marginBottom: "0.5rem",
       fontFamily: '"Inter", sans-serif',
       // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
       overflowWrap: "break-word",

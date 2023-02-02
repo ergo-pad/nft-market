@@ -47,7 +47,7 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
       <Typography variant="h5">
         Rarity
       </Typography>
-      <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
+      <Typography variant="body2" sx={{ lineHeight: 1.3, mb: '12px', }}>
         You can create rarity presets. If you choose to have token packs, there will be an option to set the probability of receiving more rare NFTs depending on the pack settings.
       </Typography>
       <Grid
@@ -56,18 +56,24 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
         sx={{
           width: '100%',
           mb: '24px',
-          '&:hover': {
-            cursor: 'pointer'
-          }
         }}
-        onClick={() => toggleImages()}
       >
         <Grid item xs>
-          <Typography sx={{ verticalAlign: 'middle', mb: 0 }}>
+
+        </Grid>
+        <Grid
+          item
+          xs="auto"
+          onClick={() => toggleImages()}
+          sx={{
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }}
+        >
+          <Typography sx={{ verticalAlign: 'middle', mb: 0, mr: '6px', display: 'inline-block' }}>
             Include Images
           </Typography>
-        </Grid>
-        <Grid item xs="auto">
           <Switch
             focusVisibleClassName=".Mui-focusVisible"
             disableRipple
@@ -83,7 +89,7 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
           </Collapse>
         ))}
       </TransitionGroup>
-      <Box sx={{ width: '100%', textAlign: 'center' }}>
+      <Box sx={{ width: '100%', textAlign: 'center', mb: '24px' }}>
         <Button onClick={() => {
           setData(data.concat([{
             id: uuidv4(),
