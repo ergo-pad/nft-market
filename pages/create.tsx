@@ -27,6 +27,7 @@ import RaritySection from '@components/create/RaritySection'
 import PackTokenSection from '@components/create/PackTokenSection';
 import SocialSection from '@components/create/SocialSection';
 import TraitSection from '@components/create/TraitSection';
+import { useCSVReader } from 'react-papaparse';
 
 interface IFormData {
   artist: {
@@ -187,6 +188,9 @@ const Create: NextPage = () => {
   const toggleCreateSale = () => {
     setCreateSale(!createSale)
   }
+
+  const { CSVReader } = useCSVReader();
+  const [csvUpload, setCsvUpload] = useState({})
 
   return (
     <>
@@ -428,6 +432,88 @@ const Create: NextPage = () => {
                       You can upload a CSV file to automatically set metadata for the NFTs you will upload. Download a sample CSV below which will include headings for the traits you set previously.
                     </Typography>
 
+                    <Box
+                      sx={{
+                        mb: '24px'
+                      }}
+                    >
+                      <CSVReader
+                        onUploadAccepted={(results: any) => {
+                          setCsvUpload(results);
+                        }}
+                      >
+                        {({
+                          getRootProps,
+                          acceptedFile,
+                          ProgressBar,
+                          getRemoveFileProps,
+                        }: any) => (
+                          <>
+                            <Grid container sx={{ flexWrap: 'nowrap', height: '56px' }}>
+                              <Grid item sx={{ flexGrow: '0' }}>
+                                <Button
+                                  variant="contained"
+                                  disableElevation
+                                  {...getRootProps()}
+                                  sx={{
+                                    borderRadius: '6px 0 0 6px',
+                                    background: theme.palette.divider,
+                                    color: theme.palette.text.secondary,
+                                    display: 'inline-block',
+                                    height: '100%'
+                                  }}
+                                >
+                                  Browse file
+                                </Button>
+                              </Grid>
+                              <Grid item sx={{ flexGrow: '1' }}>
+                                <Box
+                                  type="button"
+                                  {...getRootProps()}
+                                  sx={{
+                                    display: 'inline-block',
+                                    background: theme.palette.mode == 'dark' ? '#242932' : theme.palette.background.paper,
+                                    height: '100%',
+                                    width: '100%',
+                                    p: '12px',
+                                    verticalAlign: 'middle',
+                                    '&:hover': {
+                                      background: theme.palette.divider,
+                                      cursor: 'pointer'
+                                    }
+                                  }}
+                                >
+                                  {acceptedFile && acceptedFile.name}
+                                </Box>
+                              </Grid>
+                              <Grid item sx={{ flexGrow: '0' }}>
+                                <Button
+                                  variant="contained"
+                                  disableElevation
+                                  sx={{
+                                    borderRadius: '0 6px 6px 0',
+                                    background: theme.palette.divider,
+                                    color: theme.palette.text.secondary,
+                                    display: 'inline-block',
+                                    height: '100%'
+                                  }}
+                                  {...getRemoveFileProps()}>
+                                  Remove
+                                </Button>
+                              </Grid>
+                            </Grid>
+
+                            <ProgressBar style={{ backgroundColor: theme.palette.primary.main, }} />
+                          </>
+                        )}
+                      </CSVReader>
+
+                      <Button onClick={() => console.dir(csvUpload)}>
+                      Console log upload results
+                    </Button>
+                    </Box>
+                    
+
                     <Typography variant="h5">
                       Upload Images
                     </Typography>
@@ -481,7 +567,7 @@ const Create: NextPage = () => {
                     </Grid>
                   </Box>
                   <Collapse in={createSale}>
-                  <Grid container spacing={2} sx={{ mb: '24px' }}>
+                    <Grid container spacing={2} sx={{ mb: '24px' }}>
                       <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
@@ -498,7 +584,7 @@ const Create: NextPage = () => {
                           label="Date End"
                         />
                       </Grid>
-                      </Grid>
+                    </Grid>
                   </Collapse>
                 </Collapse>
                 <Box sx={{ pt: 2, textAlign: 'center' }}>
