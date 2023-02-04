@@ -41,13 +41,62 @@ interface IFormData {
     }[];
   }
   collection?: {
-
-  }
-  sale: {
-
+    name: string;
+    description: string;
+    bannerImageUrl: string;
+    featuredImageUrl: string;
+    collectionLogoUrl: string;
+    category: string;
+    mintingExpiry: number | -1; //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
+    rarities?: {
+      rarity: string;
+      description?: string;
+      image?: string;
+    }[];
+    traits?: {
+      name: string;
+      description?: string;
+      image?: string;
+      type: 'Property' | 'Level' | 'Stat';
+    }[];
   }
   tokens: {
-
+    packs?: {
+      name: string;
+      amount: number;
+      nftPerPack: number;
+      chances?: {
+        rarityName: string;
+        chance: number;
+      }[];
+    }[];
+    nfts: {
+      name: string;
+      image: string;
+      description: string;
+      traits?: {
+        key: string; // the name of the trait type (eg: sex, speed, age)
+        value: string | number; // the trait that this specific NFT has (eg: male, 30 out of 50, 25 out of 100)
+        // for levels and stats, just use the "30" part and exclude "out of 50". That is below, in "max"
+        max?: number; // if trait is a Level or Stat, this would be the "out of 50" number. 
+        type: 'Property' | 'Level' | 'Stat';
+      }[];
+      rarity?: string;
+      explicit?: boolean;
+    }[];
+  }
+  sale: {
+    royalties: {
+      address: string;
+      percent: number; // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
+    }[];
+    dateStart: Date;
+    dateEnd: Date;
+    price: {
+      id?: string; // if there are multiple packs to sell, this is the ID of the pack
+      price: number;
+      currency: 'erg' | 'sigusd'; // default to sigusd
+    }[];
   }
 }
 
@@ -509,10 +558,10 @@ const Create: NextPage = () => {
                       </CSVReader>
 
                       <Button onClick={() => console.dir(csvUpload)}>
-                      Console log upload results
-                    </Button>
+                        Console log upload results
+                      </Button>
                     </Box>
-                    
+
 
                     <Typography variant="h5">
                       Upload Images
