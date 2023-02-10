@@ -38,8 +38,8 @@ const fileInitObject: IFileData = {
 const fileInit = [fileInitObject]
 
 interface IFileUploadAreaProps {
-  fileUrls: string[];
-  setFileUrls: React.Dispatch<React.SetStateAction<string[]>>;
+  fileUrls?: string[];
+  setFileUrls?: React.Dispatch<React.SetStateAction<string[]>>;
   title?: string;
   expectedImgHeight?: number;
   expectedImgWidth?: number;
@@ -47,6 +47,8 @@ interface IFileUploadAreaProps {
   multiple?: boolean;
   sx?: SxProps;
   imgFill?: boolean;
+  clearTrigger?: boolean;
+  setClearTrigger?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FileUploadArea: FC<IFileUploadAreaProps> = ({
@@ -59,6 +61,8 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   multiple,
   sx,
   imgFill,
+  clearTrigger,
+  setClearTrigger
 }) => {
   const theme = useTheme()
   const [aspect, setAspect] = useState({})
@@ -84,6 +88,11 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       }
     }
   }, [fileData[0].previewImage])
+
+  useEffect(() => {
+    clearFiles()
+    if (setClearTrigger) setClearTrigger(false)
+  }, [clearTrigger])
 
   const [dropHover, setDropHover] = useState('')
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
@@ -156,6 +165,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       }])
     }
     console.log(fileData)
+    handleUpload()
   }
 
   const deleteFile = (fileNumber: number) => {
@@ -165,7 +175,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   const [isLoading, setIsLoading] = React.useState(false);
   const inputFileRef = React.useRef<HTMLInputElement | null>(null);
 
-  const handleOnClick = async () => {
+  const handleUpload = async () => {
 
     /* If file is not selected, then show alert message */
     if (fileData[0].currentFile.name == undefined) {
@@ -193,7 +203,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
 
     if (body.status === 'ok') {
       console.log('success')
-      setFileUrls(fileData.map((file, i) => {
+      if (setFileUrls) setFileUrls(fileData.map((file, i) => {
         return '/uploads/' + file.currentFile.name
       }))
     } else {
@@ -228,7 +238,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
               <Grid item>
                 <Button
                   size="small"
-                  onClick={() => handleOnClick()} disabled={isLoading}
+                  onClick={() => handleUpload()} disabled={isLoading}
                 >
                   Upload
                 </Button>

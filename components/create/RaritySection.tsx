@@ -17,13 +17,6 @@ interface IRaritySectionProps {
   setData: React.Dispatch<React.SetStateAction<ITraitData[]>>;
 }
 
-const fileInitObject = {
-  currentFile: {} as File,
-  previewImage: '',
-  progress: 0,
-  message: ""
-}
-
 const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
   const [images, setImages] = useState(false)
   const toggleImages = () => {
@@ -82,7 +75,7 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
             id: uuidv4(),
             name: '',
             description: '',
-            img: fileInitObject
+            imgUrl: ''
           }]))
         }}>
           Add another

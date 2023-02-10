@@ -70,10 +70,6 @@ interface ISaleData {
 }
 
 /// FORM INIT ///
-
-
-
-
 const tokensDataInit: ITokensData = {
   packs: [
     {
@@ -150,7 +146,7 @@ export interface ITraitData {
   id: string;
   name: string;
   description: string;
-  img: IFileData
+  imgUrl: string;
 }
 
 const fileInit = [fileInitObject]
@@ -224,13 +220,13 @@ const Create: NextPage = () => {
     id: uuidv4(),
     name: '',
     description: '',
-    img: fileInitObject
+    imgUrl: ''
   }])
   const [traitData, setTraitData] = useState([{
     id: uuidv4(),
     name: '',
     description: '',
-    img: fileInitObject
+    imgUrl: ''
   }])
 
   // TOKEN DATA STATES //

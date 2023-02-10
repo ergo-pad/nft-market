@@ -9,14 +9,14 @@ import {
   IconButton
 } from '@mui/material'
 import InputSlider from '@components/forms/InputSlider';
-import { IRarityItem } from '@components/create/RaritySection';
+import { ITraitData } from '@pages/create';
 import { IDataObject } from '@components/create/PackTokenSection';
 
 interface IPackTokenItemProps {
   data: IDataObject[];
   setData: React.Dispatch<React.SetStateAction<IDataObject[]>>;
   index: number;
-  rarityData: IRarityItem[];
+  rarityData: ITraitData[];
 }
 
 const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityData }) => {

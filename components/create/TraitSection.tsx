@@ -82,7 +82,7 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
             id: uuidv4(),
             name: '',
             description: '',
-            img: fileInitObject
+            imgUrl: ''
           }]))
         }}>
           Add another

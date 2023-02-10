@@ -39,11 +39,13 @@ export interface ICollectionData {
   mintingExpiry: number | -1; //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
   rarities?: {
     rarity: string;
+    id: string;
     description?: string;
     image?: string;
   }[];
   availableTraits?: {
     name: string; // the name of the trait type (eg: sex, speed, age)
+    id: string;
     description?: string; // used only on our front-end and not required
     image?: string; // this is only used on our front-end and not required. 
     type: 'Property' | 'Level' | 'Stat';
@@ -62,6 +64,7 @@ export const collectionDataInit: ICollectionData = {
   rarities: [
     {
       rarity: '',
+      id: uuidv4(),
       description: '',
       image: '',
     }
@@ -69,6 +72,7 @@ export const collectionDataInit: ICollectionData = {
   availableTraits: [
     {
       name: '', // the name of the trait type (eg: sex, speed, age)
+      id: uuidv4(),
       description: '', // used only on our front-end and not required
       image: '', // this is only used on our front-end and not required. 
       type: 'Property',
