@@ -9,20 +9,7 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
-
-interface IFileData {
-  currentFile: File;
-  previewImage: string;
-  progress: number;
-  message: string;
-}
-
-interface ITraitData {
-  id: string;
-  name: string;
-  description: string;
-  img: IFileData;
-}
+import { ITraitData } from '@pages/create';
 
 const TraitItem: FC<{
   data: ITraitData[];
@@ -30,7 +17,7 @@ const TraitItem: FC<{
   images?: boolean;
   i: number;
 }> = ({ data, setData, i, images }) => {
-  const [traitImg, setTraitImg] = useState([data[i].img])
+  const [traitImg, setTraitImg] = useState([''])
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
 
@@ -45,15 +32,11 @@ const TraitItem: FC<{
       return item
     })
     setData(newArray)
-  }, [traitImg[0]])
+  }, [JSON.stringify(traitImg)])
 
   const removeItem = (index: number) => {
     setData(current => current.filter((_item, idx) => idx !== index))
   }
-
-  useEffect(() => {
-    setTraitImg([data[i].img])
-  }, [data[i].img.previewImage])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newArray = data.map((item, index) => {
@@ -74,8 +57,8 @@ const TraitItem: FC<{
         <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="stretch">
           <Grid item xs={12} sm={3}>
             <FileUploadArea
-              fileData={traitImg}
-              setFileData={setTraitImg}
+              fileUrls={traitImg}
+              setFileUrls={setTraitImg}
               imgFill
               sx={{
                 height: '100%'

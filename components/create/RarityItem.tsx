@@ -11,18 +11,11 @@ import {
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
 
-interface IFileData {
-  currentFile: File;
-  previewImage: string;
-  progress: number;
-  message: string;
-}
-
 interface IRarityData {
   id: string;
   name: string;
   description: string;
-  img: IFileData;
+  imgUrl: string;
 }
 
 const RarityItem: FC<{
@@ -31,7 +24,7 @@ const RarityItem: FC<{
   images?: boolean;
   i: number;
 }> = ({ data, setData, i, images }) => {
-  const [rarityImg, setRarityImg] = useState([data[i].img])
+  const [rarityImg, setRarityImg] = useState([''])
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
 
@@ -46,15 +39,11 @@ const RarityItem: FC<{
       return item
     })
     setData(newArray)
-  }, [rarityImg[0]])
+  }, [JSON.stringify(rarityImg)])
 
   const removeItem = (index: number) => {
     setData(current => current.filter((_item, idx) => idx !== index))
   }
-
-  useEffect(() => {
-    setRarityImg([data[i].img])
-  }, [data[i].img.previewImage])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newArray = data.map((item, index) => {
@@ -75,8 +64,8 @@ const RarityItem: FC<{
         <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="stretch">
           <Grid item xs={12} sm={3}>
             <FileUploadArea
-              fileData={rarityImg}
-              setFileData={setRarityImg}
+              fileUrls={rarityImg}
+              setFileUrls={setRarityImg}
               imgFill
               sx={{
                 height: '100%'
