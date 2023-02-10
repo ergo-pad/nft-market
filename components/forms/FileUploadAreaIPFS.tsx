@@ -28,18 +28,9 @@ interface IFileData {
   message: string;
 }
 
-const fileInitObject: IFileData = {
-  currentFile: {} as File,
-  previewImage: '',
-  progress: 0,
-  message: ""
-}
-
-const fileInit = [fileInitObject]
-
 interface IFileUploadAreaProps {
-  fileUrls: string[];
-  setFileUrls: React.Dispatch<React.SetStateAction<string[]>>;
+  fileData: IFileData[];
+  setFileData: React.Dispatch<React.SetStateAction<IFileData[]>>;
   title?: string;
   expectedImgHeight?: number;
   expectedImgWidth?: number;
@@ -49,12 +40,10 @@ interface IFileUploadAreaProps {
   imgFill?: boolean;
 }
 
-const FileUploadArea: FC<IFileUploadAreaProps> = ({
-  fileUrls,
-  setFileUrls,
+const FileUploadAreaIPFS: FC<IFileUploadAreaProps> = ({
+  fileData,
+  setFileData,
   title,
-  expectedImgHeight,
-  expectedImgWidth,
   type,
   multiple,
   sx,
@@ -62,25 +51,13 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
 }) => {
   const theme = useTheme()
   const [aspect, setAspect] = useState({})
-  const [fileData, setFileData] = useState(fileInit)
-
-  useEffect(() => {
-    if (expectedImgHeight && expectedImgWidth) {
-      setAspect(aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350))
-    }
-  }, [])
 
   useEffect(() => {
     if (!multiple) {
-      if (expectedImgHeight && expectedImgWidth) {
-        setAspect(aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350))
-      }
-      else {
-        let img = document.createElement("img");
-        img.src = fileData[0].previewImage
-        img.onload = () => {
-          setAspect(aspectRatioResize(img.naturalWidth, img.naturalHeight, 800, 300))
-        }
+      let img = document.createElement("img");
+      img.src = fileData[0].previewImage
+      img.onload = () => {
+        setAspect(aspectRatioResize(img.naturalWidth, img.naturalHeight, 800, 300))
       }
     }
   }, [fileData[0].previewImage])
@@ -127,7 +104,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
             progress: 0,
             message: ""
           }])
-          if (type === undefined && expectedImgHeight === undefined && expectedImgWidth === undefined) {
+          if (type === undefined) {
             let img = document.createElement("img");
             img.src = URL.createObjectURL(file)
             img.onload = () => {
@@ -159,11 +136,14 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   }
 
   const deleteFile = (fileNumber: number) => {
-    setFileData(fileData.filter((data, idx) => idx !== fileNumber))
+    setFileData(fileData.filter((_, idx) => idx !== fileNumber))
   }
 
   const [isLoading, setIsLoading] = React.useState(false);
   const inputFileRef = React.useRef<HTMLInputElement | null>(null);
+
+  const [files, setFiles] = useState([])
+  const [filesUrl, setFilesUrl] = useState('')
 
   const handleOnClick = async () => {
 
@@ -175,33 +155,25 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
 
     setIsLoading(true);
 
-    /* Add files to FormData */
-    const formData = new FormData();
-    Object.values(fileData).forEach((file, i) => {
-      formData.append('file', file.currentFile);
+    const promises = fileData.map(async (file) => {
+      let form = new FormData();
+      form.append('file', file.currentFile);
+      return fetch(process.env.IPFS_URL + '/api/v0/add', {
+        method: 'POST',
+        body: form,
+      }).then(res => res.json())
+        .then(res => {
+          return {
+            name: file.currentFile.name,
+            url: `ipfs://${res.Hash}`
+          }
+        })
     })
-
-    /* Send request to the api route */
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData
-    });
-
-    const body = await response.json() as { status: 'ok' | 'fail', message: string };
-
-    console.log(body.message);
-
-    if (body.status === 'ok') {
-      console.log('success')
-      setFileUrls(fileData.map((file, i) => {
-        return '/uploads/' + file.currentFile.name
-      }))
-    } else {
-      // Do some stuff on error
-    }
+    const results = await Promise.all(promises)
+    console.log(results)
 
     setIsLoading(false);
-  };
+  }
 
   return (
     <Box sx={sx && sx}>
@@ -228,7 +200,8 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
               <Grid item>
                 <Button
                   size="small"
-                  onClick={() => handleOnClick()} disabled={isLoading}
+                  onClick={() => handleOnClick()}
+                  disabled={isLoading}
                 >
                   Upload
                 </Button>
@@ -311,11 +284,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
             {multiple && fileData[0]?.currentFile.name != undefined ? ( // if multiple files can be added
               <>
                 <Typography>Add more (Unique filenames only)</Typography>
-                {expectedImgWidth && expectedImgHeight &&
-                  <Typography sx={{ color: theme.palette.text.secondary, }}>
-                    Recommended dimensions: {' ' + expectedImgWidth + 'px Wide by ' + expectedImgHeight + 'px High'}
-                  </Typography>
-                }
               </>
             ) : ( // for single file upload areas only: 
 
@@ -337,8 +305,8 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                         <Box sx={{ mx: 'auto' }}>
                           <Box
                             sx={{
-                              width: expectedImgWidth ? expectedImgWidth.toString() + 'px' : '120px',
-                              height: expectedImgHeight ? expectedImgHeight.toString() + 'px' : '120px',
+                              width: '120px',
+                              height: '120px',
                               maxWidth: '240px',
                               maxHeight: '240px',
                               position: 'relative',
@@ -397,11 +365,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                       <Typography sx={{ color: theme.palette.text.secondary, }}>
                         Drag and drop an image or click to choose.
                       </Typography>
-                      {expectedImgWidth && expectedImgHeight &&
-                        <Typography sx={{ color: theme.palette.text.secondary, }}>
-                          Recommended dimensions: {' ' + expectedImgWidth + 'px Wide by ' + expectedImgHeight + 'px High'}
-                        </Typography>
-                      }
                     </>
                   )}
                 </Box>
@@ -441,4 +404,4 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   );
 };
 
-export default FileUploadArea;
+export default FileUploadAreaIPFS;

@@ -10,24 +10,11 @@ import {
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
 import RarityItem from '@components/create/RarityItem'
-
-interface IFileData {
-  currentFile: File;
-  previewImage: string;
-  progress: number;
-  message: string;
-}
-
-export interface IRarityItem {
-  id: string;
-  name: string;
-  description: string;
-  img: IFileData;
-}
+import { ITraitData } from '@pages/create';
 
 interface IRaritySectionProps {
-  data: IRarityItem[];
-  setData: React.Dispatch<React.SetStateAction<IRarityItem[]>>;
+  data: ITraitData[];
+  setData: React.Dispatch<React.SetStateAction<ITraitData[]>>;
 }
 
 const fileInitObject = {

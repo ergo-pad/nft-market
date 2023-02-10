@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import type { NextPage } from 'next'
 import {
   Grid,
@@ -18,115 +18,112 @@ import {
 } from '@mui/material'
 import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
-import Image from 'next/image';
+import Image from 'next/image'
 // import { motion } from 'framer-motion'
-import { WalletContext } from '@contexts/WalletContext'
 import FileUploadArea from '@components/forms/FileUploadArea'
+import FileUploadAreaIPFS from '@components/forms/FileUploadAreaIPFS'
 import { v4 as uuidv4 } from 'uuid';
 import RaritySection from '@components/create/RaritySection'
 import PackTokenSection from '@components/create/PackTokenSection';
 import SocialSection from '@components/create/SocialSection';
 import TraitSection from '@components/create/TraitSection';
 import { useCSVReader } from 'react-papaparse';
+import ArtistForm, { IArtistData, artistDataInit } from '@components/create/ArtistForm'
+import CollectionForm, { ICollectionData, collectionDataInit } from '@components/create/CollectionForm'
 
-interface IFormData {
-  artist: {
-    address: string;
-    name?: string;
-    website?: string;
-    tagline?: string;
-    social?: {
-      socialNetwork: string;
-      address: string;
-    }[];
-  }
-  collection?: {
+interface ITokensData {
+  packs?: {
     name: string;
-    description: string;
-    bannerImageUrl: string;
-    featuredImageUrl: string;
-    collectionLogoUrl: string;
-    category: string;
-    mintingExpiry: number | -1; //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
-    rarities?: {
-      rarity: string;
-      description?: string;
-      image?: string;
+    amount: number;
+    nftPerPack: number;
+    chances?: {
+      rarityName: string;
+      chance: number; // higher number is higher chance of receiving this rarity
     }[];
+  }[];
+  nfts: {
+    name: string;
+    image: string;
+    description: string;
     traits?: {
-      name: string;
-      description?: string;
-      image?: string;
+      key: string; // the name of the trait type (eg: sex, speed, age)
+      value: string | number; // the trait that this specific NFT has
       type: 'Property' | 'Level' | 'Stat';
     }[];
-  }
-  tokens: {
-    packs?: {
-      name: string;
-      amount: number;
-      nftPerPack: number;
-      chances?: {
-        rarityName: string;
-        chance: number;
-      }[];
-    }[];
-    nfts: {
-      name: string;
-      image: string;
-      description: string;
-      traits?: {
-        key: string; // the name of the trait type (eg: sex, speed, age)
-        value: string | number; // the trait that this specific NFT has (eg: male, 30 out of 50, 25 out of 100)
-        // for levels and stats, just use the "30" part and exclude "out of 50". That is below, in "max"
-        max?: number; // if trait is a Level or Stat, this would be the "out of 50" number. 
-        type: 'Property' | 'Level' | 'Stat';
-      }[];
-      rarity?: string;
-      explicit?: boolean;
-    }[];
-  }
-  sale: {
-    royalties: {
-      address: string;
-      percent: number; // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
-    }[];
-    dateStart: Date;
-    dateEnd: Date;
-    price: {
-      id?: string; // if there are multiple packs to sell, this is the ID of the pack
-      price: number;
-      currency: 'erg' | 'sigusd'; // default to sigusd
-    }[];
-  }
+    rarity?: string;
+    explicit?: boolean; // default is false
+  }[];
 }
 
-///////////////////////////////////////////////////////////////////
-// BEGIN PLACEHOLDER DATA /////////////////////////////////////////
-const formData = {
-  artist: {
-    address: '',
-    name: '',
-    website: '',
-    tagline: '',
-    social: [
-      {
-        socialNetwork: '',
-        address: '',
-      }
-    ]
-  },
-  collection: {
-
-  },
-  sale: {
-
-  },
-  tokens: {
-
-  }
+interface ISaleData {
+  royalties: {
+    address: string;
+    percent: number; // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
+  }[];
+  dateStart: Date;
+  dateEnd: Date;
+  price: {
+    tokenId?: string; // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
+    price: number;
+    currency: 'erg' | 'sigusd'; // default to sigusd
+  }[];
 }
-// END PLACEHOLDER DATA ///////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
+
+/// FORM INIT ///
+
+
+
+
+const tokensDataInit: ITokensData = {
+  packs: [
+    {
+      name: '',
+      amount: 1,
+      nftPerPack: 1,
+      chances: [
+        {
+          rarityName: '',
+          chance: 1,
+        }
+      ],
+    }
+  ],
+  nfts: [
+    {
+      name: '',
+      image: '',
+      description: '',
+      traits: [
+        {
+          key: '', // the name of the trait type (eg: sex, speed, age)
+          value: '', // the trait that this specific NFT has
+          type: 'Property',
+        }
+      ],
+      rarity: '',
+      explicit: false, // default is false
+    }
+  ],
+}
+
+const saleDataInit: ISaleData = {
+  royalties: [
+    {
+      address: '',
+      percent: 1000, // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
+    },
+  ],
+  dateStart: new Date(1663353871000), // FIX DEFAULTS
+  dateEnd: new Date(1663353871000), // FIX DEFAULTS
+  price: [
+    {
+      tokenId: '', // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
+      price: 1,
+      currency: 'sigusd', // default to sigusd
+    },
+  ]
+}
+// END FORM INIT //
 
 const steps = [
   'Artist',
@@ -142,26 +139,26 @@ interface IFileData {
   message: string;
 }
 
-const fileInitObject = {
+const fileInitObject: IFileData = {
   currentFile: {} as File,
   previewImage: '',
   progress: 0,
   message: ""
 }
 
+export interface ITraitData {
+  id: string;
+  name: string;
+  description: string;
+  img: IFileData
+}
+
 const fileInit = [fileInitObject]
 
 const Create: NextPage = () => {
-  const {
-    walletAddress,
-    setWalletAddress,
-    dAppWallet,
-    setDAppWallet,
-    addWalletModalOpen,
-    setAddWalletModalOpen
-  } = useContext(WalletContext);
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
+  const [clearArtistForm, setClearArtistForm] = useState(false)
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepperCompleted, setStepperCompleted] = React.useState<{
@@ -194,7 +191,22 @@ const Create: NextPage = () => {
   const handleStep = (step: number) => () => {
     setActiveStep(step);
   };
+  const saveStep = () => {
+    if (activeStep === 0) {
+      localStorage.setItem('creation-artist-form', JSON.stringify(artistData))
+    }
+  }
+  const clearSaved = () => {
+    const newCompleted = stepperCompleted;
+    newCompleted[activeStep] = false;
+    setStepperCompleted(newCompleted);
+    if (activeStep === 0) {
+      setClearArtistForm(true)
+      localStorage.removeItem('creation-artist-form')
+    }
+  }
   const handleStepperComplete = () => {
+    saveStep()
     const newCompleted = stepperCompleted;
     newCompleted[activeStep] = true;
     setStepperCompleted(newCompleted);
@@ -205,15 +217,9 @@ const Create: NextPage = () => {
     setStepperCompleted({});
   };
 
-  const [artistAvatarImg, setArtistAvatarImg] = useState(fileInit)
-  const [artistBannerImg, setArtistBannerImg] = useState(fileInit)
-  const [collectionFeaturedImg, setCollectionFeaturedImg] = useState(fileInit)
-  const [collectionBannerImg, setCollectionBannerImg] = useState(fileInit)
-  const [artistSocials, setArtistSocials] = useState([{
-    id: uuidv4(),
-    network: '',
-    url: '',
-  }])
+  const [artistData, setArtistData] = useState<IArtistData>(artistDataInit)
+
+  // COLLECTION DATA STATES //
   const [rarityData, setRarityData] = useState([{
     id: uuidv4(),
     name: '',
@@ -226,13 +232,17 @@ const Create: NextPage = () => {
     description: '',
     img: fileInitObject
   }])
+
+  // TOKEN DATA STATES //
   const [packTokenData, setPackTokenData] = useState([{
     id: uuidv4(),
     name: '',
     packAmount: 1,
     nftAmount: 1,
   }])
+  const [nftImages, setNftImages] = useState(fileInit)
 
+  // SALE DATA STATES //
   const [createSale, setCreateSale] = useState(true)
   const toggleCreateSale = () => {
     setCreateSale(!createSale)
@@ -240,6 +250,9 @@ const Create: NextPage = () => {
 
   const { CSVReader } = useCSVReader();
   const [csvUpload, setCsvUpload] = useState({})
+
+
+  
 
   return (
     <>
@@ -354,119 +367,20 @@ const Create: NextPage = () => {
             ) : (
               <>
                 <Collapse in={activeStep === 0}>
-                  <Box>
-                    <Typography variant="h4">
-                      Artist Info
-                    </Typography>
-                    <Grid container spacing={2} sx={{ mb: '24px' }}>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="wallet-address"
-                          label="Wallet Address"
-                          value={walletAddress}
-                          onClick={() => {
-                            setAddWalletModalOpen(true)
-                          }}
-                        />
-                      </Grid>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="artist-name"
-                          label="Artist Name"
-                        />
-                      </Grid>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="artist-website"
-                          label="Website"
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="artist-tagline"
-                          label="Tagline"
-                          multiline
-                          minRows={3}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FileUploadArea
-                          title="Artist Profile Image"
-                          fileData={artistAvatarImg}
-                          setFileData={setArtistAvatarImg}
-                          expectedImgHeight={120}
-                          expectedImgWidth={120}
-                          type="avatar"
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FileUploadArea
-                          title="Artist Banner"
-                          fileData={artistBannerImg}
-                          setFileData={setArtistBannerImg}
-                          expectedImgHeight={260}
-                          expectedImgWidth={3840}
-                        />
-                      </Grid>
-                    </Grid>
-                    <SocialSection data={artistSocials} setData={setArtistSocials} />
-                  </Box>
+                  <ArtistForm
+                    artistData={artistData}
+                    setArtistData={setArtistData}
+                    clearForm={clearArtistForm}
+                    setClearForm={setClearArtistForm}
+                  />
                 </Collapse>
                 <Collapse in={activeStep === 1}>
-                  <Box>
-                    <Typography variant="h4">
-                      Collection Details
-                    </Typography>
-
-                    <Grid container spacing={2} sx={{ mb: '24px' }}>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="collection-name"
-                          label="Collection Name"
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="collection-description"
-                          label="Collection Description"
-                          multiline
-                          minRows={3}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FileUploadArea
-                          title="Collection Banner Image"
-                          fileData={collectionBannerImg}
-                          setFileData={setCollectionBannerImg}
-                          expectedImgHeight={320}
-                          expectedImgWidth={564}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FileUploadArea
-                          title="Collection Featured Image"
-                          fileData={collectionFeaturedImg}
-                          setFileData={setCollectionFeaturedImg}
-                          expectedImgHeight={320}
-                          expectedImgWidth={564}
-                        />
-                      </Grid>
-                    </Grid>
-                    <RaritySection data={rarityData} setData={setRarityData} />
-                    <TraitSection data={traitData} setData={setTraitData} />
-                  </Box>
+                  <CollectionForm
+                    rarityData={rarityData}
+                    setRarityData={setRarityData}
+                    traitData={traitData}
+                    setTraitData={setTraitData}
+                  />
                 </Collapse>
                 <Collapse in={activeStep === 2}>
                   <Box>
@@ -566,9 +480,12 @@ const Create: NextPage = () => {
                     <Typography variant="h5">
                       Upload Images
                     </Typography>
-                    {/* <FileUploadArea
-                        multiple
-                        /> */}
+                    <FileUploadAreaIPFS
+                      multiple
+                      title="NFT Images"
+                      fileData={nftImages}
+                      setFileData={setNftImages}
+                    />
                   </Box>
                 </Collapse>
                 <Collapse in={activeStep === 3}>
@@ -654,9 +571,14 @@ const Create: NextPage = () => {
                   </Button>
                   {activeStep !== steps.length &&
                     (stepperCompleted[activeStep] ? (
-                      <Typography variant="caption" sx={{ display: 'inline-block' }}>
-                        Step {activeStep + 1} already completed
-                      </Typography>
+                      <>
+                        <Typography variant="caption" sx={{ display: 'inline-block' }}>
+                          Step {activeStep + 1} already completed
+                        </Typography>
+                        <Button onClick={clearSaved}>
+                          Clear This Step
+                        </Button>
+                      </>
                     ) : (
                       <Button onClick={handleStepperComplete}>
                         {completedSteps() === totalSteps() - 1
@@ -664,7 +586,6 @@ const Create: NextPage = () => {
                           : 'Save Step'}
                       </Button>
                     ))}
-
                 </Box>
               </>
             )}
