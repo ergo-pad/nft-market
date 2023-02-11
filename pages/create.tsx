@@ -16,17 +16,9 @@ import {
   TextField,
   Switch
 } from '@mui/material'
-import Link from '@components/Link'
-import ButtonLink from '@components/ButtonLink'
-import Image from 'next/image'
-// import { motion } from 'framer-motion'
-import FileUploadArea from '@components/forms/FileUploadArea'
 import FileUploadAreaIPFS from '@components/forms/FileUploadAreaIPFS'
 import { v4 as uuidv4 } from 'uuid';
-import RaritySection from '@components/create/RaritySection'
 import PackTokenSection from '@components/create/PackTokenSection';
-import SocialSection from '@components/create/SocialSection';
-import TraitSection from '@components/create/TraitSection';
 import { useCSVReader } from 'react-papaparse';
 import ArtistForm, { IArtistData, artistDataInit } from '@components/create/ArtistForm'
 import CollectionForm, { ICollectionData, collectionDataInit } from '@components/create/CollectionForm'
@@ -142,20 +134,23 @@ const fileInitObject: IFileData = {
   message: ""
 }
 
-export interface ITraitData {
-  id: string;
-  name: string;
-  description: string;
-  imgUrl: string;
-}
-
 const fileInit = [fileInitObject]
 
 const Create: NextPage = () => {
   const theme = useTheme()
-  const upSm = useMediaQuery(theme.breakpoints.up('sm'))
-  const [clearArtistForm, setClearArtistForm] = useState(false)
+  // const upSm = useMediaQuery(theme.breakpoints.up('sm')) // not currently used
 
+  // FORM DATA STATES //
+  const [artistData, setArtistData] = useState<IArtistData>(artistDataInit)
+  const [collectionData, setCollectionData] = useState<ICollectionData>(collectionDataInit)
+  // END FORM DATA STATES //
+
+  // CLEAR FORM STATES // 
+  const [clearArtistForm, setClearArtistForm] = useState(false)
+  const [clearCollectionForm, setClearCollectionForm] = useState(false)
+  // END CLEAR FORM STATES //
+
+  // STEPPER LOGIC // 
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepperCompleted, setStepperCompleted] = React.useState<{
     [k: number]: boolean;
@@ -187,12 +182,15 @@ const Create: NextPage = () => {
   const handleStep = (step: number) => () => {
     setActiveStep(step);
   };
-  const saveStep = () => {
+  const handleSaveStep = () => {
     if (activeStep === 0) {
       localStorage.setItem('creation-artist-form', JSON.stringify(artistData))
     }
+    if (activeStep === 1) {
+      localStorage.setItem('creation-collection-form', JSON.stringify(collectionData))
+    }
   }
-  const clearSaved = () => {
+  const handleClearSavedStep = () => {
     const newCompleted = stepperCompleted;
     newCompleted[activeStep] = false;
     setStepperCompleted(newCompleted);
@@ -200,9 +198,13 @@ const Create: NextPage = () => {
       setClearArtistForm(true)
       localStorage.removeItem('creation-artist-form')
     }
+    if (activeStep === 1) {
+      setClearCollectionForm(true)
+      localStorage.removeItem('creation-collection-form')
+    }
   }
   const handleStepperComplete = () => {
-    saveStep()
+    handleSaveStep()
     const newCompleted = stepperCompleted;
     newCompleted[activeStep] = true;
     setStepperCompleted(newCompleted);
@@ -212,22 +214,7 @@ const Create: NextPage = () => {
     setActiveStep(0);
     setStepperCompleted({});
   };
-
-  const [artistData, setArtistData] = useState<IArtistData>(artistDataInit)
-
-  // COLLECTION DATA STATES //
-  const [rarityData, setRarityData] = useState([{
-    id: uuidv4(),
-    name: '',
-    description: '',
-    imgUrl: ''
-  }])
-  const [traitData, setTraitData] = useState([{
-    id: uuidv4(),
-    name: '',
-    description: '',
-    imgUrl: ''
-  }])
+  // END STEPPER LOGIC //
 
   // TOKEN DATA STATES //
   const [packTokenData, setPackTokenData] = useState([{
@@ -246,9 +233,6 @@ const Create: NextPage = () => {
 
   const { CSVReader } = useCSVReader();
   const [csvUpload, setCsvUpload] = useState({})
-
-
-  
 
   return (
     <>
@@ -306,20 +290,8 @@ const Create: NextPage = () => {
             lg={3}
             sx={{ pr: "24px", display: { xs: "none", lg: "flex" } }}
           >
-            <Box sx={{
-              position: 'relative',
-              //height: 'calc(100% + 100px)' 
-            }}
-            // ref={userProfileContainer}
-            >
-              {/* <motion.div
-                animate={{
-                  y: scrollY
-                }}
-                transition={{ type: "spring", bounce: 0.1  }}
-              > */}
+            <Box sx={{ position: 'relative' }}>
               <Paper
-                // ref={userProfileCard}
                 elevation={0}
                 sx={{
                   position: 'sticky',
@@ -330,7 +302,6 @@ const Create: NextPage = () => {
                 }}
               >
                 {/* STEPPER DESKTOP */}
-
                 <Stepper nonLinear activeStep={activeStep} orientation="vertical">
                   {steps.map((label, index) => (
                     <Step key={label} completed={stepperCompleted[index]}
@@ -346,7 +317,6 @@ const Create: NextPage = () => {
                   ))}
                 </Stepper>
               </Paper>
-              {/* </motion.div> */}
             </Box>
           </Grid>
           <Grid item lg={9} xs={12} sx={{ flex: '1 1 auto' }}>
@@ -372,10 +342,10 @@ const Create: NextPage = () => {
                 </Collapse>
                 <Collapse in={activeStep === 1}>
                   <CollectionForm
-                    rarityData={rarityData}
-                    setRarityData={setRarityData}
-                    traitData={traitData}
-                    setTraitData={setTraitData}
+                    collectionData={collectionData}
+                    setCollectionData={setCollectionData}
+                    clearForm={clearCollectionForm}
+                    setClearForm={setClearCollectionForm}
                   />
                 </Collapse>
                 <Collapse in={activeStep === 2}>
@@ -383,14 +353,13 @@ const Create: NextPage = () => {
                     <Typography variant="h4">
                       Token details
                     </Typography>
-                    <PackTokenSection data={packTokenData} setData={setPackTokenData} rarityData={rarityData} />
+                    <PackTokenSection data={packTokenData} setData={setPackTokenData} rarityData={collectionData.rarities} />
                     <Typography variant="h5">
                       Provide CSV for Metadata
                     </Typography>
                     <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
                       You can upload a CSV file to automatically set metadata for the NFTs you will upload. Download a sample CSV below which will include headings for the traits you set previously.
                     </Typography>
-
                     <Box
                       sx={{
                         mb: '24px'
@@ -571,7 +540,7 @@ const Create: NextPage = () => {
                         <Typography variant="caption" sx={{ display: 'inline-block' }}>
                           Step {activeStep + 1} already completed
                         </Typography>
-                        <Button onClick={clearSaved}>
+                        <Button onClick={handleClearSavedStep}>
                           Clear This Step
                         </Button>
                       </>

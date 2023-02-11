@@ -72,6 +72,7 @@ const mainTheme = [{
       // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
     },
     body2: {
+      fontFamily: '"Inter", sans-serif',
       marginBottom: '24px',
       fontSize: '1rem',
       lineHeight: '1.75',

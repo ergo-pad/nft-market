@@ -214,19 +214,29 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   };
 
   return (
-    <Box sx={sx && sx}>
+    <Box sx={
+      sx ? (
+        sx
+      ) : (
+        {
+          height: '100%'
+        }
+      )
+    }>
       <Box
         sx={{
           background: theme.palette.mode == 'dark' ? '#242932' : theme.palette.background.paper,
           borderRadius: '6px',
           p: '12px',
-          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%'
         }}
       >
         {title &&
           <InputLabel
             htmlFor="file"
-            sx={{ mb: '12px' }}
+            sx={{ mb: '12px', position: 'relative', overflow: 'visible' }}
             onClick={e => e.preventDefault()}
           >
             <Grid container justifyContent="space-between">
@@ -244,11 +254,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                 </Button>
                 <Button
                   size="small"
-                  onClick={() => { console.log(fileData) }}>
-                  File Data
-                </Button>
-                <Button
-                  size="small"
                   onClick={clearFiles}
                 >
                   Clear Data
@@ -263,6 +268,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
             borderRadius: '6px',
             width: '100%',
             height: '100%',
+            display: 'block',
             position: 'relative',
             border: `1px dashed ${theme.palette.divider}`,
             '&:hover': {

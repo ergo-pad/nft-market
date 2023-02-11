@@ -10,11 +10,11 @@ import {
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
 import RarityItem from '@components/create/RarityItem'
-import { ITraitData } from '@pages/create';
+import { IRarityData } from '@components/create/CollectionForm';
 
 interface IRaritySectionProps {
-  data: ITraitData[];
-  setData: React.Dispatch<React.SetStateAction<ITraitData[]>>;
+  data: IRarityData[];
+  setData: React.Dispatch<React.SetStateAction<IRarityData[]>>;
 }
 
 const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
@@ -24,22 +24,17 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
   }
   return (
     <>
-      <Typography variant="h5">
-        Rarity
-      </Typography>
-      <Typography variant="body2" sx={{ lineHeight: 1.3, mb: '12px', }}>
-        You can create rarity presets. If you choose to have token packs, there will be an option to set the probability of receiving more rare NFTs depending on the pack settings.
-      </Typography>
       <Grid
         container
         alignItems="center"
         sx={{
           width: '100%',
-          mb: '24px',
         }}
       >
         <Grid item xs>
-
+          <Typography variant="h5">
+            Rarity
+          </Typography>
         </Grid>
         <Grid
           item
@@ -62,6 +57,10 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
         </Grid>
       </Grid>
 
+      <Typography variant="body2" sx={{ lineHeight: 1.3, mb: '12px', }}>
+        You can create rarity presets. If you choose to have token packs, there will be an option to set the probability of receiving more rare NFTs depending on the pack settings.
+      </Typography>
+
       <TransitionGroup>
         {data.map((item, i) => (
           <Collapse key={item.id}>
@@ -72,10 +71,10 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
       <Box sx={{ width: '100%', textAlign: 'center', mb: '24px' }}>
         <Button onClick={() => {
           setData(data.concat([{
+            rarity: '',
             id: uuidv4(),
-            name: '',
             description: '',
-            imgUrl: ''
+            image: ''
           }]))
         }}>
           Add another

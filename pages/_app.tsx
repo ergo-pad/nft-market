@@ -12,6 +12,8 @@ import { ColorizeSharp } from "@mui/icons-material";
 import { ThemeContext } from "@contexts/ThemeContext";
 import { WalletContext } from '@contexts/WalletContext'
 import { UserContext } from "@contexts/UserContext";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -38,6 +40,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=yes"
         />
       </Head>
+      <LocalizationProvider
+            // @ts-ignore
+            dateAdapter={AdapterDayjs}
+          >
       <ThemeProvider theme={theme}>
         <ThemeContext.Provider value={{ theme, setTheme }}>
           <WalletContext.Provider
@@ -63,6 +69,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           </WalletContext.Provider>
         </ThemeContext.Provider>
       </ThemeProvider>
+      </LocalizationProvider>
     </>
   )
 }

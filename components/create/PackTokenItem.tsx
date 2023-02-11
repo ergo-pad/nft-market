@@ -9,21 +9,21 @@ import {
   IconButton
 } from '@mui/material'
 import InputSlider from '@components/forms/InputSlider';
-import { ITraitData } from '@pages/create';
+import { IRarityData } from '@components/create/CollectionForm'
 import { IDataObject } from '@components/create/PackTokenSection';
 
 interface IPackTokenItemProps {
   data: IDataObject[];
   setData: React.Dispatch<React.SetStateAction<IDataObject[]>>;
   index: number;
-  rarityData: ITraitData[];
+  rarityData: IRarityData[];
 }
 
 const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityData }) => {
   const theme = useTheme()
 
   useEffect(() => {
-    if (rarityData.length === 1 && rarityData[0].name === '') {
+    if (rarityData.length === 1 && rarityData[0].rarity === '') {
       const newArray = data.map((item, i) => {
         if (index === i) {
           return {
@@ -38,7 +38,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
     else {
       const rarityArray = rarityData.map((item, i) => {
         return {
-          rarity: item.name,
+          rarity: item.rarity,
           probability: 0,
         }
       })

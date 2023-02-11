@@ -11,7 +11,7 @@ import {
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
 import PackTokenItem from '@components/create/PackTokenItem';
-import { ITraitData } from '@pages/create';
+import { IRarityData } from '@components/create/CollectionForm'
 
 export interface IDataObject {
   id: string;
@@ -28,7 +28,7 @@ export interface IDataObject {
 interface IPackTokenSectionProps {
   data: IDataObject[];
   setData: React.Dispatch<React.SetStateAction<IDataObject[]>>;
-  rarityData: ITraitData[];
+  rarityData: IRarityData[];
 }
 
 const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityData }) => {
