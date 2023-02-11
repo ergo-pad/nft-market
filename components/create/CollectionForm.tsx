@@ -95,7 +95,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
   // COLLECTION DATA STATES //
   const [rarityData, setRarityData] = useState<IRarityData[]>(collectionDataInit.rarities)
   const [traitData, setTraitData] = useState<ITraitsData[]>(collectionDataInit.availableTraits)
-  const [mintExpiry, setMintExpiry] = useState<Dayjs>(dayjs())
+  const [mintExpiry, setMintExpiry] = useState<Dayjs | null>(dayjs())
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCollectionData(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -125,7 +125,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
     if (expiryToggle === false) {
       setCollectionData(prev => ({ ...prev, mintingExpiry: -1 }))
     }
-    else setCollectionData(prev => ({ ...prev, mintingExpiry: mintExpiry.valueOf() }))
+    else if (mintExpiry !== null) setCollectionData(prev => ({ ...prev, mintingExpiry: mintExpiry.valueOf() }))
   }, [expiryToggle, mintExpiry])
 
   // CLEAR FORM //
