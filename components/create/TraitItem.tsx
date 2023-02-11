@@ -9,11 +9,11 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
-import { ITraitData } from '@pages/create';
+import { ITraitsData } from '@components/create/CollectionForm';
 
 const TraitItem: FC<{
-  data: ITraitData[];
-  setData: React.Dispatch<React.SetStateAction<ITraitData[]>>;
+  data: ITraitsData[];
+  setData: React.Dispatch<React.SetStateAction<ITraitsData[]>>;
   images?: boolean;
   i: number;
 }> = ({ data, setData, i, images }) => {
@@ -26,7 +26,7 @@ const TraitItem: FC<{
       if (index === i) {
         return {
           ...item,
-          img: traitImg[0]
+          image: traitImg[0]
         }
       }
       return item

@@ -10,13 +10,7 @@ import {
   Divider
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
-
-interface IRarityData {
-  id: string;
-  name: string;
-  description: string;
-  imgUrl: string;
-}
+import { IRarityData } from '@components/create/CollectionForm';
 
 const RarityItem: FC<{
   data: IRarityData[];
@@ -33,7 +27,7 @@ const RarityItem: FC<{
       if (index === i) {
         return {
           ...item,
-          img: rarityImg[0]
+          image: rarityImg[0]
         }
       }
       return item
@@ -84,9 +78,9 @@ const RarityItem: FC<{
                     fullWidth
                     variant="filled"
                     id="rarity-name"
-                    name="name"
+                    name="rarity"
                     label="Rarity"
-                    value={data[i].name}
+                    value={data[i].rarity}
                     onChange={handleChange}
                   />
                 </Grid>
@@ -135,9 +129,9 @@ const RarityItem: FC<{
                   fullWidth
                   variant="filled"
                   id="rarity-name"
-                  name="name"
+                  name="rarity"
                   label="Rarity"
-                  value={data[i].name}
+                  value={data[i].rarity}
                   onChange={handleChange}
                 />
               </Grid>
