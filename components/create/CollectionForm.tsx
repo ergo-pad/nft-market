@@ -278,7 +278,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
           disabled={!expiryToggle}
           label="Mint Expiry Date"
           value={mintExpiry}
-          onChange={(newValue: Dayjs) => setMintExpiry(newValue)}
+          onChange={(newValue: any) => setMintExpiry(newValue)}
         />
       </Box>
       <Button onClick={() => console.log(collectionData)}>Console log data</Button>
