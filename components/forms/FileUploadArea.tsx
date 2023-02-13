@@ -123,7 +123,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
 
   const onFileChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
     setDropHover('')
-    console.log('files' in event.target && event.target.files != null && event.target.files)
     if ('files' in event.target && event.target.files?.[0] != undefined) {
       Array.from(event.target.files).forEach((file: File, i: number) => {
         if (!multiple || i === 0 && fileData?.[0]?.previewImage === "") {
