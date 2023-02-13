@@ -29,6 +29,6 @@
       "@utilities/*": ["utilities/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "additional.d.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "additional.d.ts", "emotion.d.ts.bak"],
   "exclude": ["node_modules"]
 }
