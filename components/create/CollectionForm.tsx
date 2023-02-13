@@ -24,7 +24,7 @@ export interface IRarityData {
 }
 
 export interface ITraitsData {
-  name: string; // the name of the trait type (eg: sex, speed, age)
+  traitName: string; // the name of the trait type (eg: sex, speed, age)
   id: string;
   description?: string; // used only on our front-end and not required
   image?: string; // this is only used on our front-end and not required. 
@@ -33,7 +33,7 @@ export interface ITraitsData {
 }
 
 export interface ICollectionData {
-  name: string;
+  collectionName: string;
   description: string;
   bannerImageUrl: string;
   featuredImageUrl: string;
@@ -45,7 +45,7 @@ export interface ICollectionData {
 }
 
 export const collectionDataInit: ICollectionData = {
-  name: '',
+  collectionName: '',
   description: '',
   bannerImageUrl: '',
   featuredImageUrl: '',
@@ -62,7 +62,7 @@ export const collectionDataInit: ICollectionData = {
   ],
   availableTraits: [
     {
-      name: '', // the name of the trait type (eg: sex, speed, age)
+      traitName: '', // the name of the trait type (eg: sex, speed, age)
       id: uuidv4(),
       description: '', // used only on our front-end and not required
       // image: '', // this is only used on our front-end and not required. 
@@ -130,16 +130,14 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
 
   // CLEAR FORM //
   useEffect(() => {
-    setClearTriggerCollectionFeatured(true)
-    setClearTriggerCollectionBanner(true)
-    setClearTriggerCollectionLogo(true)
-    // clear rarity data state
-    // clear trait data state
-    // clear collectionData
+    setClearTriggerCollectionFeatured(true) // this is a trigger to update child state
+    setClearTriggerCollectionBanner(true) // this is a trigger to update child state
+    setClearTriggerCollectionLogo(true) // this is a trigger to update child state
+    setRarityData(collectionDataInit.rarities) // this is a local state
+    setTraitData(collectionDataInit.availableTraits) // this is a local state
+    setCollectionData(collectionDataInit) // this belongs to parent
     setClearForm(false)
   }, [clearForm])
-
-
 
   return (
     <Box>
@@ -154,7 +152,8 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
             variant="filled"
             id="collection-name"
             label="Collection Name"
-            name="name"
+            name="collectionName"
+            value={collectionData.collectionName}
             onChange={handleChange}
           />
         </Grid>
@@ -165,6 +164,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
             id="collection-category"
             label="Collection Category"
             name="category"
+            value={collectionData.category}
             onChange={handleChange}
           />
         </Grid>
@@ -175,6 +175,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
             id="collection-description"
             label="Collection Description"
             name="description"
+            value={collectionData.description}
             onChange={handleChange}
             multiline
             minRows={3}
@@ -250,38 +251,44 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
           />
         </Grid>
       </Grid>
-      <Typography variant="body2" sx={{ lineHeight: 1.3, mb: '12px', }}>
-        Set the last date that new tokens can be minted to this collection. If you want to be able to mint tokens to this collection indefinitely, <Link
-          onClick={() => setExpiryToggle(false)}
-          sx={{
-            '&:hover': { cursor: 'pointer' },
-            fontSize: theme.typography.body2.fontSize,
-            lineHeight: 1.3,
-          }}
-        >turn off the "Set Expiry" switch
-        </Link>.
-      </Typography>
-      <Box sx={{ mb: '24px', textAlign: 'center', width: '100%' }}>
-        <DateTimePicker
-          renderInput={
-            (props: any) =>
-              <TextField
-                // required
-                id="mintingExpiry"
-                name="mintingExpiry"
-                variant="filled"
-                {...props}
-                InputProps={{ ...props.InputProps, disableUnderline: true }}
-              />
-          }
-          ampm={false}
-          disabled={!expiryToggle}
-          label="Mint Expiry Date"
-          value={mintExpiry}
-          onChange={(newValue: any) => setMintExpiry(newValue)}
-        />
-      </Box>
+      <Grid container direction="row" alignItems="center">
+        <Grid item xs={12} md={8}>
+          <Typography variant="body2" sx={{ lineHeight: 1.3, mb: { xs: '12px', md: 0 } }}>
+            The final date new tokens can be minted to this collection. To allow minting indefinitely, <Link
+              onClick={() => setExpiryToggle(false)}
+              sx={{
+                '&:hover': { cursor: 'pointer' },
+                fontSize: theme.typography.body2.fontSize,
+                lineHeight: 1.3,
+              }}
+            >turn off the "Set Expiry" switch
+            </Link>.
+          </Typography>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <DateTimePicker
+            renderInput={
+              (props: any) =>
+                <TextField
+                  // required
+                  fullWidth
+                  id="mintingExpiry"
+                  name="mintingExpiry"
+                  variant="filled"
+                  {...props}
+                  InputProps={{ ...props.InputProps, disableUnderline: true }}
+                />
+            }
+            ampm={false}
+            disabled={!expiryToggle}
+            label="Mint Expiry Date"
+            value={mintExpiry}
+            onChange={(newValue: any) => setMintExpiry(newValue)}
+          />
+        </Grid>
+      </Grid>
       <Button onClick={() => console.log(collectionData)}>Console log data</Button>
+      <Button onClick={() => setClearForm(true)}>Clear Form</Button>
     </Box>
   );
 };
