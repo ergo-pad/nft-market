@@ -226,6 +226,7 @@ const Home: NextPage = () => {
                 src="/images/cube1.png"
                 layout="fill"
                 objectFit="contain"
+                alt="cube"
               />
               <Card
                 sx={{
@@ -330,6 +331,7 @@ const Home: NextPage = () => {
           height={51}
           layout="fixed"
           draggable="false"
+          alt="logo"
         />
       </CardSlider>
       <Box sx={{ mb: '100px' }}></Box>
@@ -365,6 +367,7 @@ const Home: NextPage = () => {
                 src="/images/cube2.png"
                 layout="fill"
                 objectFit="contain"
+                alt="cube"
               />
             </Box>
           </Grid>
@@ -497,6 +500,7 @@ const Home: NextPage = () => {
                 src="/images/nft-cube.png"
                 layout="fill"
                 objectFit="contain"
+                alt="cube"
               />
             </Box>
           </Grid>

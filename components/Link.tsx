@@ -41,6 +41,8 @@ const NextLinkComposed = React.forwardRef<HTMLAnchorElement, INextLinkComposedPr
   );
 });
 
+NextLinkComposed.displayName = "NextLinkComposed"
+
 interface ILinkProps {
   children: React.ReactNode;
   className?: string;
@@ -71,10 +73,10 @@ const Link = React.forwardRef<HTMLAnchorElement, ILinkProps>(((props, ref) => {
 
   if (isExternal) {
     if (noLinkStyle) {
-      return <a className={className} href={href} ref={ref} target="_blank" rel="noopener" {...other} />;
+      return <a className={className} href={href} ref={ref} target="_blank" rel="noreferrer" {...other} />;
     }
 
-    return <MuiLink className={className} href={href} ref={ref} sx={sx} target="_blank" rel="noopener" {...other} />;
+    return <MuiLink className={className} href={href} ref={ref} sx={sx} target="_blank" rel="noreferrer" {...other} />;
   }
 
   if (noLinkStyle) {
@@ -92,6 +94,8 @@ const Link = React.forwardRef<HTMLAnchorElement, ILinkProps>(((props, ref) => {
     />
   )
 }))
+
+Link.displayName = "Link"
 
 export default Link;
 

@@ -71,6 +71,7 @@ const Collection: FC<ICollectionProps> = (props) => {
               src={props.imgUrl ? props.imgUrl : `/images/placeholder/${rand}.jpg`}
               layout="fill"
               objectFit="cover"
+              alt="placeholder"
             />
           </Box>
         </Grid>
@@ -102,6 +103,7 @@ const Collection: FC<ICollectionProps> = (props) => {
                   layout="fixed"
                   height={32}
                   width={32}
+                  alt="logo"
                 />
               </Box>
               <Typography

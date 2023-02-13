@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useCallback } from 'react';
 import {
   Grid,
   Container,
@@ -112,12 +112,8 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   // };
 
   const clearFiles = () => {
-    setFileData([{
-      currentFile: {} as File,
-      previewImage: "",
-      progress: 0,
-      message: ""
-    }])
+    setInputKey(randomNumber())
+    setFileData([fileInitObject])
   }
 
   const checkExists = (name: string) => {
@@ -129,7 +125,8 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
     setDropHover('')
     if ('files' in event.target && event.target.files?.[0] != undefined) {
       Array.from(event.target.files).forEach((file: File, i: number) => {
-        if (i === 0 && (fileData?.[0]?.previewImage === "" || !multiple)) { // make sure to erase the existing empty object first
+        if (!multiple || i === 0 && fileData?.[0]?.previewImage === "") {
+          // make sure to erase the existing empty object first
           setFileData([{
             currentFile: file,
             previewImage: URL.createObjectURL(file),
@@ -157,12 +154,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       })
     }
     else if (!multiple) {
-      setFileData([{
-        currentFile: {} as File,
-        previewImage: "",
-        progress: 0,
-        message: ""
-      }])
+      setFileData([fileInitObject])
     }
     console.log(fileData)
     handleUpload()
@@ -172,8 +164,10 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
     setFileData(fileData.filter((data, idx) => idx !== fileNumber))
   }
 
+  const randomNumber = () => { return Math.random().toString(36) }
   const [isLoading, setIsLoading] = React.useState(false);
   const inputFileRef = React.useRef<HTMLInputElement | null>(null);
+  const [inputKey, setInputKey] = useState(randomNumber())
 
   const handleUpload = async () => {
 
@@ -235,7 +229,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       >
         {title &&
           <InputLabel
-            htmlFor="file"
+            htmlFor="fileInputUncontrolled"
             sx={{ mb: '12px', position: 'relative', overflow: 'visible' }}
             onClick={e => e.preventDefault()}
           >
@@ -284,7 +278,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
           <Input
             ref={inputFileRef}
             type="file"
-            id="file"
+            id="fileInputUncontrolled"
             title=""
             onChange={onFileChange}
             inputProps={{
@@ -312,6 +306,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                 display: 'none',
               }
             }}
+            key={inputKey}
           />
           <Box
             sx={{
@@ -334,7 +329,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                 }
               </>
             ) : ( // for single file upload areas only: 
-
               <Box sx={{
                 width: '100%',
                 height: '100%',
@@ -364,7 +358,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                               overflow: 'hidden'
                             }}
                           >
-                            <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" />
+                            <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" alt="image" />
                           </Box>
                           {imgFill ? ('') : (
                             <Box sx={{
@@ -396,7 +390,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                               ...aspect
                             }}
                           >
-                            <Image src={fileData[0].previewImage} layout="fill" objectFit="cover" />
+                            <Image src={fileData[0].previewImage} layout="fill" objectFit="cover" alt="image" />
                           </Box>
                           {imgFill ? ('') : (
                             <Box>

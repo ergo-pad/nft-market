@@ -47,7 +47,7 @@ const UserCard: FC<INftCardProps> = (props) => {
         }}
       >
         <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
-          <Image src={props.pfpUrl ? props.pfpUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" />
+          <Image src={props.pfpUrl ? props.pfpUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" alt="placeholder" />
         </Box>
         <CardContent sx={{ position: 'relative' }}>
           <Typography

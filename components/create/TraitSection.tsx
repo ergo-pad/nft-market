@@ -58,7 +58,7 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
       </Grid>
 
       <Typography variant="body2" sx={{ lineHeight: 1.3, mb: '12px' }}>
-        Add traits that you will exist across all the NFTs in this collection. You may create presets to specifically limit traits with dropdown menus. Additional traits can be added later when you add NFT data.
+        Each NFT in a collection will have the same traits to choose from. Set as many as you&apos;d like here. 
       </Typography>
 
       <TransitionGroup>
@@ -71,7 +71,7 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
       <Box sx={{ width: '100%', textAlign: 'center', mb: '24px' }}>
         <Button onClick={() => {
           setData(data.concat([{
-            name: '',
+            traitName: '',
             id: uuidv4(),
             description: '',
             image: '',

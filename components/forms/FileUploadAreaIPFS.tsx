@@ -316,7 +316,7 @@ const FileUploadAreaIPFS: FC<IFileUploadAreaProps> = ({
                               overflow: 'hidden'
                             }}
                           >
-                            <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" />
+                            <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" alt="image" />
                           </Box>
                           {imgFill ? ('') : (
                             <Box sx={{
@@ -348,7 +348,7 @@ const FileUploadAreaIPFS: FC<IFileUploadAreaProps> = ({
                               ...aspect
                             }}
                           >
-                            <Image src={fileData[0].previewImage} layout="fill" objectFit="cover" />
+                            <Image src={fileData[0].previewImage} layout="fill" objectFit="cover" alt="image" />
                           </Box>
                           {imgFill ? ('') : (
                             <Box>
