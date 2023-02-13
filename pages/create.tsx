@@ -459,7 +459,7 @@ const Create: NextPage = () => {
                       Sale info
                     </Typography>
                     <Typography variant="body2">
-                      If you choose not to setup a sale, the NFTs will be sent to the artist address as they're minted.
+                      If you choose not to setup a sale, the NFTs will be sent to the artist address as they&apos;re minted.
                     </Typography>
                     <Grid
                       container

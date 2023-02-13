@@ -54,7 +54,7 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, c
         }}
       >
         <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
-          <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" />
+          <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" alt="logo" />
         </Box>
         {price && (
           <Box
@@ -195,7 +195,7 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, c
                   },
                 }}
               >
-                <Image src={artistLogo} layout="fixed" width={32} height={32} />
+                <Image src={artistLogo} layout="fixed" width={32} height={32} alt="Artist Logo" />
               </Link>
             ) : (
               ''

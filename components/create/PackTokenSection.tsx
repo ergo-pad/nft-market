@@ -75,7 +75,7 @@ const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityDat
         </Grid>
       </Grid>
       <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-        If you want to sell or give away tokens that represent "packs" of NFTs, such as for card packs or other bundles, select this box to create them. If you choose not to now, you won't be able to make them later for this collection.
+        If you want to sell or give away tokens that represent &quot;packs&quot; of NFTs, such as for card packs or other bundles, select this box to create them. If you choose not to now, you won&apos;t be able to make them later for this collection.
       </Typography>
       <Collapse in={packToggle}>
         <TransitionGroup>

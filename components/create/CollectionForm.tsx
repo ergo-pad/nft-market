@@ -261,7 +261,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
                 fontSize: theme.typography.body2.fontSize,
                 lineHeight: 1.3,
               }}
-            >turn off the "Set Expiry" switch
+            >turn off the &quot;Set Expiry&quot; switch
             </Link>.
           </Typography>
         </Grid>

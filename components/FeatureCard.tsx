@@ -29,7 +29,7 @@ const FeatureCard: FC<IFeatureCardProps> = (props) => {
       }}
     >
       <CardMedia sx={{ height: '270px' }}>
-        <Image src={props.imgUrl ? props.imgUrl : `/images/placeholder/${rand}.jpg`} layout="intrinsic" objectFit="cover" width={270} height={270} draggable="false" />
+        <Image src={props.imgUrl ? props.imgUrl : `/images/placeholder/${rand}.jpg`} layout="intrinsic" objectFit="cover" width={270} height={270} draggable="false" alt="image" />
       </CardMedia>
       <CardContent>
         <Typography

@@ -58,7 +58,7 @@ const PackCard: FC<IPackCardProps> = ({ imgUrl, link, name, price, rarity, colle
           }}
         >
           <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
-            <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" />
+            <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" alt="placeholder" />
           </Box>
           {price && (
             <Box
@@ -187,7 +187,7 @@ const PackCard: FC<IPackCardProps> = ({ imgUrl, link, name, price, rarity, colle
                     },
                   }}
                 >
-                  <Image src={artistLogo} layout="fixed" width={32} height={32} />
+                  <Image src={artistLogo} layout="fixed" width={32} height={32} alt="Artist Logo" />
                 </Link>
               ) : (
                 ''

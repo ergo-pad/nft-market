@@ -22,100 +22,100 @@ interface IPage {
   link: string;
 }
 
-interface IPageLinkList {
-  title: string;
-  links: IPage[];
-}
+// interface IPageLinkList {
+//   title: string;
+//   links: IPage[];
+// }
 
-const firstPages = {
-  title: 'First',
-  links: [
-    {
-      name: "Home",
-      link: "/",
-    },
-    {
-      name: "About",
-      link: "/about",
-    },
-    {
-      name: "Blog",
-      link: "/blog",
-    },
-  ],
-};
+// const firstPages = {
+//   title: 'First',
+//   links: [
+//     {
+//       name: "Home",
+//       link: "/",
+//     },
+//     {
+//       name: "About",
+//       link: "/about",
+//     },
+//     {
+//       name: "Blog",
+//       link: "/blog",
+//     },
+//   ],
+// };
 
-const secondPages = {
-  title: 'Second',
-  links: [
-    {
-      name: "Home",
-      link: "/",
-    },
-    {
-      name: "About",
-      link: "/about",
-    },
-    {
-      name: "Blog",
-      link: "/blog",
-    },
-  ],
-};
+// const secondPages = {
+//   title: 'Second',
+//   links: [
+//     {
+//       name: "Home",
+//       link: "/",
+//     },
+//     {
+//       name: "About",
+//       link: "/about",
+//     },
+//     {
+//       name: "Blog",
+//       link: "/blog",
+//     },
+//   ],
+// };
 
-const thirdPages = {
-  title: 'Third',
-  links: [
-    {
-      name: "Home is super long waytoo long",
-      link: "/",
-    },
-    {
-      name: "About",
-      link: "/about",
-    },
-    {
-      name: "Blog",
-      link: "/blog",
-    },
-  ],
-};
+// const thirdPages = {
+//   title: 'Third',
+//   links: [
+//     {
+//       name: "Home is super long waytoo long",
+//       link: "/",
+//     },
+//     {
+//       name: "About",
+//       link: "/about",
+//     },
+//     {
+//       name: "Blog",
+//       link: "/blog",
+//     },
+//   ],
+// };
 
-const fourthPages = {
-  title: 'Fourth',
-  links: [
-    {
-      name: "Hello",
-      link: "/",
-    },
-  ],
-};
+// const fourthPages = {
+//   title: 'Fourth',
+//   links: [
+//     {
+//       name: "Hello",
+//       link: "/",
+//     },
+//   ],
+// };
 
-const linkList: FC<IPageLinkList> = ({ title, links }) => {
-  const theme = useTheme()
-  return (
-    <Grid item xs={6} md={3} sx={{}} zeroMinWidth>
-      <Typography sx={titleFont}>{title}</Typography>
-      {links.map((page, i) => (
-        <Typography key={i}><Link
-          href={page.link}
-          sx={{
-            color: theme.palette.text.primary,
-            textDecoration: "none",
-            "&:hover": {
-              // textDecoration: "underline",
-              color: theme.palette.primary.main,
-            },
-            // fontSize: "16px",
-            lineHeight: '1.625',
-          }}
-        >
-          {page.name}
-        </Link></Typography>
-      ))}
-    </Grid>
-  )
-}
+// const linkList: FC<IPageLinkList> = ({ title, links }) => {
+//   const theme = useTheme()
+//   return (
+//     <Grid item xs={6} md={3} sx={{}} zeroMinWidth>
+//       <Typography sx={titleFont}>{title}</Typography>
+//       {links.map((page, i) => (
+//         <Typography key={i}><Link
+//           href={page.link}
+//           sx={{
+//             color: theme.palette.text.primary,
+//             textDecoration: "none",
+//             "&:hover": {
+//               // textDecoration: "underline",
+//               color: theme.palette.primary.main,
+//             },
+//             // fontSize: "16px",
+//             lineHeight: '1.625',
+//           }}
+//         >
+//           {page.name}
+//         </Link></Typography>
+//       ))}
+//     </Grid>
+//   )
+// }
 
 const Footer: FC = () => {
   const theme = useTheme()

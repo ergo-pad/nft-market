@@ -66,7 +66,7 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name }) => {
           </Typography>
         </CardContent>
         <Box sx={{ position: 'relative', display: 'block', height: '220px' }}>
-          <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" objectFit="cover" />
+          <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" objectFit="cover" alt="image" />
         </Box>
       </CardActionArea>
       <CardActions>

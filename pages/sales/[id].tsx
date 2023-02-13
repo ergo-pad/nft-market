@@ -266,6 +266,7 @@ const Nft: NextPage<INftProps> = (props) => {
                 src="/images/cube2.png"
                 layout="fill"
                 objectFit="contain"
+                alt="cube"
               />
             </Box>
           </Grid>
@@ -299,7 +300,7 @@ const Nft: NextPage<INftProps> = (props) => {
                       mr: '6px'
                     }}
                   >
-                    <Image src={props.artistLogoUrl} layout="fixed" width={32} height={32} />
+                    <Image src={props.artistLogoUrl} layout="fixed" width={32} height={32} alt="Artist Logo" />
                   </Link>
                 }
                 <Typography sx={{ display: 'inline-block', fontWeight: '700', }}>

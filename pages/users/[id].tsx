@@ -183,7 +183,7 @@ const User: NextPage = () => {
         overflow: 'hidden',
         display: 'block',
       }}>
-        <Image src="/images/placeholder/6.jpg" layout="responsive" height={260} width="100vw" />
+        <Image src="/images/placeholder/6.jpg" layout="responsive" height={260} width="100vw" alt="image" />
       </Box>
       <Container sx={{ my: '50px' }}>
         <Grid container>

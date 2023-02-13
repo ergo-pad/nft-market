@@ -279,6 +279,7 @@ const Collection: NextPage<IDataTypeProps> = (props) => {
                       layout="fixed"
                       height={32}
                       width={32}
+                      alt="logo"
                     />
                   </Box>
                   <Typography
@@ -405,6 +406,7 @@ const Collection: NextPage<IDataTypeProps> = (props) => {
                 src="/images/cube1.png"
                 layout="fill"
                 objectFit="contain"
+                alt="cube"
               />
             </Box>
           </Grid>

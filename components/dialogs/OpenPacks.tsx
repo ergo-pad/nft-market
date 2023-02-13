@@ -180,7 +180,7 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
                   key={i}
                 >
                   <Grid2 xs="auto">
-                    <Image src={item.imgUrl} layout="fixed" width={48} height={48} />
+                    <Image src={item.imgUrl} layout="fixed" width={48} height={48} alt="image" />
                   </Grid2>
                   <Grid2 xs>
                     <Typography sx={{ fontWeight: '700'}}>

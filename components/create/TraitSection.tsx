@@ -58,7 +58,7 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
       </Grid>
 
       <Typography variant="body2" sx={{ lineHeight: 1.3, mb: '12px' }}>
-        Each NFT in a collection will have the same traits to choose from. Set as many as you'd like here. 
+        Each NFT in a collection will have the same traits to choose from. Set as many as you&apos;d like here. 
       </Typography>
 
       <TransitionGroup>
