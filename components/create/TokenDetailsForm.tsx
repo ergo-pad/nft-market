@@ -15,7 +15,6 @@ import RaritySection from '@components/create/RaritySection'
 import TraitSection from '@components/create/TraitSection';
 import dayjs, { Dayjs } from 'dayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import FileUploadAreaIPFS from '@components/forms/FileUploadAreaIPFS'
 import PackTokenSection from '@components/create/PackTokenSection';
 import { useCSVReader } from 'react-papaparse';
 import { IRarityData } from '@components/create/CollectionForm';

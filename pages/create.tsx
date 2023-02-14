@@ -13,13 +13,7 @@ import {
   Stepper,
   Step,
   StepButton,
-  TextField,
-  Switch
 } from '@mui/material'
-import FileUploadAreaIPFS from '@components/forms/FileUploadAreaIPFS'
-import { v4 as uuidv4 } from 'uuid';
-import PackTokenSection from '@components/create/PackTokenSection';
-import { useCSVReader } from 'react-papaparse';
 import ArtistForm, { IArtistData, artistDataInit } from '@components/create/ArtistForm'
 import CollectionForm, { ICollectionData, collectionDataInit } from '@components/create/CollectionForm'
 import TokenDetailsForm, { ITokenDetailsData, tokenDetailsDataInit } from '@components/create/TokenDetailsForm'
@@ -41,14 +35,12 @@ const Create: NextPage = () => {
   const [collectionData, setCollectionData] = useState<ICollectionData>(collectionDataInit)
   const [tokenDetailsData, setTokenDetailsData] = useState<ITokenDetailsData>(tokenDetailsDataInit)
   const [saleInfoData, setSaleInfoData] = useState<ISaleInfoData>(saleInfoDataInit)
-  // END FORM DATA STATES //
 
   // CLEAR FORM STATES // 
   const [clearArtistForm, setClearArtistForm] = useState(false)
   const [clearCollectionForm, setClearCollectionForm] = useState(false)
   const [clearTokenDetailsForm, setClearTokenDetailsForm] = useState(false)
   const [clearSaleInfoForm, setClearSaleInfoForm] = useState(false)
-  // END CLEAR FORM STATES //
 
   // STEPPER LOGIC //
   const [activeStep, setActiveStep] = React.useState(0);
