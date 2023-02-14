@@ -11,6 +11,7 @@ import { WalletContext } from '@contexts/WalletContext'
 import FileUploadArea from '@components/forms/FileUploadArea'
 import { v4 as uuidv4 } from 'uuid';
 import SocialSection from '@components/create/SocialSection';
+import { IFileUrl } from '@components/forms/FileUploadArea';
 
 export interface IArtistData {
   address: string;
@@ -35,6 +36,12 @@ export const artistDataInit: IArtistData = {
   social: []
 }
 
+const artistSocialsInit = {
+  id: uuidv4(),
+  network: '',
+  url: '',
+}
+
 interface IArtistFormProps {
   artistData: IArtistData;
   setArtistData: React.Dispatch<React.SetStateAction<IArtistData>>;
@@ -50,13 +57,9 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
   const theme = useTheme()
 
   // ARTIST DATA STATES //
-  const [artistAvatarImg, setArtistAvatarImg] = useState([''])
-  const [artistBannerImg, setArtistBannerImg] = useState([''])
-  const [artistSocials, setArtistSocials] = useState([{
-    id: uuidv4(),
-    network: '',
-    url: '',
-  }])
+  const [artistAvatarImg, setArtistAvatarImg] = useState<IFileUrl[]>([])
+  const [artistBannerImg, setArtistBannerImg] = useState<IFileUrl[]>([])
+  const [artistSocials, setArtistSocials] = useState([artistSocialsInit])
   const handleArtistChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setArtistData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
@@ -73,10 +76,10 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
     setArtistData(prev => ({ ...prev, social: socials }))
   }, [JSON.stringify(artistSocials)])
   useEffect(() => {
-    setArtistData(prev => ({ ...prev, avatarUrl: artistAvatarImg[0] }))
+    setArtistData(prev => ({ ...prev, avatarUrl: artistAvatarImg[0]?.url }))
   }, [JSON.stringify(artistAvatarImg)])
   useEffect(() => {
-    setArtistData(prev => ({ ...prev, bannerUrl: artistBannerImg[0] }))
+    setArtistData(prev => ({ ...prev, bannerUrl: artistBannerImg[0]?.url }))
   }, [JSON.stringify(artistBannerImg)])
 
   const [clearTriggerAvatar, setClearTriggerAvatar] = useState(false)
@@ -85,11 +88,7 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
   useEffect(() => {
     setClearTriggerAvatar(true)
     setClearTriggerBanner(true)
-    setArtistSocials([{
-      id: uuidv4(),
-      network: '',
-      url: '',
-    }])
+    setArtistSocials([artistSocialsInit])
     setArtistData(artistDataInit)
     setClearForm(false)
   }, [clearForm])

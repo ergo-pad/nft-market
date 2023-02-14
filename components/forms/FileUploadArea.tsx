@@ -1,7 +1,6 @@
-import React, { FC, useEffect, useState, useCallback } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Grid,
-  Container,
   Typography,
   Button,
   Box,
@@ -37,9 +36,16 @@ const fileInitObject: IFileData = {
 
 const fileInit = [fileInitObject]
 
+export interface IFileUrl {
+  url: string;
+  ipfs: string;
+}
+
 interface IFileUploadAreaProps {
-  fileUrls?: string[];
-  setFileUrls?: React.Dispatch<React.SetStateAction<string[]>>;
+  fileUrls: IFileUrl[];
+  setFileUrls: React.Dispatch<React.SetStateAction<IFileUrl[]>>;
+  ipfsFlag?: boolean;
+  autoUpload?: boolean;
   title?: string;
   expectedImgHeight?: number;
   expectedImgWidth?: number;
@@ -47,13 +53,14 @@ interface IFileUploadAreaProps {
   multiple?: boolean;
   sx?: SxProps;
   imgFill?: boolean;
-  clearTrigger?: boolean;
-  setClearTrigger?: React.Dispatch<React.SetStateAction<boolean>>;
+  clearTrigger: boolean;
+  setClearTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FileUploadArea: FC<IFileUploadAreaProps> = ({
   fileUrls,
   setFileUrls,
+  ipfsFlag,
   title,
   expectedImgHeight,
   expectedImgWidth,
@@ -62,7 +69,8 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   sx,
   imgFill,
   clearTrigger,
-  setClearTrigger
+  setClearTrigger,
+  autoUpload
 }) => {
   const theme = useTheme()
   const [aspect, setAspect] = useState({})
@@ -90,8 +98,10 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   }, [fileData[0].previewImage])
 
   useEffect(() => {
-    clearFiles()
-    if (setClearTrigger) setClearTrigger(false)
+    if (clearTrigger === true) {
+      clearFiles()
+      setClearTrigger(false)
+    }
   }, [clearTrigger])
 
   const [dropHover, setDropHover] = useState('')
@@ -157,7 +167,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       setFileData([fileInitObject])
     }
     console.log(fileData)
-    handleUpload()
   }
 
   const deleteFile = (fileNumber: number) => {
@@ -169,16 +178,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   const inputFileRef = React.useRef<HTMLInputElement | null>(null);
   const [inputKey, setInputKey] = useState(randomNumber())
 
-  const handleUpload = async () => {
-
-    /* If file is not selected, then show alert message */
-    if (fileData[0].currentFile.name == undefined) {
-      console.log('Please, select the file(s) you want to upload');
-      return;
-    }
-
-    setIsLoading(true);
-
+  const standardUpload = async () => {
     /* Add files to FormData */
     const formData = new FormData();
     Object.values(fileData).forEach((file, i) => {
@@ -196,16 +196,67 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
     console.log(body.message);
 
     if (body.status === 'ok') {
-      console.log('success')
       if (setFileUrls) setFileUrls(fileData.map((file, i) => {
-        return '/uploads/' + file.currentFile.name
+        return {
+          url: '/uploads/' + file.currentFile.name,
+          ipfs: ''
+        }
       }))
     } else {
       // Do some stuff on error
     }
+  }
+
+  const ipfsUpload = async () => {
+    const promises = fileData.map(async (file) => {
+      let form = new FormData();
+      form.append('file', file.currentFile);
+      return fetch(process.env.IPFS_URL + '/api/v0/add', {
+        method: 'POST',
+        body: form,
+      }).then(res => res.json())
+        .then(res => {
+          return `ipfs://${res.Hash}`
+        })
+    })
+    const results = await Promise.all(promises)
+
+    const newArray = results.map((item, index) => {
+      return {
+        ...fileUrls[index],
+        ipfs: item
+      }
+    })
+
+    if (setFileUrls) setFileUrls(newArray)
+  }
+
+  const handleUpload = async () => {
+
+    /* If file is not selected, then show alert message */
+    if (fileData[0].currentFile.name == undefined) {
+      console.log('Please, select the file(s) you want to upload');
+      return;
+    }
+
+    setIsLoading(true);
+
+    standardUpload()
+    if (ipfsFlag === true) {
+      ipfsUpload()
+    }
+
+    console.log(fileUrls)
 
     setIsLoading(false);
   };
+
+  // auto upload if fileData changes and autoUpload is true
+  useEffect(() => {
+    if (autoUpload && fileData[0].currentFile.name !== undefined) {
+      handleUpload()
+    }
+  }, [JSON.stringify(fileData)])
 
   return (
     <Box sx={

@@ -15,6 +15,7 @@ import RaritySection from '@components/create/RaritySection'
 import TraitSection from '@components/create/TraitSection';
 import dayjs, { Dayjs } from 'dayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { IFileUrl } from '@components/forms/FileUploadArea';
 
 export interface IRarityData {
   rarity: string;
@@ -81,9 +82,9 @@ interface ICollectionFormProps {
 
 const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectionData, clearForm, setClearForm }) => {
   const theme = useTheme()
-  const [collectionFeaturedImg, setCollectionFeaturedImg] = useState([''])
-  const [collectionBannerImg, setCollectionBannerImg] = useState([''])
-  const [collectionLogoImg, setCollectionLogoImg] = useState([''])
+  const [collectionFeaturedImg, setCollectionFeaturedImg] = useState<IFileUrl[]>([])
+  const [collectionBannerImg, setCollectionBannerImg] = useState<IFileUrl[]>([])
+  const [collectionLogoImg, setCollectionLogoImg] = useState<IFileUrl[]>([])
   const [clearTriggerCollectionFeatured, setClearTriggerCollectionFeatured] = useState(false)
   const [clearTriggerCollectionBanner, setClearTriggerCollectionBanner] = useState(false)
   const [clearTriggerCollectionLogo, setClearTriggerCollectionLogo] = useState(false)
@@ -113,13 +114,13 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
     setCollectionData(prev => ({ ...prev, availableTraits: traits }))
   }, [JSON.stringify(traitData)])
   useEffect(() => {
-    setCollectionData(prev => ({ ...prev, featuredImageUrl: collectionFeaturedImg[0] }))
+    setCollectionData(prev => ({ ...prev, featuredImageUrl: collectionFeaturedImg[0]?.url }))
   }, [JSON.stringify(collectionFeaturedImg)])
   useEffect(() => {
-    setCollectionData(prev => ({ ...prev, bannerImageUrl: collectionBannerImg[0] }))
+    setCollectionData(prev => ({ ...prev, bannerImageUrl: collectionBannerImg[0]?.url }))
   }, [JSON.stringify(collectionBannerImg)])
   useEffect(() => {
-    setCollectionData(prev => ({ ...prev, collectionLogoUrl: collectionLogoImg[0] }))
+    setCollectionData(prev => ({ ...prev, collectionLogoUrl: collectionLogoImg[0]?.url }))
   }, [JSON.stringify(collectionLogoImg)])
   useEffect(() => {
     if (expiryToggle === false) {
