@@ -132,7 +132,6 @@ interface ITokenDetailsProps {
   setTokenDetailsData: React.Dispatch<React.SetStateAction<ITokenDetailsData>>;
   clearForm: boolean;
   setClearForm: React.Dispatch<React.SetStateAction<boolean>>;
-  rarityData: IRarityData[];
 }
 
 const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetailsData, clearForm, setClearForm }) => {

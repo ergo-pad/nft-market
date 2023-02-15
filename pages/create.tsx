@@ -242,7 +242,6 @@ const Create: NextPage = () => {
                     setTokenDetailsData={setTokenDetailsData}
                     clearForm={clearTokenDetailsForm}
                     setClearForm={setClearTokenDetailsForm}
-                    rarityData={collectionData.rarities}
                   />
                 </Collapse>
                 <Collapse in={activeStep === 3}>
