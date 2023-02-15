@@ -286,7 +286,7 @@ const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetail
       <Box>
         {nftImages.map((item, i) => {
           return (
-            <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="stretch">
+            <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="stretch" key={i}>
               <Grid item xs={12} sm={3}>
                 {/* */}
 

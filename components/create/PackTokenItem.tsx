@@ -328,7 +328,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
             <Grid container spacing={2}>
               {nftArray.map((item, i) => {
                 return (
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} md={6} key={i}>
                     <Grid container spacing={1}>
                       <Grid item xs={12}>
                         <Grid
@@ -364,7 +364,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
                       <Grid item xs={12}>
                         {item.probabilities && item.probabilities.map((item, idx) => {
                           return (
-                            <>
+                            <React.Fragment key={i}>
                               <TextField
                                 fullWidth
                                 variant="filled"
@@ -378,7 +378,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
                                 onChange={(e) => handleChangeProbability(e, i, idx)}
                                 sx={{ mb: 1 }}
                               />
-                            </>
+                            </React.Fragment>
                           )
                         })}
                       </Grid>
