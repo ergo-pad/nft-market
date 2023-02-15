@@ -7,7 +7,7 @@ import {
   Box,
   Icon
 } from '@mui/material';
-import { IDataObject } from '@components/create/PackTokenSection';
+import { IPackData, packTokenDataInit } from '@components/create/TokenDetailsForm';
 
 interface IInputSliderProps {
   step?: number;
@@ -19,8 +19,8 @@ interface IInputSliderProps {
   label: string;
   dataIndex: number;
   index: number;
-  data: IDataObject[];
-  setData: React.Dispatch<React.SetStateAction<IDataObject[]>>;
+  data: IPackData[];
+  setData: React.Dispatch<React.SetStateAction<IPackData[]>>;
 }
 
 const InputSlider: FC<IInputSliderProps> = ({ step, name, min, max, variant, id, label, dataIndex, index, data, setData }) => {
@@ -60,7 +60,7 @@ const InputSlider: FC<IInputSliderProps> = ({ step, name, min, max, variant, id,
       }
       return item
     })
-    let newArrayReduced: { rarity: string; probability: number; }[] = []
+    let newArrayReduced: { rarityName: string; probability: number; }[] = []
     if (newArray && (newArray.reduce((sum, value) => {
       return sum + value.probability;
     }, 0) > 1)) {

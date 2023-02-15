@@ -17,21 +17,44 @@ import dayjs, { Dayjs } from 'dayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import PackTokenSection from '@components/create/PackTokenSection';
 import { useCSVReader } from 'react-papaparse';
-import { IRarityData } from '@components/create/CollectionForm';
 import { IFileUrl } from '@components/forms/FileUploadArea';
 
-export interface ITokenDetailsData {
-  packs?: {
-    name: string;
-    amount: number;
-    nftPerPack: number;
-    chances?: {
+export interface IRarityData {
+  rarity: string;
+  id: string;
+  description?: string;
+  image?: string;
+}
+
+export interface ITraitsData {
+  traitName: string; // the name of the trait type (eg: sex, speed, age)
+  id: string;
+  description?: string; // used only on our front-end and not required
+  image?: string; // this is only used on our front-end and not required. 
+  type: 'Property' | 'Level' | 'Stat';
+  max?: number; // if trait is a Level or Stat, this is the highest possible value
+}
+
+export interface IPackData {
+  id: string;
+  packName: string;
+  amountOfPacks: number;
+  nftPerPack: {
+    id: string;
+    count: number | '';
+    probabilities?: {
       rarityName: string;
-      chance: number; // higher number is higher chance of receiving this rarity
-    }[];
-  }[];
+      probability: number;
+    }[]
+  }[]
+  price: number | '';
+  currency: string;
+}
+
+export interface ITokenDetailsData {
+  packs: IPackData[];
   nfts: {
-    name: string;
+    nftName: string;
     image: string;
     description: string;
     traits?: {
@@ -42,25 +65,35 @@ export interface ITokenDetailsData {
     rarity?: string;
     explicit?: boolean; // default is false
   }[];
+  rarities: IRarityData[];
+  availableTraits: ITraitsData[];
+}
+
+export const packTokenDataInit: IPackData = {
+  id: uuidv4(),
+  packName: '',
+  amountOfPacks: 1,
+  nftPerPack: [
+    {
+      id: uuidv4(),
+      count: 1,
+      probabilities: [
+        {
+          rarityName: '',
+          probability: 1
+        }
+      ]
+    }
+  ],
+  price: '',
+  currency: 'SigUSD',
 }
 
 export const tokenDetailsDataInit: ITokenDetailsData = {
-  packs: [
-    {
-      name: '',
-      amount: 1,
-      nftPerPack: 1,
-      chances: [
-        {
-          rarityName: '',
-          chance: 1,
-        }
-      ],
-    }
-  ],
+  packs: [packTokenDataInit],
   nfts: [
     {
-      name: '',
+      nftName: '',
       image: '',
       description: '',
       traits: [
@@ -74,13 +107,24 @@ export const tokenDetailsDataInit: ITokenDetailsData = {
       explicit: false, // default is false
     }
   ],
-}
-
-const packTokenDataInit = {
-  id: uuidv4(),
-  name: '',
-  packAmount: 1,
-  nftAmount: 1,
+  rarities: [
+    {
+      rarity: '',
+      id: uuidv4(),
+      description: '',
+      // image: '',
+    }
+  ],
+  availableTraits: [
+    {
+      traitName: '', // the name of the trait type (eg: sex, speed, age)
+      id: uuidv4(),
+      description: '', // used only on our front-end and not required
+      // image: '', // this is only used on our front-end and not required. 
+      type: 'Property',
+      // max: 1, // if trait is a Level or Stat, this is the highest possible value
+    }
+  ],
 }
 
 interface ITokenDetailsProps {
@@ -91,24 +135,41 @@ interface ITokenDetailsProps {
   rarityData: IRarityData[];
 }
 
-const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetailsData, clearForm, setClearForm, rarityData }) => {
+const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetailsData, clearForm, setClearForm }) => {
   const theme = useTheme()
+  const [rarityData, setRarityData] = useState<IRarityData[]>(tokenDetailsDataInit.rarities)
+  const [traitData, setTraitData] = useState<ITraitsData[]>(tokenDetailsDataInit.availableTraits)
   const [clearTriggerNftImages, setClearTriggerNftImages] = useState(false)
   const [packTokenData, setPackTokenData] = useState([packTokenDataInit])
   const [nftImages, setNftImages] = useState<IFileUrl[]>([])
   const { CSVReader } = useCSVReader();
   const [csvUpload, setCsvUpload] = useState({})
 
+  useEffect(() => {
+    const rarities = rarityData.map((item) => {
+      return item
+    })
+    setTokenDetailsData(prev => ({ ...prev, rarities: rarities }))
+  }, [JSON.stringify(rarityData)])
+  useEffect(() => {
+    const traits = traitData.map((item) => {
+      return item
+    })
+    setTokenDetailsData(prev => ({ ...prev, availableTraits: traits }))
+  }, [JSON.stringify(traitData)])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTokenDetailsData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
   useEffect(() => {
-    
+
   }, [JSON.stringify(nftImages)])
 
   // CLEAR FORM //
   useEffect(() => {
     setClearTriggerNftImages(true) // this is a trigger to update child state
+    setRarityData(tokenDetailsDataInit.rarities) // this is a local state
+    setTraitData(tokenDetailsDataInit.availableTraits) // this is a local state
     setTokenDetailsData(tokenDetailsDataInit) // this belongs to parent
     setClearForm(false)
   }, [clearForm])
@@ -119,7 +180,9 @@ const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetail
         <Typography variant="h4">
           Token details
         </Typography>
+        <RaritySection data={rarityData} setData={setRarityData} />
         <PackTokenSection data={packTokenData} setData={setPackTokenData} rarityData={rarityData} />
+        <TraitSection data={traitData} setData={setTraitData} />
         <Typography variant="h5">
           Provide CSV for Metadata
         </Typography>
@@ -219,6 +282,66 @@ const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetail
           clearTrigger={clearTriggerNftImages}
           setClearTrigger={setClearTriggerNftImages}
         />
+      </Box>
+      <Box>
+        {nftImages.map((item, i) => {
+          return (
+            <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="stretch">
+              <Grid item xs={12} sm={3}>
+                {/* */}
+
+              </Grid>
+              <Grid item container direction="column" justifyContent="space-between" spacing={1} xs={12} sm={9}>
+                {/* <Grid item>
+                  <Grid
+                    container
+                    spacing={1}
+                    alignItems="center"
+                  >
+                    <Grid item xs>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        id="nft-name"
+                        name="nftName"
+                        label="Rarity"
+                        value={data[i].rarity}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+                    <Grid item xs="auto" sx={{ display: i === 0 ? 'none' : 'flex' }}>
+                      <IconButton onClick={() => removeItem(i)}>
+                        <Icon>
+                          delete
+                        </Icon>
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item sx={{ flexGrow: 1 }}>
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    id="rarity-description"
+                    name="description"
+                    label="Description"
+                    value={data[i].description}
+                    onChange={handleChange}
+                    multiline
+                    minRows={2}
+                    sx={{
+                      flex: '0 1 100%',
+                      height: '100%',
+                      '& .MuiInputBase-root': {
+                        flex: '0 1 100%',
+                      }
+                    }}
+                  />
+                </Grid> */}
+              </Grid>
+            </Grid>
+          )
+        })}
       </Box>
       <Button onClick={() => console.log(tokenDetailsData)}>Console log data</Button>
       <Button onClick={() => setClearForm(true)}>Clear Form</Button>

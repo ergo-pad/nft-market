@@ -13,7 +13,7 @@ import {
   FormControl
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
-import { ITraitsData } from '@components/create/CollectionForm';
+import { ITraitsData } from '@components/create/TokenDetailsForm';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { IFileUrl } from '@components/forms/FileUploadArea';
 

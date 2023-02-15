@@ -11,23 +11,12 @@ import {
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
 import PackTokenItem from '@components/create/PackTokenItem';
-import { IRarityData } from '@components/create/CollectionForm'
-
-export interface IDataObject {
-  id: string;
-  name: string;
-  packAmount: number;
-  nftAmount: number;
-  probabilities?: {
-    rarity: string;
-    probability: number;
-    locked?: boolean;
-  }[];
-}
+import { IRarityData } from '@components/create/TokenDetailsForm'
+import { IPackData, packTokenDataInit } from '@components/create/TokenDetailsForm';
 
 interface IPackTokenSectionProps {
-  data: IDataObject[];
-  setData: React.Dispatch<React.SetStateAction<IDataObject[]>>;
+  data: IPackData[];
+  setData: React.Dispatch<React.SetStateAction<IPackData[]>>;
   rarityData: IRarityData[];
 }
 
@@ -79,8 +68,8 @@ const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityDat
       </Typography>
       <Collapse in={packToggle}>
         <TransitionGroup>
-          {data.map((c, i) => (
-            <Collapse key={c.id}>
+          {data.map((item, i) => (
+            <Collapse key={item.id}>
               <PackTokenItem data={data} setData={setData} rarityData={rarityData} index={i} />
             </Collapse>
           ))}
@@ -88,18 +77,28 @@ const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityDat
         <Box sx={{ width: '100%', textAlign: 'center' }}>
           <Button onClick={() => {
             setData(data.concat(
-              [
-                {
-                  id: uuidv4(),
-                  name: '',
-                  packAmount: 1,
-                  nftAmount: 1,
-                  probabilities: []
-                }
-              ]
+              {
+                id: uuidv4(),
+                packName: '',
+                amountOfPacks: 1,
+                nftPerPack: [
+                  {
+                    id: uuidv4(),
+                    count: 1,
+                    probabilities: [
+                      {
+                        rarityName: '',
+                        probability: 1
+                      }
+                    ]
+                  }
+                ],
+                price: '',
+                currency: 'SigUSD',
+              }
             ))
           }}>
-            Add another
+            Add another pack
           </Button>
           <Button onClick={() => {
             console.log(data)

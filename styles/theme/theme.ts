@@ -54,11 +54,11 @@ const mainTheme = [{
       hyphens: "manual",
     },
     h6: {
-      fontSize: "1.3rem",
+      fontSize: "1.2rem",
       fontWeight: "600",
       lineHeight: 1.3,
       letterSpacing: "0.0075em",
-      marginBottom: "0.5rem",
+      marginBottom: "0",
       fontFamily: '"Inter", sans-serif',
       // textShadow: "0px 2px 2px rgba(0, 0, 0, 0.6)",
       overflowWrap: "break-word",
