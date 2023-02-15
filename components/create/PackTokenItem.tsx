@@ -90,7 +90,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
       if (i === index) {
         return {
           ...item,
-          nftPerPack: customProbabilitiesToggle ? nftArray : [{count: nftArray[0].count, id: nftArray[0].id}]
+          nftPerPack: customProbabilitiesToggle ? nftArray : [{ count: nftArray[0].count, id: nftArray[0].id }]
         }
       }
       return item
@@ -180,7 +180,8 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
 
   const addProbabilityType = () => {
     const init = {
-      ...nftPackObjectInit,
+      id: uuidv4(),
+      count: 1,
       probabilities: probabilityArray
     }
     setNftArray(nftArray.concat(init))
@@ -341,7 +342,11 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
                               Probability Type {i + 1}
                             </Typography>
                           </Grid>
-                          <Grid item xs="auto">
+                          <Grid item xs="auto"
+                          sx={{
+                            display: (nftArray.length > 1) ? 'block' : 'none',
+                          }}
+                          >
                             <IconButton onClick={() => removeProbabilityType(i)}>
                               <Icon>
                                 delete
@@ -364,7 +369,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
                       <Grid item xs={12}>
                         {item.probabilities && item.probabilities.map((item, idx) => {
                           return (
-                            <React.Fragment key={i}>
+                            <React.Fragment key={idx}>
                               <TextField
                                 fullWidth
                                 variant="filled"
@@ -401,7 +406,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            You must set more than one Rarity option to use this feature. 
+            You must set more than one Rarity option to use this feature.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

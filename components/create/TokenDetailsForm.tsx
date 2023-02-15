@@ -145,30 +145,28 @@ const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetail
   const [csvUpload, setCsvUpload] = useState({})
 
   useEffect(() => {
-    const rarities = rarityData.map((item) => {
-      return item
-    })
-    setTokenDetailsData(prev => ({ ...prev, rarities: rarities }))
+    setTokenDetailsData(prev => ({ ...prev, rarities: rarityData }))
   }, [JSON.stringify(rarityData)])
   useEffect(() => {
-    const traits = traitData.map((item) => {
-      return item
-    })
-    setTokenDetailsData(prev => ({ ...prev, availableTraits: traits }))
+    setTokenDetailsData(prev => ({ ...prev, availableTraits: traitData }))
   }, [JSON.stringify(traitData)])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTokenDetailsData(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  }
   useEffect(() => {
+    setTokenDetailsData(prev => ({ ...prev, packs: packTokenData }))
+  }, [JSON.stringify(packTokenData)])
 
-  }, [JSON.stringify(nftImages)])
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setTokenDetailsData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  // }
+  // useEffect(() => {
+
+  // }, [JSON.stringify(nftImages)])
 
   // CLEAR FORM //
   useEffect(() => {
     setClearTriggerNftImages(true) // this is a trigger to update child state
     setRarityData(tokenDetailsDataInit.rarities) // this is a local state
     setTraitData(tokenDetailsDataInit.availableTraits) // this is a local state
+    setPackTokenData([packTokenDataInit])
     setTokenDetailsData(tokenDetailsDataInit) // this belongs to parent
     setClearForm(false)
   }, [clearForm])
