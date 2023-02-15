@@ -10,7 +10,8 @@ import {
   Divider
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
-import { IRarityData } from '@components/create/CollectionForm';
+import { IRarityData } from '@components/create/TokenDetailsForm';
+import { IFileUrl } from '@components/forms/FileUploadArea';
 
 const RarityItem: FC<{
   data: IRarityData[];
@@ -18,16 +19,17 @@ const RarityItem: FC<{
   images?: boolean;
   i: number;
 }> = ({ data, setData, i, images }) => {
-  const [rarityImg, setRarityImg] = useState([''])
+  const [rarityImg, setRarityImg] = useState<IFileUrl[]>([])
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
+  const [imgClearTrigger, setImgClearTrigger] = useState(false)
 
   useEffect(() => {
     const newArray = data.map((item, index) => {
       if (index === i) {
         return {
           ...item,
-          image: rarityImg[0]
+          image: rarityImg[0]?.url
         }
       }
       return item
@@ -60,6 +62,9 @@ const RarityItem: FC<{
             <FileUploadArea
               fileUrls={rarityImg}
               setFileUrls={setRarityImg}
+              autoUpload
+              clearTrigger={imgClearTrigger}
+              setClearTrigger={setImgClearTrigger}
               imgFill
               sx={{
                 height: '100%'

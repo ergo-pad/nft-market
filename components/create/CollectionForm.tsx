@@ -15,22 +15,7 @@ import RaritySection from '@components/create/RaritySection'
 import TraitSection from '@components/create/TraitSection';
 import dayjs, { Dayjs } from 'dayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-
-export interface IRarityData {
-  rarity: string;
-  id: string;
-  description?: string;
-  image?: string;
-}
-
-export interface ITraitsData {
-  traitName: string; // the name of the trait type (eg: sex, speed, age)
-  id: string;
-  description?: string; // used only on our front-end and not required
-  image?: string; // this is only used on our front-end and not required. 
-  type: 'Property' | 'Level' | 'Stat';
-  max?: number; // if trait is a Level or Stat, this is the highest possible value
-}
+import { IFileUrl } from '@components/forms/FileUploadArea';
 
 export interface ICollectionData {
   collectionName: string;
@@ -40,8 +25,7 @@ export interface ICollectionData {
   collectionLogoUrl: string;
   category: string;
   mintingExpiry: number | -1; //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
-  rarities: IRarityData[];
-  availableTraits: ITraitsData[];
+
 }
 
 export const collectionDataInit: ICollectionData = {
@@ -52,24 +36,6 @@ export const collectionDataInit: ICollectionData = {
   collectionLogoUrl: '',
   category: '',
   mintingExpiry: -1, //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
-  rarities: [
-    {
-      rarity: '',
-      id: uuidv4(),
-      description: '',
-      // image: '',
-    }
-  ],
-  availableTraits: [
-    {
-      traitName: '', // the name of the trait type (eg: sex, speed, age)
-      id: uuidv4(),
-      description: '', // used only on our front-end and not required
-      // image: '', // this is only used on our front-end and not required. 
-      type: 'Property',
-      // max: 1, // if trait is a Level or Stat, this is the highest possible value
-    }
-  ],
 }
 
 interface ICollectionFormProps {
@@ -81,9 +47,9 @@ interface ICollectionFormProps {
 
 const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectionData, clearForm, setClearForm }) => {
   const theme = useTheme()
-  const [collectionFeaturedImg, setCollectionFeaturedImg] = useState([''])
-  const [collectionBannerImg, setCollectionBannerImg] = useState([''])
-  const [collectionLogoImg, setCollectionLogoImg] = useState([''])
+  const [collectionFeaturedImg, setCollectionFeaturedImg] = useState<IFileUrl[]>([])
+  const [collectionBannerImg, setCollectionBannerImg] = useState<IFileUrl[]>([])
+  const [collectionLogoImg, setCollectionLogoImg] = useState<IFileUrl[]>([])
   const [clearTriggerCollectionFeatured, setClearTriggerCollectionFeatured] = useState(false)
   const [clearTriggerCollectionBanner, setClearTriggerCollectionBanner] = useState(false)
   const [clearTriggerCollectionLogo, setClearTriggerCollectionLogo] = useState(false)
@@ -93,33 +59,19 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
   }
 
   // COLLECTION DATA STATES //
-  const [rarityData, setRarityData] = useState<IRarityData[]>(collectionDataInit.rarities)
-  const [traitData, setTraitData] = useState<ITraitsData[]>(collectionDataInit.availableTraits)
   const [mintExpiry, setMintExpiry] = useState<Dayjs | null>(dayjs())
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCollectionData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
   useEffect(() => {
-    const rarities = rarityData.map((item) => {
-      return item
-    })
-    setCollectionData(prev => ({ ...prev, rarities: rarities }))
-  }, [JSON.stringify(rarityData)])
-  useEffect(() => {
-    const traits = traitData.map((item) => {
-      return item
-    })
-    setCollectionData(prev => ({ ...prev, availableTraits: traits }))
-  }, [JSON.stringify(traitData)])
-  useEffect(() => {
-    setCollectionData(prev => ({ ...prev, featuredImageUrl: collectionFeaturedImg[0] }))
+    setCollectionData(prev => ({ ...prev, featuredImageUrl: collectionFeaturedImg[0]?.url }))
   }, [JSON.stringify(collectionFeaturedImg)])
   useEffect(() => {
-    setCollectionData(prev => ({ ...prev, bannerImageUrl: collectionBannerImg[0] }))
+    setCollectionData(prev => ({ ...prev, bannerImageUrl: collectionBannerImg[0]?.url }))
   }, [JSON.stringify(collectionBannerImg)])
   useEffect(() => {
-    setCollectionData(prev => ({ ...prev, collectionLogoUrl: collectionLogoImg[0] }))
+    setCollectionData(prev => ({ ...prev, collectionLogoUrl: collectionLogoImg[0]?.url }))
   }, [JSON.stringify(collectionLogoImg)])
   useEffect(() => {
     if (expiryToggle === false) {
@@ -133,8 +85,6 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
     setClearTriggerCollectionFeatured(true) // this is a trigger to update child state
     setClearTriggerCollectionBanner(true) // this is a trigger to update child state
     setClearTriggerCollectionLogo(true) // this is a trigger to update child state
-    setRarityData(collectionDataInit.rarities) // this is a local state
-    setTraitData(collectionDataInit.availableTraits) // this is a local state
     setCollectionData(collectionDataInit) // this belongs to parent
     setClearForm(false)
   }, [clearForm])
@@ -216,9 +166,6 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
           />
         </Grid>
       </Grid>
-      <RaritySection data={rarityData} setData={setRarityData} />
-      <TraitSection data={traitData} setData={setTraitData} />
-
       <Grid
         container
         alignItems="center"

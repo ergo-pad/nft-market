@@ -13,8 +13,9 @@ import {
   FormControl
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
-import { ITraitsData } from '@components/create/CollectionForm';
+import { ITraitsData } from '@components/create/TokenDetailsForm';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { IFileUrl } from '@components/forms/FileUploadArea';
 
 const TraitItem: FC<{
   data: ITraitsData[];
@@ -22,7 +23,8 @@ const TraitItem: FC<{
   images?: boolean;
   i: number;
 }> = ({ data, setData, i, images }) => {
-  const [traitImg, setTraitImg] = useState([''])
+  const [traitImg, setTraitImg] = useState<IFileUrl[]>([])
+  const [imgClearTrigger, setImgClearTrigger] = useState(false)
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
 
@@ -31,7 +33,7 @@ const TraitItem: FC<{
       if (index === i) {
         return {
           ...item,
-          image: traitImg[0]
+          image: traitImg[0]?.url
         }
       }
       return item
@@ -92,6 +94,9 @@ const TraitItem: FC<{
             <FileUploadArea
               fileUrls={traitImg}
               setFileUrls={setTraitImg}
+              autoUpload
+              clearTrigger={imgClearTrigger}
+              setClearTrigger={setImgClearTrigger}
               imgFill
               sx={{
                 height: '100%'

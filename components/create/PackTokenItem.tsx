@@ -6,54 +6,97 @@ import {
   useTheme,
   Button,
   Slider,
-  IconButton
+  IconButton,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Switch,
+  Typography,
+  Collapse,
+  Box
 } from '@mui/material'
-import InputSlider from '@components/forms/InputSlider';
-import { IRarityData } from '@components/create/CollectionForm'
-import { IDataObject } from '@components/create/PackTokenSection';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { IRarityData } from '@components/create/TokenDetailsForm'
+import { IPackData, packTokenDataInit } from '@components/create/TokenDetailsForm';
+import NumberIncrementNftArray from '@components/forms/NumberIncrementNftArray';
+import { v4 as uuidv4 } from 'uuid';
 
 interface IPackTokenItemProps {
-  data: IDataObject[];
-  setData: React.Dispatch<React.SetStateAction<IDataObject[]>>;
+  data: IPackData[];
+  setData: React.Dispatch<React.SetStateAction<IPackData[]>>;
   index: number;
   rarityData: IRarityData[];
 }
 
+export interface INftPackObject {
+  id: string;
+  count: number | '';
+  probabilities: {
+    rarityName: string;
+    probability: number;
+  }[]
+}
+
+const nftPackObjectInit = {
+  id: uuidv4(),
+  count: 1,
+  probabilities: [
+    {
+      rarityName: '',
+      probability: 1
+    }
+  ]
+}
+
 const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityData }) => {
   const theme = useTheme()
+  const [customProbabilitiesToggle, setCustomProbabilitiesToggle] = useState(false)
+  const handleCustomProbabilitiesToggle = () => {
+    setCustomProbabilitiesToggle(!customProbabilitiesToggle);
+  };
+  const [nftArray, setNftArray] = useState<INftPackObject[]>([nftPackObjectInit])
+  const [probabilityArray, setProbabilityArray] = useState(nftPackObjectInit.probabilities)
+  const [openRarityAlert, setOpenRarityAlert] = useState(false);
 
   useEffect(() => {
-    if (rarityData.length === 1 && rarityData[0].rarity === '') {
-      const newArray = data.map((item, i) => {
-        if (index === i) {
-          return {
-            ...item,
-            probabilities: undefined
-          }
-        }
-        return item
-      })
-      setData(newArray)
-    }
-    else {
-      const rarityArray = rarityData.map((item, i) => {
-        return {
-          rarity: item.rarity,
-          probability: 0,
-        }
-      })
-      const newArray = data.map((item, i) => {
-        if (index === i) {
-          return {
-            ...item,
-            probabilities: rarityArray
-          }
-        }
-        return item
-      })
-      setData(newArray)
+    setProbabilityArray(rarityData.map((item, i) => {
+      return {
+        rarityName: item.rarity,
+        probability: 1
+      }
+    }))
+    if (rarityData.length < 2) {
+      setCustomProbabilitiesToggle(false);
     }
   }, [rarityData])
+
+  useEffect(() => {
+    const newArray: INftPackObject[] = nftArray.map((item, i) => {
+      return {
+        ...item,
+        probabilities: probabilityArray
+      }
+    })
+    setNftArray(newArray)
+  }, [probabilityArray])
+
+  useEffect(() => {
+    const newArray = data.map((item, i) => {
+      if (i === index) {
+        return {
+          ...item,
+          nftPerPack: customProbabilitiesToggle ? nftArray : [{count: nftArray[0].count, id: nftArray[0].id}]
+        }
+      }
+      return item
+    })
+    setData(newArray)
+  }, [JSON.stringify(nftArray), customProbabilitiesToggle])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newArray = data.map((item, i) => {
@@ -67,6 +110,20 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
     })
     setData(newArray)
   }
+
+  const handleSelectChange = (e: SelectChangeEvent) => {
+    const newArray = data.map((item, i) => {
+      if (i === index) {
+        return {
+          ...item,
+          [e.target.name]: e.target.value
+        }
+      }
+      return item
+    })
+    setData(newArray)
+  };
+
   const handleChangeNum = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, max?: number) => {
     const newArray = data.map((item, i) => {
       if (i === index) {
@@ -96,31 +153,61 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
     })
     setData(newArray)
   }
-  const handleNumberIncrement = (name: 'nftAmount' | 'packAmount', direction: 'up' | 'down', max?: number) => {
-    const newArray = data.map((item, i) => {
-      if (i === index) {
-        if (direction === 'up' && ((max && item[name] < max) || max === undefined)) {
-          return {
-            ...item,
-            [name]: Number(item[name]) + 1
-          }
-        }
-        if (direction === 'down' && item[name] > 1) {
-          return {
-            ...item,
-            [name]: Number(item[name]) - 1
-          }
+
+  const handleChangeProbability = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    typeNum: number,
+    probabilityIndex: number,
+  ) => {
+    const newArray = nftArray.map((item, i) => {
+      if (i === typeNum) {
+        return {
+          ...item,
+          probabilities: [
+            ...item.probabilities.slice(0, probabilityIndex),
+            {
+              ...item.probabilities[probabilityIndex],
+              probability: Number(e.target.value)
+            },
+            ...item.probabilities.slice(probabilityIndex + 1),
+          ]
         }
       }
       return item
     })
-    setData(newArray)
+    setNftArray(newArray)
   }
+
+  const addProbabilityType = () => {
+    const init = {
+      ...nftPackObjectInit,
+      probabilities: probabilityArray
+    }
+    setNftArray(nftArray.concat(init))
+  }
+
+  const checkProbabilityToggleForRarityOptions = () => {
+    if (rarityData.length > 1) {
+      handleCustomProbabilitiesToggle()
+    }
+    else {
+      setOpenRarityAlert(true);
+    }
+  }
+
+  const handleCloseRarityAlert = () => {
+    setOpenRarityAlert(false);
+  };
+
   const removeItem = (i: number) => {
     setData(current => current.filter((_item, idx) => idx !== i))
   }
+  const removeProbabilityType = (i: number) => {
+    setNftArray(nftArray.filter((_item, idx) => idx !== i))
+  }
+
   return (
-    <>
+    <Box sx={{ position: 'relative', display: 'block', p: 1, background: theme.palette.divider, mb: 2, borderRadius: '6px' }}>
       <Grid container spacing={1} sx={{ mb: '16px' }}>
         <Grid item xs={12}>
           <Grid
@@ -134,8 +221,8 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
                 variant="filled"
                 id="pack-name"
                 label="Pack Name"
-                name="name"
-                value={data[index].name}
+                name="packName"
+                value={data[index].packName}
                 onChange={handleChange}
               />
             </Grid>
@@ -148,7 +235,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
           <TextField
             fullWidth
             variant="filled"
@@ -157,93 +244,173 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
             inputProps={{
               inputMode: 'numeric',
             }}
-            name="packAmount"
-            value={data[index].packAmount}
+            name="amountOfPacks"
+            value={data[index].amountOfPacks}
             onChange={handleChangeNum}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container sx={{ flexWrap: 'nowrap' }}>
-            <Grid item sx={{ flexGrow: '0' }}>
-              <Button
-                variant="contained"
-                disableElevation
-                sx={{
-                  height: '100%',
-                  borderRadius: '6px 0 0 6px',
-                  background: theme.palette.divider,
-                  color: theme.palette.text.secondary
-                }}
-                onClick={() => handleNumberIncrement('nftAmount', 'down')}
-              >
-                <Icon>
-                  remove
-                </Icon>
-              </Button>
-            </Grid>
-            <Grid item sx={{ flexGrow: '1' }}>
-              <TextField
-                variant="filled"
-                fullWidth
-                id="nfts-per-pack"
-                label="NFTs Per Pack (Max 24)"
-                name="nftAmount"
-                value={data[index].nftAmount}
-                onChange={(e) => handleChangeNum(e, 24)}
-                inputProps={{
-                  inputMode: 'numeric',
-                  step: 1,
-                }}
-                sx={{
-                  '& .MuiInputBase-root': {
-                    borderRadius: '0'
-                  },
-                  width: '100%',
-                  flexGrow: '1'
-                }}
-              />
-            </Grid>
-            <Grid item sx={{ flexGrow: '0' }}>
-              <Button
-                variant="contained"
-                disableElevation
-                sx={{
-                  height: '100%',
-                  borderRadius: '0 6px 6px 0',
-                  background: theme.palette.divider,
-                  color: theme.palette.text.secondary
-                }}
-                onClick={() => handleNumberIncrement('nftAmount', 'up', 24)}
-              >
-                <Icon>
-                  add
-                </Icon>
-              </Button>
-            </Grid>
-          </Grid>
+        <Grid item xs={12} md={4}>
+          <TextField
+            fullWidth
+            variant="filled"
+            id="price"
+            label="Price Per Pack"
+            inputProps={{
+              inputMode: 'numeric',
+            }}
+            name="price"
+            value={data[index].price}
+            onChange={handleChangeNum}
+          />
         </Grid>
+        <Grid item xs={12} md={4}>
+          <FormControl variant="filled" fullWidth>
+            <InputLabel id="currency">Currency</InputLabel>
+            <Select
+              id="currency"
+              value={data[index].currency}
+              label="Currency"
+              name="currency"
+              onChange={handleSelectChange}
+            >
+              <MenuItem value={'SigUSD'}>SigUSD</MenuItem>
+              <MenuItem value={'Erg'}>Erg</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          onClick={checkProbabilityToggleForRarityOptions}
+          sx={{
+            '&:hover': {
+              cursor: 'pointer',
+            }
+          }}
+        >
+          <Box>
+            <Switch
+              focusVisibleClassName=".Mui-focusVisible"
+              disableRipple
+              checked={customProbabilitiesToggle}
+            />
+            <Typography
+              sx={{
+                display: 'inline-block',
+                ml: '6px',
+                verticalAlign: 'middle',
+                color: customProbabilitiesToggle ? theme.palette.text.primary : theme.palette.text.secondary
+              }}
+            >
+              Use Custom Probabilities
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Collapse in={!customProbabilitiesToggle}>
+            <NumberIncrementNftArray
+              dataArray={nftArray}
+              setDataArray={setNftArray}
+              max={24}
+              name="nftPerPack"
+              label="NFTs Per Pack (Max 24)"
+              index={0}
+            />
+          </Collapse>
+          <Collapse in={customProbabilitiesToggle}>
+            <Button onClick={addProbabilityType}>Add Another Probability Type</Button>
+          </Collapse>
+        </Grid>
+        <Grid item xs={12}>
+          <Collapse in={customProbabilitiesToggle}>
 
-        {data[index].probabilities?.map((item, i) => {
-          return (
-            <Grid item key={i}>
-              <InputSlider
-                name={item.rarity}
-                data={data}
-                setData={setData}
-                id={data[index].name + '-' + item.rarity}
-                label={item.rarity}
-                dataIndex={index}
-                index={i}
-                max={1}
-                min={0}
-                step={0.01}
-              />
+            <Grid container spacing={2}>
+              {nftArray.map((item, i) => {
+                return (
+                  <Grid item xs={12} md={6} key={i}>
+                    <Grid container spacing={1}>
+                      <Grid item xs={12}>
+                        <Grid
+                          container
+                          spacing={1}
+                          alignItems="center"
+                        >
+                          <Grid item xs>
+                            <Typography variant="h6">
+                              Probability Type {i + 1}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs="auto">
+                            <IconButton onClick={() => removeProbabilityType(i)}>
+                              <Icon>
+                                delete
+                              </Icon>
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+
+                      </Grid>
+                      <Grid item xs={12}>
+                        <NumberIncrementNftArray
+                          dataArray={nftArray}
+                          setDataArray={setNftArray}
+                          // max={24}
+                          name={'nftPerType' + (i + 1)}
+                          label={"Number of NFTs of Type " + (i + 1)}
+                          index={i}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        {item.probabilities && item.probabilities.map((item, idx) => {
+                          return (
+                            <React.Fragment key={i}>
+                              <TextField
+                                fullWidth
+                                variant="filled"
+                                id={"probability-type" + i + '-' + item.rarityName}
+                                label={item.rarityName}
+                                inputProps={{
+                                  inputMode: 'numeric',
+                                }}
+                                name={'probability-type-' + i + '-' + item.rarityName}
+                                value={item.probability}
+                                onChange={(e) => handleChangeProbability(e, i, idx)}
+                                sx={{ mb: 1 }}
+                              />
+                            </React.Fragment>
+                          )
+                        })}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                )
+              })}
             </Grid>
-          )
-        })}
-
+          </Collapse>
+        </Grid>
       </Grid>
-    </>
+      <Dialog
+        open={openRarityAlert}
+        onClose={handleCloseRarityAlert}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Add rarity options"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You must set more than one Rarity option to use this feature. 
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseRarityAlert} autoFocus>
+            Okay
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

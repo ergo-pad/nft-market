@@ -13,105 +13,11 @@ import {
   Stepper,
   Step,
   StepButton,
-  TextField,
-  Switch
 } from '@mui/material'
-import FileUploadAreaIPFS from '@components/forms/FileUploadAreaIPFS'
-import { v4 as uuidv4 } from 'uuid';
-import PackTokenSection from '@components/create/PackTokenSection';
-import { useCSVReader } from 'react-papaparse';
 import ArtistForm, { IArtistData, artistDataInit } from '@components/create/ArtistForm'
 import CollectionForm, { ICollectionData, collectionDataInit } from '@components/create/CollectionForm'
-
-interface ITokensData {
-  packs?: {
-    name: string;
-    amount: number;
-    nftPerPack: number;
-    chances?: {
-      rarityName: string;
-      chance: number; // higher number is higher chance of receiving this rarity
-    }[];
-  }[];
-  nfts: {
-    name: string;
-    image: string;
-    description: string;
-    traits?: {
-      key: string; // the name of the trait type (eg: sex, speed, age)
-      value: string | number; // the trait that this specific NFT has
-      type: 'Property' | 'Level' | 'Stat';
-    }[];
-    rarity?: string;
-    explicit?: boolean; // default is false
-  }[];
-}
-
-interface ISaleData {
-  royalties: {
-    address: string;
-    percent: number; // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
-  }[];
-  dateStart: Date;
-  dateEnd: Date;
-  price: {
-    tokenId?: string; // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
-    price: number;
-    currency: 'erg' | 'sigusd'; // default to sigusd
-  }[];
-}
-
-/// FORM INIT ///
-const tokensDataInit: ITokensData = {
-  packs: [
-    {
-      name: '',
-      amount: 1,
-      nftPerPack: 1,
-      chances: [
-        {
-          rarityName: '',
-          chance: 1,
-        }
-      ],
-    }
-  ],
-  nfts: [
-    {
-      name: '',
-      image: '',
-      description: '',
-      traits: [
-        {
-          key: '', // the name of the trait type (eg: sex, speed, age)
-          value: '', // the trait that this specific NFT has
-          type: 'Property',
-        }
-      ],
-      rarity: '',
-      explicit: false, // default is false
-    }
-  ],
-}
-
-const saleDataInit: ISaleData = {
-  royalties: [
-    {
-      address: '',
-      percent: 1000, // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
-    },
-  ],
-  dateStart: new Date(1663353871000), // FIX DEFAULTS
-  dateEnd: new Date(1663353871000), // FIX DEFAULTS
-  price: [
-    {
-      tokenId: '', // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
-      price: 1,
-      currency: 'sigusd', // default to sigusd
-    },
-  ]
-}
-// END FORM INIT //
+import TokenDetailsForm, { ITokenDetailsData, tokenDetailsDataInit } from '@components/create/TokenDetailsForm'
+import SaleInfoForm, { ISaleInfoData, saleInfoDataInit } from '@components/create/SaleInfoForm'
 
 const steps = [
   'Artist',
@@ -120,22 +26,6 @@ const steps = [
   'Sale Info'
 ];
 
-interface IFileData {
-  currentFile: File;
-  previewImage: string;
-  progress: number;
-  message: string;
-}
-
-const fileInitObject: IFileData = {
-  currentFile: {} as File,
-  previewImage: '',
-  progress: 0,
-  message: ""
-}
-
-const fileInit = [fileInitObject]
-
 const Create: NextPage = () => {
   const theme = useTheme()
   // const upSm = useMediaQuery(theme.breakpoints.up('sm')) // not currently used
@@ -143,14 +33,16 @@ const Create: NextPage = () => {
   // FORM DATA STATES //
   const [artistData, setArtistData] = useState<IArtistData>(artistDataInit)
   const [collectionData, setCollectionData] = useState<ICollectionData>(collectionDataInit)
-  // END FORM DATA STATES //
+  const [tokenDetailsData, setTokenDetailsData] = useState<ITokenDetailsData>(tokenDetailsDataInit)
+  const [saleInfoData, setSaleInfoData] = useState<ISaleInfoData>(saleInfoDataInit)
 
   // CLEAR FORM STATES // 
   const [clearArtistForm, setClearArtistForm] = useState(false)
   const [clearCollectionForm, setClearCollectionForm] = useState(false)
-  // END CLEAR FORM STATES //
+  const [clearTokenDetailsForm, setClearTokenDetailsForm] = useState(false)
+  const [clearSaleInfoForm, setClearSaleInfoForm] = useState(false)
 
-  // STEPPER LOGIC // 
+  // STEPPER LOGIC //
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepperCompleted, setStepperCompleted] = React.useState<{
     [k: number]: boolean;
@@ -189,6 +81,12 @@ const Create: NextPage = () => {
     if (activeStep === 1) {
       localStorage.setItem('creation-collection-form', JSON.stringify(collectionData))
     }
+    if (activeStep === 2) {
+      localStorage.setItem('creation-token-details-form', JSON.stringify(collectionData))
+    }
+    if (activeStep === 3) {
+      localStorage.setItem('creation-sale-info-form', JSON.stringify(collectionData))
+    }
   }
   const handleClearSavedStep = () => {
     const newCompleted = stepperCompleted;
@@ -201,6 +99,14 @@ const Create: NextPage = () => {
     if (activeStep === 1) {
       setClearCollectionForm(true)
       localStorage.removeItem('creation-collection-form')
+    }
+    if (activeStep === 2) {
+      setClearTokenDetailsForm(true)
+      localStorage.removeItem('creation-token-details-form')
+    }
+    if (activeStep === 3) {
+      setClearSaleInfoForm(true)
+      localStorage.removeItem('creation-sale-info-form')
     }
   }
   const handleStepperComplete = () => {
@@ -215,24 +121,6 @@ const Create: NextPage = () => {
     setStepperCompleted({});
   };
   // END STEPPER LOGIC //
-
-  // TOKEN DATA STATES //
-  const [packTokenData, setPackTokenData] = useState([{
-    id: uuidv4(),
-    name: '',
-    packAmount: 1,
-    nftAmount: 1,
-  }])
-  const [nftImages, setNftImages] = useState(fileInit)
-
-  // SALE DATA STATES //
-  const [createSale, setCreateSale] = useState(true)
-  const toggleCreateSale = () => {
-    setCreateSale(!createSale)
-  }
-
-  const { CSVReader } = useCSVReader();
-  const [csvUpload, setCsvUpload] = useState({})
 
   return (
     <>
@@ -349,174 +237,20 @@ const Create: NextPage = () => {
                   />
                 </Collapse>
                 <Collapse in={activeStep === 2}>
-                  <Box>
-                    <Typography variant="h4">
-                      Token details
-                    </Typography>
-                    <PackTokenSection data={packTokenData} setData={setPackTokenData} rarityData={collectionData.rarities} />
-                    <Typography variant="h5">
-                      Provide CSV for Metadata
-                    </Typography>
-                    <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-                      You can upload a CSV file to automatically set metadata for the NFTs you will upload. Download a sample CSV below which will include headings for the traits you set previously.
-                    </Typography>
-                    <Box
-                      sx={{
-                        mb: '24px'
-                      }}
-                    >
-                      <CSVReader
-                        onUploadAccepted={(results: any) => {
-                          setCsvUpload(results);
-                        }}
-                      >
-                        {({
-                          getRootProps,
-                          acceptedFile,
-                          ProgressBar,
-                          getRemoveFileProps,
-                        }: any) => (
-                          <>
-                            <Grid container sx={{ flexWrap: 'nowrap', height: '56px' }}>
-                              <Grid item sx={{ flexGrow: '0' }}>
-                                <Button
-                                  variant="contained"
-                                  disableElevation
-                                  {...getRootProps()}
-                                  sx={{
-                                    borderRadius: '6px 0 0 6px',
-                                    background: theme.palette.divider,
-                                    color: theme.palette.text.secondary,
-                                    display: 'inline-block',
-                                    height: '100%'
-                                  }}
-                                >
-                                  Browse file
-                                </Button>
-                              </Grid>
-                              <Grid item sx={{ flexGrow: '1' }}>
-                                <Box
-                                  type="button"
-                                  {...getRootProps()}
-                                  sx={{
-                                    display: 'inline-block',
-                                    background: theme.palette.mode == 'dark' ? '#242932' : theme.palette.background.paper,
-                                    height: '100%',
-                                    width: '100%',
-                                    p: '12px',
-                                    verticalAlign: 'middle',
-                                    '&:hover': {
-                                      background: theme.palette.divider,
-                                      cursor: 'pointer'
-                                    }
-                                  }}
-                                >
-                                  {acceptedFile && acceptedFile.name}
-                                </Box>
-                              </Grid>
-                              <Grid item sx={{ flexGrow: '0' }}>
-                                <Button
-                                  variant="contained"
-                                  disableElevation
-                                  sx={{
-                                    borderRadius: '0 6px 6px 0',
-                                    background: theme.palette.divider,
-                                    color: theme.palette.text.secondary,
-                                    display: 'inline-block',
-                                    height: '100%'
-                                  }}
-                                  {...getRemoveFileProps()}>
-                                  Remove
-                                </Button>
-                              </Grid>
-                            </Grid>
-
-                            <ProgressBar style={{ backgroundColor: theme.palette.primary.main, }} />
-                          </>
-                        )}
-                      </CSVReader>
-
-                      <Button onClick={() => console.dir(csvUpload)}>
-                        Console log upload results
-                      </Button>
-                    </Box>
-
-
-                    <Typography variant="h5">
-                      Upload Images
-                    </Typography>
-                    <FileUploadAreaIPFS
-                      multiple
-                      title="NFT Images"
-                      fileData={nftImages}
-                      setFileData={setNftImages}
-                    />
-                  </Box>
+                  <TokenDetailsForm
+                    tokenDetailsData={tokenDetailsData}
+                    setTokenDetailsData={setTokenDetailsData}
+                    clearForm={clearTokenDetailsForm}
+                    setClearForm={setClearTokenDetailsForm}
+                  />
                 </Collapse>
                 <Collapse in={activeStep === 3}>
-                  <Box>
-                    <Typography variant="h4">
-                      Sale info
-                    </Typography>
-                    <Typography variant="body2">
-                      If you choose not to setup a sale, the NFTs will be sent to the artist address as they&apos;re minted.
-                    </Typography>
-                    <Grid
-                      container
-                      alignItems="center"
-                      sx={{
-                        width: '100%',
-                        mb: '0px',
-                        '&:hover': {
-                          cursor: 'pointer'
-                        }
-                      }}
-                      onClick={() => toggleCreateSale()}
-                    >
-                      <Grid item xs>
-                        <Typography variant="h5" sx={{ verticalAlign: 'middle' }}>
-                          Create Sales Portal
-                        </Typography>
-                      </Grid>
-                      <Grid item xs="auto">
-                        <Typography
-                          sx={{
-                            display: 'inline-block',
-                            mr: '6px',
-                            verticalAlign: 'middle',
-                            color: createSale ? theme.palette.text.primary : theme.palette.text.secondary
-                          }}
-                        >
-                          Enable
-                        </Typography>
-                        <Switch
-                          focusVisibleClassName=".Mui-focusVisible"
-                          disableRipple
-                          checked={createSale}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Box>
-                  <Collapse in={createSale}>
-                    <Grid container spacing={2} sx={{ mb: '24px' }}>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="date-start"
-                          label="Date Start"
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          variant="filled"
-                          id="date-end"
-                          label="Date End"
-                        />
-                      </Grid>
-                    </Grid>
-                  </Collapse>
+                  <SaleInfoForm
+                    saleInfoData={saleInfoData}
+                    setSaleInfoData={setSaleInfoData}
+                    clearForm={clearSaleInfoForm}
+                    setClearForm={setClearSaleInfoForm}
+                  />
                 </Collapse>
                 <Box sx={{ pt: 2, textAlign: 'center' }}>
                   <Button

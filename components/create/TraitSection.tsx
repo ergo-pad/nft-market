@@ -10,7 +10,7 @@ import {
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
 import TraitItem from '@components/create/TraitItem'
-import { ITraitsData } from '@components/create/CollectionForm';
+import { ITraitsData } from '@components/create/TokenDetailsForm';
 
 interface ITraitSectionProps {
   data: ITraitsData[];
