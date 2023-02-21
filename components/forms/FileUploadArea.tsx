@@ -184,30 +184,31 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
     Object.values(fileData).forEach((file, i) => {
       formData.append('file', file.currentFile);
     })
-
-    /* Send request to the api route */
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData
     });
-
     const body = await response.json() as { status: 'ok' | 'fail', message: string };
-
-    console.log(body.message);
-
     if (body.status === 'ok') {
-      if (setFileUrls) setFileUrls(fileData.map((file, i) => {
+      const urlData = fileData.map((file, i) => {
         return {
           url: '/uploads/' + file.currentFile.name,
           ipfs: ''
         }
-      }))
+      })
+      if (ipfsFlag === true) {
+        ipfsUpload(urlData)
+      }
+      else if (setFileUrls) setFileUrls(urlData)
     } else {
-      // Do some stuff on error
+      // if upload error, still try ipfs upload
+      if (ipfsFlag === true) {
+        ipfsUpload([])
+      }
     }
   }
 
-  const ipfsUpload = async () => {
+  const ipfsUpload = async (urlData: { url: string; ipfs: string; }[]) => {
     const promises = fileData.map(async (file) => {
       let form = new FormData();
       form.append('file', file.currentFile);
@@ -217,37 +218,30 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       }).then(res => res.json())
         .then(res => {
           return `ipfs://${res.Hash}`
+        }).catch(error => {
+          console.log("Fetch error");
+          console.log(error);
+          return ''
         })
     })
     const results = await Promise.all(promises)
-
     const newArray = results.map((item, index) => {
       return {
-        ...fileUrls[index],
+        url: urlData[index].url,
         ipfs: item
       }
     })
-
     if (setFileUrls) setFileUrls(newArray)
   }
 
   const handleUpload = async () => {
-
     /* If file is not selected, then show alert message */
     if (fileData[0].currentFile.name == undefined) {
       console.log('Please, select the file(s) you want to upload');
       return;
     }
-
     setIsLoading(true);
-
     standardUpload()
-    if (ipfsFlag === true) {
-      ipfsUpload()
-    }
-
-    console.log(fileUrls)
-
     setIsLoading(false);
   };
 
