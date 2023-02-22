@@ -51,10 +51,11 @@ export interface INftData {
     key: string; // the name of the trait type (eg: sex, speed, age)
     value: string | number; // the trait that this specific NFT has
     type: 'Property' | 'Level' | 'Stat';
+    id: string;
     max?: number;
   }[];
   rarity?: string;
-  explicit?: boolean; // default is false
+  explicit: boolean; // default is false
 };
 
 export interface ITokenDetailsData {
@@ -86,23 +87,7 @@ export const packTokenDataInit: IPackData = {
 
 export const tokenDetailsDataInit: ITokenDetailsData = {
   packs: [packTokenDataInit],
-  nfts: [
-    {
-      id: uuidv4(),
-      nftName: '',
-      image: '',
-      description: '',
-      traits: [
-        {
-          key: '', // the name of the trait type (eg: sex, speed, age)
-          value: '', // the trait that this specific NFT has
-          type: 'Property'
-        }
-      ],
-      rarity: '',
-      explicit: false, // default is false
-    }
-  ],
+  nfts: [],
   rarities: [
     {
       rarity: '',
@@ -149,6 +134,9 @@ const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetail
     const timeout = setTimeout(() => setTokenDetailsData(prev => ({ ...prev, packs: packTokenData })), 400);
     return () => clearTimeout(timeout);
   }, [JSON.stringify(packTokenData)])
+  useEffect(() => {
+    setTokenDetailsData(prev => ({ ...prev, nfts: nftData }))
+  }, [JSON.stringify(nftData)])
 
   // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   setTokenDetailsData(prev => ({ ...prev, [e.target.name]: e.target.value }))

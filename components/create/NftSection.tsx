@@ -39,7 +39,35 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
   const { CSVReader } = useCSVReader();
   const [csvUpload, setCsvUpload] = useState({})
   const [nftImages, setNftImages] = useState<IFileUrl[]>([])
-  const [nftList, setNftList] = useState()
+  const [uploadedUrls, setUploadedUrls] = useState<{ [key: string]: string }>({})
+
+  useEffect(() => {
+    nftImages.map((item) => {
+      const filter = nftData.filter((nft) => nft.image === item.ipfs)
+      if (filter.length > 0) return
+      else {
+        const uuid = uuidv4()
+        setNftData(prev => [...prev, {
+          id: uuid,
+          nftName: '',
+          image: item.ipfs,
+          description: '',
+          traits: [
+            {
+              key: '', // the name of the trait type (eg: sex, speed, age)
+              value: '', // the trait that this specific NFT has
+              type: 'Property',
+              id: uuidv4()
+            }
+          ],
+          rarity: '',
+          explicit: false, // default is false
+        }])
+        setUploadedUrls(prev => ({ ...prev, [uuid]: item.url }))
+      }
+      return
+    })
+  }, [nftImages])
 
   return (
     <Box>
@@ -144,17 +172,18 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
       />
       <Button onClick={() => { console.log(nftImages) }}>Console Log nftImage</Button>
 
-      {nftImages.map((_item, i) => {
+      {nftData.map((_item, i) => {
         return (
           <NftItem
             rarityData={rarityData}
             traitData={traitData}
             nftData={nftData}
             setNftData={setNftData}
-            nftImages={nftImages}
-            setNftImages={setNftImages}
+            nftImageUrls={uploadedUrls}
+            setNftImageUrls={setUploadedUrls}
             index={i}
             key={i}
+            id={nftData[i].id}
           />
         )
       })}

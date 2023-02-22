@@ -12,7 +12,9 @@ import {
   useTheme,
   InputLabel,
   MenuItem,
-  FormControl
+  FormControl,
+  FormControlLabel,
+  Checkbox
 } from '@mui/material'
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FileUploadArea from '@components/forms/FileUploadArea'
@@ -27,46 +29,35 @@ interface INftItemProps {
   traitData: ITraitsData[];
   nftData: INftData[];
   setNftData: React.Dispatch<React.SetStateAction<INftData[]>>;
-  nftImages: IFileUrl[];
-  setNftImages: React.Dispatch<React.SetStateAction<IFileUrl[]>>;
+  nftImageUrls: { [key: string]: string };
+  setNftImageUrls: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
   index: number;
-}
-
-interface IThisNft {
   id: string;
-  nftName: string;
-  image: string;
-  description: string;
-  traits: {
-    key: string;
-    value: string;
-    type: string;
-    id: string;
-    max?: number;
-  }[];
-  rarity: string;
-  explicit: boolean;
 }
 
-const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData, nftImages, setNftImages, index }) => {
+const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData, nftImageUrls, setNftImageUrls, index, id }) => {
   const theme = useTheme()
   const [checkMax, setCheckMax] = useState<{ [key: string]: boolean }>({})
-  const [thisNft, setThisNft] = useState<IThisNft>({
-    id: uuidv4(),
-    nftName: '',
-    image: nftImages[index].ipfs,
-    description: '',
-    traits: [
-      {
-        key: '', // the name of the trait type (eg: sex, speed, age)
-        value: '', // the trait that this specific NFT has
-        type: 'Property',
-        id: uuidv4()
-      }
-    ],
-    rarity: '',
-    explicit: false, // default is false
-  })
+  const [thisNft, setThisNft] = useState<INftData>(nftData[index])
+
+  useEffect(() => {
+    setThisNft(nftData[index])
+  }, [id])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const newArray = nftData.map((item, i) => {
+        if (index === i) {
+          return {
+            ...thisNft
+          }
+        }
+        return item
+      })
+      setNftData(newArray)
+    }, 1000)
+    return () => clearTimeout(timeout);
+  }, [JSON.stringify(thisNft)])
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -74,8 +65,8 @@ const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData
         {
           ...prev,
           traits: traitData.map((item, i) => {
-            const matched = prev.traits.filter((trait) => trait.id === item.id)
-            if (matched.length === 1) {
+            const matched = prev.traits?.filter((trait) => trait.id === item.id)
+            if (matched && matched.length === 1) {
               if (item.max && item.max < Number(matched[0].value)) {
                 setCheckMax(prev => ({
                   ...prev,
@@ -119,7 +110,7 @@ const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData
   const handleChangeTrait = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setThisNft(prev => ({
       ...prev,
-      traits: prev.traits.map((item, i) => {
+      traits: prev.traits?.map((item, i) => {
         if (e.target.name === item.key) {
           const filteredTraits = traitData.filter((trait) => trait.id === item.id)
           let newValue = e.target.value
@@ -147,6 +138,13 @@ const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData
     }))
   }
 
+  const handleExplicitCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setThisNft(prev => ({
+      ...prev,
+      explicit: e.target.checked
+    }))
+  }
+
   useEffect(() => {
     const filter = rarityData.filter((data) => data.rarity === raritySelect)
     if (filter.length !== 1) setRaritySelect('')
@@ -163,9 +161,12 @@ const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData
   }, [raritySelect])
 
   const removeItem = () => {
-    setNftImages(prevState => (
-      prevState.filter((_item, i) => index !== i)
-    ))
+    setNftImageUrls(prev => {
+      const state = { ...prev };
+      delete state[id]
+      return state;
+    })
+    setNftData(current => current.filter((item, idx) => item.id !== id))
   }
 
   return (
@@ -174,7 +175,7 @@ const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData
         <Grid item xs={12} sm={3}>
           <Box sx={{ width: '100%', height: '300px', display: 'block', position: 'relative' }}>
             <Image
-              src={nftImages[index].url}
+              src={nftImageUrls[id]}
               alt="NFT Preview Image"
               layout="fill"
               objectFit="contain"
@@ -232,10 +233,9 @@ const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData
                 </Select>
               </FormControl>
             </Grid>
-
           )}
 
-          {thisNft.traits.length > 1 && thisNft.traits[0].key !== '' ? (
+          {thisNft.traits && thisNft.traits.length > 1 && thisNft.traits[0].key !== '' ? (
             thisNft.traits.map((item, i) => {
               return (
                 <Grid item key={item.id}>
@@ -266,13 +266,27 @@ const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData
                 onChange={handleChange}
               />
             </Grid>
-          )
-
-          }
+          )}
+          <FormControl sx={{ pl: '8px', color: theme.palette.text.secondary }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={thisNft.explicit}
+                  onChange={handleExplicitCheckbox}
+                />
+              }
+              label="Contains explicit content"
+            />
+          </FormControl>
           <Button onClick={() => {
             console.log(thisNft)
           }}>
             console log this nft
+          </Button>
+          <Button onClick={() => {
+            console.log(nftImageUrls)
+          }}>
+            console log Image URLs
           </Button>
         </Grid>
       </Grid>
