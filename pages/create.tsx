@@ -220,7 +220,7 @@ const Create: NextPage = () => {
               </>
             ) : (
               <>
-                <Collapse in={activeStep === 0}>
+                <Collapse in={activeStep === 0} unmountOnExit>
                   <ArtistForm
                     artistData={artistData}
                     setArtistData={setArtistData}
@@ -228,7 +228,7 @@ const Create: NextPage = () => {
                     setClearForm={setClearArtistForm}
                   />
                 </Collapse>
-                <Collapse in={activeStep === 1}>
+                <Collapse in={activeStep === 1} unmountOnExit>
                   <CollectionForm
                     collectionData={collectionData}
                     setCollectionData={setCollectionData}
@@ -236,7 +236,7 @@ const Create: NextPage = () => {
                     setClearForm={setClearCollectionForm}
                   />
                 </Collapse>
-                <Collapse in={activeStep === 2}>
+                <Collapse in={activeStep === 2} unmountOnExit>
                   <TokenDetailsForm
                     tokenDetailsData={tokenDetailsData}
                     setTokenDetailsData={setTokenDetailsData}
@@ -244,7 +244,7 @@ const Create: NextPage = () => {
                     setClearForm={setClearTokenDetailsForm}
                   />
                 </Collapse>
-                <Collapse in={activeStep === 3}>
+                <Collapse in={activeStep === 3} unmountOnExit>
                   <SaleInfoForm
                     saleInfoData={saleInfoData}
                     setSaleInfoData={setSaleInfoData}
