@@ -14,7 +14,8 @@ import {
   MenuItem,
   FormControl,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Collapse
 } from '@mui/material'
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FileUploadArea from '@components/forms/FileUploadArea'
@@ -22,7 +23,8 @@ import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 import { useCSVReader } from 'react-papaparse';
 import { IFileUrl } from '@components/forms/FileUploadArea';
-import { IRarityData, ITraitsData, INftData } from '@components/create/TokenDetailsForm';
+import { IRarityData, ITraitsData, INftData, IRoyaltyItem } from '@components/create/TokenDetailsForm';
+import RoyaltySection from '@components/create/RoyaltySection';
 
 interface INftItemProps {
   rarityData: IRarityData[];
@@ -33,12 +35,39 @@ interface INftItemProps {
   setNftImageUrls: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
   index: number;
   id: string;
+  royaltyData: IRoyaltyItem[];
 }
 
-const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData, nftImageUrls, setNftImageUrls, index, id }) => {
+const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData, nftImageUrls, setNftImageUrls, index, id, royaltyData }) => {
   const theme = useTheme()
   const [checkMax, setCheckMax] = useState<{ [key: string]: boolean }>({})
   const [thisNft, setThisNft] = useState<INftData>(nftData[index])
+  const [royaltyToggle, setRoyaltyToggle] = useState(false)
+  const handleRoyaltyToggle = () => {
+    setThisNft(prev => ({
+      ...prev,
+      royalties: royaltyToggle === true ? royaltyData : customRoyalties,
+      royaltyLocked: !royaltyToggle
+    }))
+    setRoyaltyToggle(!royaltyToggle);
+  };
+  const [customRoyalties, setCustomRoyalties] = useState<IRoyaltyItem[]>([{
+    address: '',
+    pct: 0,
+    id: uuidv4()
+  }])
+  useEffect(() => {
+
+  }, [])
+
+  useEffect(() => {
+    if (royaltyToggle === true) {
+      setThisNft(prev => ({
+        ...prev,
+        royalties: customRoyalties
+      }))
+    }
+  }, [customRoyalties])
 
   useEffect(() => {
     setThisNft(nftData[index])
@@ -267,17 +296,55 @@ const NftItem: FC<INftItemProps> = ({ rarityData, traitData, nftData, setNftData
               />
             </Grid>
           )}
-          <FormControl sx={{ pl: '8px', color: theme.palette.text.secondary }}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={thisNft.explicit}
-                  onChange={handleExplicitCheckbox}
+          <Grid
+            container
+            alignItems="center"
+            sx={{
+              width: '100%',
+              mb: '0px',
+            }}
+          >
+            <Grid item xs>
+              <FormControl sx={{ pl: '8px', color: theme.palette.text.secondary }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={thisNft.explicit}
+                      onChange={handleExplicitCheckbox}
+                    />
+                  }
+                  label="Contains explicit content"
                 />
-              }
-              label="Contains explicit content"
+              </FormControl>
+            </Grid>
+            <Grid item xs="auto">
+              <Box onClick={() => handleRoyaltyToggle()} sx={{ '&:hover': { cursor: 'pointer' } }}>
+                <Typography
+                  sx={{
+                    display: 'inline-block',
+                    mr: '6px',
+                    verticalAlign: 'middle',
+                    color: royaltyToggle ? theme.palette.text.primary : theme.palette.text.secondary
+                  }}
+                >
+                  Custom Royalties
+                </Typography>
+                <Switch
+                  focusVisibleClassName=".Mui-focusVisible"
+                  disableRipple
+                  checked={royaltyToggle}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+
+          <Collapse in={royaltyToggle} sx={{ pl: '8px'}}>
+            <RoyaltySection
+              data={customRoyalties}
+              setData={setCustomRoyalties}
             />
-          </FormControl>
+          </Collapse>
+
           <Button onClick={() => {
             console.log(thisNft)
           }}>

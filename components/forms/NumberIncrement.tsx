@@ -13,9 +13,10 @@ interface INumberIncrementProps {
   max?: number;
   name?: string;
   label?: string;
+  variantContained?: boolean;
 }
 
-const NumberIncrement: FC<INumberIncrementProps> = ({ value, setValue, max, name, label }) => {
+const NumberIncrement: FC<INumberIncrementProps> = ({ value, setValue, max, name, label, variantContained }) => {
   const theme = useTheme()
   const handleChangeNum = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     var regex = /^[0-9]+$/;
@@ -35,14 +36,20 @@ const NumberIncrement: FC<INumberIncrementProps> = ({ value, setValue, max, name
     <Grid container sx={{ flexWrap: 'nowrap' }}>
       <Grid item sx={{ flexGrow: '0' }}>
         <Button
-          variant="outlined"
+          variant={variantContained ? 'contained' : 'outlined'}
           disableElevation
-          sx={{
+          sx={variantContained ? {
             height: '100%',
-            minWidth: '24px',
-            width: '48px',
-            borderRadius: '12px 0 0 12px',
-          }}
+            borderRadius: '6px 0 0 6px',
+            background: theme.palette.divider,
+            color: theme.palette.text.secondary
+          } :
+            {
+              height: '100%',
+              minWidth: '24px',
+              width: '48px',
+              borderRadius: '12px 0 0 12px',
+            }}
           onClick={() => handleNumberIncrement('down')}
         >
           <Icon>
@@ -52,7 +59,7 @@ const NumberIncrement: FC<INumberIncrementProps> = ({ value, setValue, max, name
       </Grid>
       <Grid item sx={{ flexGrow: '1' }}>
         <TextField
-          variant="outlined"
+          variant={variantContained ? 'filled' : 'outlined'}
           fullWidth
           id={name}
           label={label ? label : ''}
@@ -71,19 +78,26 @@ const NumberIncrement: FC<INumberIncrementProps> = ({ value, setValue, max, name
             flexGrow: '1',
 
           }}
-          size="small"
+          size={variantContained ? undefined : "small"}
         />
       </Grid>
       <Grid item sx={{ flexGrow: '0' }}>
         <Button
-          variant="outlined"
+          variant={variantContained ? 'contained' : 'outlined'}
           disableElevation
-          sx={{
-            height: '100%',
-            minWidth: '24px',
-            width: '48px',
-            borderRadius: '0 12px 12px 0',
-          }}
+          sx={variantContained ?
+            {
+              height: '100%',
+              borderRadius: '0 6px 6px 0',
+              background: theme.palette.divider,
+              color: theme.palette.text.secondary
+            } :
+            {
+              height: '100%',
+              minWidth: '24px',
+              width: '48px',
+              borderRadius: '0 12px 12px 0',
+            }}
           onClick={() => handleNumberIncrement('up')}
         >
           <Icon>
