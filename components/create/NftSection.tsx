@@ -204,7 +204,7 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
         Royalties
       </Typography>
       <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-        You can set royalties for all NFTs here. NFTs with custom royalties will retain them unless you use the "Update All" button below. 
+        You can set royalties for all NFTs here. NFTs with custom royalties will retain them unless you use the &quot;Update All&quot; button below. 
       </Typography>
       <RoyaltySection
         data={royaltyData}
