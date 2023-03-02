@@ -26,6 +26,12 @@ export interface ITraitsData {
   max?: number; // if trait is a Level or Stat, this is the highest possible value
 }
 
+export interface IRoyaltyItem {
+  id: string;
+  address: string;
+  pct: number;
+}
+
 export interface IPackData {
   id: string;
   packName: string;
@@ -56,6 +62,12 @@ export interface INftData {
   }[];
   rarity?: string;
   explicit: boolean; // default is false
+  royalties?: {
+    address: string;
+    pct: number;
+    id: string;
+  }[]
+  royaltyLocked: boolean; // default is false
 };
 
 export interface ITokenDetailsData {

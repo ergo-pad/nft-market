@@ -15,15 +15,21 @@ import {
   FormControl,
   Collapse
 } from '@mui/material'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FileUploadArea from '@components/forms/FileUploadArea'
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 import { useCSVReader } from 'react-papaparse';
 import { IFileUrl } from '@components/forms/FileUploadArea';
-import { IRarityData, ITraitsData, INftData } from '@components/create/TokenDetailsForm';
-import NftItem from './NftItem';
+import { IRarityData, ITraitsData, INftData, IRoyaltyItem } from '@components/create/TokenDetailsForm';
+import NftItem from '@components/create/NftItem';
 import { TransitionGroup } from 'react-transition-group';
+import RoyaltySection from '@components/create/RoyaltySection';
 
 interface INftSectionProps {
   rarityData: IRarityData[];
@@ -40,6 +46,40 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
   const [csvUpload, setCsvUpload] = useState({})
   const [nftImages, setNftImages] = useState<IFileUrl[]>([])
   const [uploadedUrls, setUploadedUrls] = useState<{ [key: string]: string }>({})
+  const [royaltyData, setRoyaltyData] = useState<IRoyaltyItem[]>([{
+    address: '',
+    pct: 0,
+    id: uuidv4()
+  }])
+  const [openAllRoyaltiesWarningDialog, setOpenAllRoyaltiesWarningDialog] = useState(false);
+
+  useEffect(() => {
+    setNftData(prev => prev.map((item, i) => {
+      if (item.royaltyLocked) return item
+      else return {
+        ...item,
+        royalties: royaltyData
+      }
+    }))
+  }, [royaltyData])
+
+  const allRoyaltiesWarningDialog = () => {
+    setOpenAllRoyaltiesWarningDialog(true);
+  }
+
+  const handleCloseAllRoyaltiesWarningDialog = () => {
+    setOpenAllRoyaltiesWarningDialog(false);
+  };
+
+  const updateAllRoyalties = () => {
+    setNftData(prev => prev.map((item, i) => {
+      return {
+        ...item,
+        royalties: royaltyData
+      }
+    }))
+    handleCloseAllRoyaltiesWarningDialog()
+  }
 
   useEffect(() => {
     nftImages.map((item) => {
@@ -62,6 +102,8 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
           ],
           rarity: '',
           explicit: false, // default is false
+          royalties: royaltyData,
+          royaltyLocked: false
         }])
         setUploadedUrls(prev => ({ ...prev, [uuid]: item.url }))
       }
@@ -159,6 +201,29 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
       </Box>
 
       <Typography variant="h5">
+        Royalties
+      </Typography>
+      <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
+        You can set royalties for all NFTs here. NFTs with custom royalties will retain them unless you use the &quot;Update All&quot; button below. 
+      </Typography>
+      <RoyaltySection
+        data={royaltyData}
+        setData={setRoyaltyData}
+      />
+      <Box 
+      sx={{
+        mb: '24px',
+        width: '100%',
+        textAlign: 'center'
+      }}
+      >
+      <Button variant="contained" onClick={allRoyaltiesWarningDialog}>
+        Update All NFT Royalties
+      </Button>
+      </Box>
+      
+
+      <Typography variant="h5">
         Upload Images
       </Typography>
       <FileUploadArea
@@ -184,9 +249,38 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
             index={i}
             key={i}
             id={nftData[i].id}
+            royaltyData={royaltyData}
           />
         )
       })}
+      <Dialog
+        open={openAllRoyaltiesWarningDialog}
+        onClose={setOpenAllRoyaltiesWarningDialog}
+        aria-labelledby="alert-all-royalties-warning"
+        aria-describedby="alert-all-royalties-warning-description"
+      >
+        <DialogTitle id="alert-all-royalties-warning-title">
+          {"WARNING: Updating ALL Royalties"}
+        </DialogTitle>
+        <DialogContent sx={{ pb: 0 }}>
+          <DialogContentText id="alert-dialog-description">
+            <Typography sx={{ mb: '12px' }}>
+              This will remove any custom royalties you set, and make all NFTs have the same royalty settings. 
+              </Typography>
+              <Typography>
+                You cannot undo this action!
+              </Typography>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={updateAllRoyalties}>
+            Okay
+          </Button>
+          <Button onClick={handleCloseAllRoyaltiesWarningDialog} autoFocus>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
