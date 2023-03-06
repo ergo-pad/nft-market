@@ -26,7 +26,8 @@ import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 import { useCSVReader } from 'react-papaparse';
 import { IFileUrl } from '@components/forms/FileUploadArea';
-import { IRarityData, ITraitsData, INftData, IRoyaltyItem } from '@components/create/TokenDetailsForm';
+import { ITraitsData, INftData, IRoyaltyItem } from '@components/create/TokenDetailsForm';
+import { IRarityData } from '@pages/create';
 import NftItem from '@components/create/NftItem';
 import { TransitionGroup } from 'react-transition-group';
 import RoyaltySection from '@components/create/RoyaltySection';
@@ -38,9 +39,22 @@ interface INftSectionProps {
   setNftData: React.Dispatch<React.SetStateAction<INftData[]>>;
   clearTriggerNftImages: boolean;
   setClearTriggerNftImages: React.Dispatch<React.SetStateAction<boolean>>;
+  fungible: boolean;
+  setFungible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setNftData, clearTriggerNftImages, setClearTriggerNftImages }) => {
+const NftSection: FC<INftSectionProps> = (
+  {
+    rarityData,
+    traitData,
+    nftData,
+    setNftData,
+    clearTriggerNftImages,
+    setClearTriggerNftImages,
+    fungible,
+    setFungible
+  }
+) => {
   const theme = useTheme()
   const { CSVReader } = useCSVReader();
   const [csvUpload, setCsvUpload] = useState({})
@@ -52,6 +66,10 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
     id: uuidv4()
   }])
   const [openAllRoyaltiesWarningDialog, setOpenAllRoyaltiesWarningDialog] = useState(false);
+
+  const toggleFungible = () => {
+    setFungible(!fungible)
+  }
 
   useEffect(() => {
     setNftData(prev => prev.map((item, i) => {
@@ -91,6 +109,7 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
           id: uuid,
           nftName: '',
           image: item.ipfs,
+          qty: 1,
           description: '',
           traits: [
             {
@@ -204,24 +223,23 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
         Royalties
       </Typography>
       <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-        You can set royalties for all NFTs here. NFTs with custom royalties will retain them unless you use the &quot;Update All&quot; button below. 
+        You can set royalties for all NFTs here. NFTs with custom royalties will retain them unless you use the &quot;Update All&quot; button below.
       </Typography>
       <RoyaltySection
         data={royaltyData}
         setData={setRoyaltyData}
       />
-      <Box 
-      sx={{
-        mb: '24px',
-        width: '100%',
-        textAlign: 'center'
-      }}
+      <Box
+        sx={{
+          mb: '24px',
+          width: '100%',
+          textAlign: 'center'
+        }}
       >
-      <Button variant="contained" onClick={allRoyaltiesWarningDialog}>
-        Update All NFT Royalties
-      </Button>
+        <Button variant="contained" onClick={allRoyaltiesWarningDialog}>
+          Update All NFT Royalties
+        </Button>
       </Box>
-      
 
       <Typography variant="h5">
         Upload Images
@@ -235,9 +253,52 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
         clearTrigger={clearTriggerNftImages}
         setClearTrigger={setClearTriggerNftImages}
       />
-      <Button onClick={() => { console.log(nftImages) }}>Console Log nftImage</Button>
 
-      {nftData.map((_item, i) => {
+      <Box sx={{ my: '24px' }}>
+        <Grid
+          container
+          alignItems="center"
+          sx={{
+            width: '100%',
+            mb: '0px',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }}
+          onClick={() => toggleFungible()}
+        >
+          <Grid item xs>
+            <Typography variant="h5" sx={{ verticalAlign: 'middle' }}>
+              Fungibility
+            </Typography>
+          </Grid>
+          <Grid item xs="auto">
+            <Typography
+              sx={{
+                display: 'inline-block',
+                mr: '6px',
+                verticalAlign: 'middle',
+                color: fungible ? theme.palette.text.primary : theme.palette.text.secondary
+              }}
+            >
+              Enable
+            </Typography>
+            <Switch
+              focusVisibleClassName=".Mui-focusVisible"
+              disableRipple
+              checked={fungible}
+            />
+          </Grid>
+        </Grid>
+        <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
+          Select this box to enable fungible tokens. This is useful if you are selling trading cards or other tokens which will have more than one copy of each token.
+        </Typography>
+      </Box>
+
+      <Typography variant="h5">
+        NFT Details
+      </Typography>
+      {nftData.map((item, i) => {
         return (
           <NftItem
             rarityData={rarityData}
@@ -248,11 +309,13 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
             setNftImageUrls={setUploadedUrls}
             index={i}
             key={i}
-            id={nftData[i].id}
+            id={item.id}
             royaltyData={royaltyData}
+            fungible={fungible}
           />
         )
       })}
+      <Button onClick={() => { console.log(nftImages) }}>Console Log nftImage</Button>
       <Dialog
         open={openAllRoyaltiesWarningDialog}
         onClose={setOpenAllRoyaltiesWarningDialog}
@@ -264,12 +327,12 @@ const NftSection: FC<INftSectionProps> = ({ rarityData, traitData, nftData, setN
         </DialogTitle>
         <DialogContent sx={{ pb: 0 }}>
           <DialogContentText id="alert-dialog-description">
-            <Typography sx={{ mb: '12px' }}>
-              This will remove any custom royalties you set, and make all NFTs have the same royalty settings. 
-              </Typography>
-              <Typography>
-                You cannot undo this action!
-              </Typography>
+            <Box sx={{ mb: '12px' }}>
+              This will remove any custom royalties you set, and make all NFTs have the same royalty settings.
+            </Box>
+            <Box>
+              You cannot undo this action!
+            </Box>
           </DialogContentText>
         </DialogContent>
         <DialogActions>

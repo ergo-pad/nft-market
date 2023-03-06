@@ -21,8 +21,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { IRarityData } from '@components/create/TokenDetailsForm'
-import { IPackData, packTokenDataInit } from '@components/create/TokenDetailsForm';
+import { IRarityData, IPackData } from '@pages/create';
 import NumberIncrementNftArray from '@components/forms/NumberIncrementNftArray';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -76,82 +75,109 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
   }, [rarityData])
 
   useEffect(() => {
-    const newArray: INftPackObject[] = nftArray.map((item, i) => {
-      return {
-        ...item,
-        probabilities: probabilityArray
-      }
+    // const newArray: INftPackObject[] = nftArray.map((item, i) => {
+    //   return {
+    //     ...item,
+    //     probabilities: probabilityArray
+    //   }
+    // })
+    // setNftArray(newArray)
+    setNftArray((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        return {
+          ...item,
+          probabilities: probabilityArray
+        }
+      })
+      return newArray
     })
-    setNftArray(newArray)
   }, [probabilityArray])
 
   useEffect(() => {
-    const newArray = data.map((item, i) => {
-      if (i === index) {
-        return {
-          ...item,
-          nftPerPack: customProbabilitiesToggle ? nftArray : [{ count: nftArray[0].count, id: nftArray[0].id }]
+    // const newArray = data.map((item, i) => {
+    //   if (i === index) {
+    //     return {
+    //       ...item,
+    //       nftPerPack: customProbabilitiesToggle ? nftArray : [{ count: nftArray[0].count, id: nftArray[0].id }]
+    //     }
+    //   }
+    //   return item
+    // })
+    // setData(newArray)
+    setData((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        if (i === index) {
+          return {
+            ...item,
+            nftPerPack: customProbabilitiesToggle ? nftArray : [{ count: nftArray[0].count, id: nftArray[0].id }]
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setData(newArray)
   }, [JSON.stringify(nftArray), customProbabilitiesToggle])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newArray = data.map((item, i) => {
-      if (i === index) {
-        return {
-          ...item,
-          [e.target.name]: e.target.value
+    setData((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        if (i === index) {
+          return {
+            ...item,
+            [e.target.name]: e.target.value
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setData(newArray)
   }
 
   const handleSelectChange = (e: SelectChangeEvent) => {
-    const newArray = data.map((item, i) => {
-      if (i === index) {
-        return {
-          ...item,
-          [e.target.name]: e.target.value
+    setData((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        if (i === index) {
+          return {
+            ...item,
+            [e.target.name]: e.target.value
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setData(newArray)
   };
 
   const handleChangeNum = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, max?: number) => {
-    const newArray = data.map((item, i) => {
-      if (i === index) {
-        var regex = /^[0-9]+$/;
-        if (e.target.value.match(regex)) {
-          if ((max && Number(e.target.value) <= max) || max === undefined) {
-            return {
-              ...item,
-              [e.target.name]: Number(e.target.value)
+    setData((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        if (i === index) {
+          var regex = /^[0-9]+$/;
+          if (e.target.value.match(regex)) {
+            if ((max && Number(e.target.value) <= max) || max === undefined) {
+              return {
+                ...item,
+                [e.target.name]: Number(e.target.value)
+              }
+            }
+            else if (max && Number(e.target.value) > max) {
+              return {
+                ...item,
+                [e.target.name]: max
+              }
             }
           }
-          else if (max && Number(e.target.value) > max) {
+          else if (e.target.value === '' || e.target.value === undefined || e.target.value === null) {
             return {
               ...item,
-              [e.target.name]: max
+              [e.target.name]: ''
             }
           }
         }
-        else if (e.target.value === '' || e.target.value === undefined || e.target.value === null) {
-          return {
-            ...item,
-            [e.target.name]: ''
-          }
-        }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setData(newArray)
   }
 
   const handleChangeProbability = (
@@ -159,23 +185,25 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
     typeNum: number,
     probabilityIndex: number,
   ) => {
-    const newArray = nftArray.map((item, i) => {
-      if (i === typeNum) {
-        return {
-          ...item,
-          probabilities: [
-            ...item.probabilities.slice(0, probabilityIndex),
-            {
-              ...item.probabilities[probabilityIndex],
-              probability: Number(e.target.value)
-            },
-            ...item.probabilities.slice(probabilityIndex + 1),
-          ]
+    setNftArray((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        if (i === typeNum) {
+          return {
+            ...item,
+            probabilities: [
+              ...item.probabilities.slice(0, probabilityIndex),
+              {
+                ...item.probabilities[probabilityIndex],
+                probability: Number(e.target.value)
+              },
+              ...item.probabilities.slice(probabilityIndex + 1),
+            ]
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setNftArray(newArray)
   }
 
   const addProbabilityType = () => {
@@ -343,9 +371,9 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
                             </Typography>
                           </Grid>
                           <Grid item xs="auto"
-                          sx={{
-                            display: (nftArray.length > 1) ? 'block' : 'none',
-                          }}
+                            sx={{
+                              display: (nftArray.length > 1) ? 'block' : 'none',
+                            }}
                           >
                             <IconButton onClick={() => removeProbabilityType(i)}>
                               <Icon>

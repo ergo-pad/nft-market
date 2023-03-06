@@ -104,16 +104,18 @@ const NotificationsMenu: FC<INotificationsMenuProps> = ({ }) => {
   }, [currentMenuItems])
 
   const setRead = (i: number) => {
-    const newArray = currentMenuItems.map((item, index) => {
-      if (index === i) {
-        return {
-          ...item,
-          unread: false
+    setCurrentMenuItems((prevArray) => {
+      const newArray = prevArray.map((item, index) => {
+        if (index === i) {
+          return {
+            ...item,
+            unread: false
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setCurrentMenuItems(newArray)
   }
 
   const CustomMenuItem: FC<IMenuItemProps> = ({ icon, txType, txId, success, time, unread, index }) => {

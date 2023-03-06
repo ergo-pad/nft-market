@@ -14,10 +14,11 @@ import {
   Step,
   StepButton,
 } from '@mui/material'
-import ArtistForm, { IArtistData, artistDataInit } from '@components/create/ArtistForm'
-import CollectionForm, { ICollectionData, collectionDataInit } from '@components/create/CollectionForm'
-import TokenDetailsForm, { ITokenDetailsData, tokenDetailsDataInit } from '@components/create/TokenDetailsForm'
-import SaleInfoForm, { ISaleInfoData, saleInfoDataInit } from '@components/create/SaleInfoForm'
+import ArtistForm from '@components/create/ArtistForm'
+import CollectionForm from '@components/create/CollectionForm'
+import TokenDetailsForm, { ITraitsData, INftData } from '@components/create/TokenDetailsForm'
+import SaleInfoForm from '@components/create/SaleInfoForm'
+import { v4 as uuidv4 } from 'uuid';
 
 const steps = [
   'Artist',
@@ -26,24 +27,184 @@ const steps = [
   'Sale Info'
 ];
 
+export interface IArtistData {
+  address: string;
+  name?: string;
+  website?: string;
+  tagline?: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
+  social?: {
+    socialNetwork: string;
+    url: string;
+  }[];
+}
+
+export const artistDataInit: IArtistData = {
+  address: '',
+  name: '',
+  website: '',
+  tagline: '',
+  avatarUrl: '',
+  bannerUrl: '',
+  social: []
+}
+
+export interface ICollectionData {
+  collectionName: string;
+  description: string;
+  bannerImageUrl: string;
+  featuredImageUrl: string;
+  collectionLogoUrl: string;
+  category: string;
+  mintingExpiry: number | -1; //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
+
+}
+
+export const collectionDataInit: ICollectionData = {
+  collectionName: '',
+  description: '',
+  bannerImageUrl: '',
+  featuredImageUrl: '',
+  collectionLogoUrl: '',
+  category: '',
+  mintingExpiry: -1, //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
+}
+
+export interface IRarityData {
+  rarity: string;
+  id: string;
+  description?: string;
+  image?: string;
+}
+
+export interface IPackData {
+  id: string;
+  packName: string;
+  amountOfPacks: number;
+  nftPerPack: {
+    id: string;
+    count: number | '';
+    probabilities?: {
+      rarityName: string;
+      probability: number;
+    }[]
+  }[]
+  price: number | '';
+  currency: string;
+}
+
+export interface ISaleInfoData {
+  // royalties: {
+  //   address: string;
+  //   percent: number; // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
+  // }[];
+  packs: IPackData[];
+  dateStart: Date;
+  dateEnd: Date;
+  price: {
+    tokenId?: string; // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
+    price: number;
+    currency: 'erg' | 'sigusd'; // default to sigusd
+  }[];
+}
+
+export interface ITokenDetailsData {
+  // packs: IPackData[];
+  nfts: INftData[];
+  rarities: IRarityData[];
+  availableTraits: ITraitsData[];
+}
+
+export const tokenDetailsDataInit: ITokenDetailsData = {
+  // packs: [packTokenDataInit],
+  nfts: [],
+  rarities: [
+    {
+      rarity: '',
+      id: uuidv4(),
+      description: '',
+      // image: '',
+    }
+  ],
+  availableTraits: [
+    {
+      traitName: '', // the name of the trait type (eg: sex, speed, age)
+      id: uuidv4(),
+      description: '', // used only on our front-end and not required
+      // image: '', // this is only used on our front-end and not required. 
+      type: 'Property',
+      // max: 1, // if trait is a Level or Stat, this is the highest possible value
+    }
+  ],
+}
+
+export const packTokenDataInit: IPackData = {
+  id: uuidv4(),
+  packName: '',
+  amountOfPacks: 1,
+  nftPerPack: [
+    {
+      id: uuidv4(),
+      count: 1,
+      probabilities: [
+        {
+          rarityName: '',
+          probability: 1
+        }
+      ]
+    }
+  ],
+  price: '',
+  currency: 'SigUSD',
+}
+
+export const saleInfoDataInit: ISaleInfoData = {
+  packs: [packTokenDataInit],
+  dateStart: new Date(1663353871000), // FIX DEFAULTS
+  dateEnd: new Date(1663353871000), // FIX DEFAULTS
+  price: [
+    {
+      tokenId: '', // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
+      price: 1,
+      currency: 'sigusd', // default to sigusd
+    },
+  ]
+}
+
 const Create: NextPage = () => {
   const theme = useTheme()
   // const upSm = useMediaQuery(theme.breakpoints.up('sm')) // not currently used
+  const [activeStep, setActiveStep] = React.useState(0);
 
   // FORM DATA STATES //
   const [artistData, setArtistData] = useState<IArtistData>(artistDataInit)
   const [collectionData, setCollectionData] = useState<ICollectionData>(collectionDataInit)
   const [tokenDetailsData, setTokenDetailsData] = useState<ITokenDetailsData>(tokenDetailsDataInit)
   const [saleInfoData, setSaleInfoData] = useState<ISaleInfoData>(saleInfoDataInit)
+  useEffect(() => {
+    const localStorageData = [
+      localStorage.getItem('creation-artist-form'),
+      localStorage.getItem('creation-collection-form'),
+      localStorage.getItem('creation-token-details-form'),
+      localStorage.getItem('creation-sale-info-form'),
+    ]
+    if (localStorageData[0] !== null) setArtistData(JSON.parse(localStorageData[0]))
+    if (localStorageData[1] !== null) setCollectionData(JSON.parse(localStorageData[1]))
+    if (localStorageData[2] !== null) setTokenDetailsData(JSON.parse(localStorageData[2]))
+    if (localStorageData[3] !== null) setSaleInfoData(JSON.parse(localStorageData[3]))
+  }, [])
 
-  // CLEAR FORM STATES // 
+  // CLEAR FORM STATES //
   const [clearArtistForm, setClearArtistForm] = useState(false)
   const [clearCollectionForm, setClearCollectionForm] = useState(false)
   const [clearTokenDetailsForm, setClearTokenDetailsForm] = useState(false)
   const [clearSaleInfoForm, setClearSaleInfoForm] = useState(false)
 
+  // OTHER STATES //
+  const [rarityData, setRarityData] = useState<IRarityData[]>(tokenDetailsDataInit.rarities)
+  
   // STEPPER LOGIC //
-  const [activeStep, setActiveStep] = React.useState(0);
   const [stepperCompleted, setStepperCompleted] = React.useState<{
     [k: number]: boolean;
   }>({});
@@ -82,10 +243,10 @@ const Create: NextPage = () => {
       localStorage.setItem('creation-collection-form', JSON.stringify(collectionData))
     }
     if (activeStep === 2) {
-      localStorage.setItem('creation-token-details-form', JSON.stringify(collectionData))
+      localStorage.setItem('creation-token-details-form', JSON.stringify(tokenDetailsData))
     }
     if (activeStep === 3) {
-      localStorage.setItem('creation-sale-info-form', JSON.stringify(collectionData))
+      localStorage.setItem('creation-sale-info-form', JSON.stringify(saleInfoData))
     }
   }
   const handleClearSavedStep = () => {
@@ -220,7 +381,7 @@ const Create: NextPage = () => {
               </>
             ) : (
               <>
-                <Collapse in={activeStep === 0} unmountOnExit>
+                <Collapse in={activeStep === 0}>
                   <ArtistForm
                     artistData={artistData}
                     setArtistData={setArtistData}
@@ -228,7 +389,7 @@ const Create: NextPage = () => {
                     setClearForm={setClearArtistForm}
                   />
                 </Collapse>
-                <Collapse in={activeStep === 1} unmountOnExit>
+                <Collapse in={activeStep === 1}>
                   <CollectionForm
                     collectionData={collectionData}
                     setCollectionData={setCollectionData}
@@ -236,20 +397,23 @@ const Create: NextPage = () => {
                     setClearForm={setClearCollectionForm}
                   />
                 </Collapse>
-                <Collapse in={activeStep === 2} unmountOnExit>
+                <Collapse in={activeStep === 2}>
                   <TokenDetailsForm
                     tokenDetailsData={tokenDetailsData}
                     setTokenDetailsData={setTokenDetailsData}
                     clearForm={clearTokenDetailsForm}
                     setClearForm={setClearTokenDetailsForm}
+                    rarityData={rarityData}
+                    setRarityData={setRarityData}
                   />
                 </Collapse>
-                <Collapse in={activeStep === 3} unmountOnExit>
+                <Collapse in={activeStep === 3}>
                   <SaleInfoForm
                     saleInfoData={saleInfoData}
                     setSaleInfoData={setSaleInfoData}
                     clearForm={clearSaleInfoForm}
                     setClearForm={setClearSaleInfoForm}
+                    rarityData={rarityData}
                   />
                 </Collapse>
                 <Box sx={{ pt: 2, textAlign: 'center' }}>

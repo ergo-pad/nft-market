@@ -10,7 +10,7 @@ import {
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
 import RarityItem from '@components/create/RarityItem'
-import { IRarityData } from '@components/create/TokenDetailsForm';
+import { IRarityData } from '@pages/create';
 
 interface IRaritySectionProps {
   data: IRarityData[];

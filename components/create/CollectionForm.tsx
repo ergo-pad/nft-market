@@ -16,27 +16,7 @@ import TraitSection from '@components/create/TraitSection';
 import dayjs, { Dayjs } from 'dayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { IFileUrl } from '@components/forms/FileUploadArea';
-
-export interface ICollectionData {
-  collectionName: string;
-  description: string;
-  bannerImageUrl: string;
-  featuredImageUrl: string;
-  collectionLogoUrl: string;
-  category: string;
-  mintingExpiry: number | -1; //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
-
-}
-
-export const collectionDataInit: ICollectionData = {
-  collectionName: '',
-  description: '',
-  bannerImageUrl: '',
-  featuredImageUrl: '',
-  collectionLogoUrl: '',
-  category: '',
-  mintingExpiry: -1, //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
-}
+import { ICollectionData, collectionDataInit } from '@pages/create';
 
 interface ICollectionFormProps {
   collectionData: ICollectionData;
@@ -103,7 +83,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
             id="collection-name"
             label="Collection Name"
             name="collectionName"
-            value={collectionData.collectionName}
+            value={collectionData.collectionName || ''}
             onChange={handleChange}
           />
         </Grid>
