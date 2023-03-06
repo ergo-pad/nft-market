@@ -31,29 +31,33 @@ const SocialItem: FC<{
 
   const handleChange = (e: SelectChangeEvent) => {
     setSortOption(e.target.value as string);
-    const newArray = socialData.map((c, i) => {
-      if (i === index) {
-        return {
-          ...c,
-          network: e.target.value
+    setSocialData((prevArray) => {
+      const newArray = prevArray.map((c, i) => {
+        if (i === index) {
+          return {
+            ...c,
+            network: e.target.value
+          }
         }
-      }
-      return c
+        return c
+      })
+      return newArray
     })
-    setSocialData(newArray)
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newArray = socialData.map((c, i) => {
-      if (i === index) {
-        return {
-          ...c,
-          [e.target.name]: e.target.value
+    setSocialData((prevArray) => {
+      const newArray = prevArray.map((c, i) => {
+        if (i === index) {
+          return {
+            ...c,
+            [e.target.name]: e.target.value
+          }
         }
-      }
-      return c
+        return c
+      })
+      return newArray
     })
-    setSocialData(newArray)
   }
 
   const removeItem = (idx: number) => {
@@ -88,7 +92,7 @@ const SocialItem: FC<{
           </Grid>
           <Grid item xs="auto" sx={{ display: upSm || index === 0 ? 'none' : 'flex' }}>
             <IconButton
-              
+
               onClick={() => removeItem(index)}
             >
               <Icon>

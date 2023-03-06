@@ -19,16 +19,18 @@ const RoyaltyItem: FC<{
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newArray = royaltyData.map((item, i) => {
-      if (i === index) {
-        return {
-          ...item,
-          [e.target.name]: e.target.value
+    setRoyaltyData((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        if (i === index) {
+          return {
+            ...item,
+            [e.target.name]: e.target.value
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setRoyaltyData(newArray)
   }
 
   const removeItem = (idx: number) => {
@@ -42,7 +44,7 @@ const RoyaltyItem: FC<{
       <Grid item sm={8} xs={12}>
         <Grid
           container
-          
+
           alignItems="center"
         >
           <Grid item xs>
@@ -71,7 +73,7 @@ const RoyaltyItem: FC<{
       <Grid item sm={4} xs={12}>
         <Grid
           container
-          
+
           alignItems="center"
         >
           <Grid item xs>

@@ -12,29 +12,7 @@ import FileUploadArea from '@components/forms/FileUploadArea'
 import { v4 as uuidv4 } from 'uuid';
 import SocialSection from '@components/create/SocialSection';
 import { IFileUrl } from '@components/forms/FileUploadArea';
-
-export interface IArtistData {
-  address: string;
-  name?: string;
-  website?: string;
-  tagline?: string;
-  avatarUrl?: string;
-  bannerUrl?: string;
-  social?: {
-    socialNetwork: string;
-    url: string;
-  }[];
-}
-
-export const artistDataInit: IArtistData = {
-  address: '',
-  name: '',
-  website: '',
-  tagline: '',
-  avatarUrl: '',
-  bannerUrl: '',
-  social: []
-}
+import { IArtistData, artistDataInit } from '@pages/create';
 
 const artistSocialsInit = {
   id: uuidv4(),
@@ -92,6 +70,10 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
     setArtistData(artistDataInit)
     setClearForm(false)
   }, [clearForm])
+
+  useEffect(() => {
+    
+  }, [JSON.stringify(artistData)])
 
   return (
     <Box>

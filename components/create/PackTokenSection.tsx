@@ -11,8 +11,7 @@ import {
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
 import PackTokenItem from '@components/create/PackTokenItem';
-import { IRarityData } from '@components/create/TokenDetailsForm'
-import { IPackData, packTokenDataInit } from '@components/create/TokenDetailsForm';
+import { IPackData, IRarityData } from '@pages/create';
 
 interface IPackTokenSectionProps {
   data: IPackData[];

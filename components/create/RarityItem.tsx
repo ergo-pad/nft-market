@@ -10,7 +10,7 @@ import {
   Divider
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
-import { IRarityData } from '@components/create/TokenDetailsForm';
+import { IRarityData } from '@pages/create';
 import { IFileUrl } from '@components/forms/FileUploadArea';
 
 const RarityItem: FC<{
@@ -25,16 +25,18 @@ const RarityItem: FC<{
   const [imgClearTrigger, setImgClearTrigger] = useState(false)
 
   useEffect(() => {
-    const newArray = data.map((item, index) => {
-      if (index === i) {
-        return {
-          ...item,
-          image: rarityImg[0]?.url
+    setData((prevArray) => {
+      const newArray = prevArray.map((item, index) => {
+        if (index === i) {
+          return {
+            ...item,
+            image: rarityImg[0]?.url
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setData(newArray)
   }, [JSON.stringify(rarityImg)])
 
   const removeItem = (index: number) => {
@@ -42,16 +44,18 @@ const RarityItem: FC<{
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newArray = data.map((item, index) => {
-      if (index === i) {
-        return {
-          ...item,
-          [e.target.name]: e.target.value
+    setData((prevArray) => {
+      const newArray = prevArray.map((item, index) => {
+        if (index === i) {
+          return {
+            ...item,
+            [e.target.name]: e.target.value
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setData(newArray)
   }
 
   return (

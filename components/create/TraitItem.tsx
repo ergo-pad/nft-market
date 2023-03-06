@@ -29,16 +29,18 @@ const TraitItem: FC<{
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
 
   useEffect(() => {
-    const newArray = data.map((item, index) => {
-      if (index === i) {
-        return {
-          ...item,
-          image: traitImg[0]?.url
+    setData((prevArray) => {
+      const newArray = prevArray.map((item, index) => {
+        if (index === i) {
+          return {
+            ...item,
+            image: traitImg[0]?.url
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setData(newArray)
   }, [JSON.stringify(traitImg)])
 
   const removeItem = (index: number) => {
@@ -46,29 +48,33 @@ const TraitItem: FC<{
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newArray = data.map((item, index) => {
-      if (index === i) {
-        return {
-          ...item,
-          [e.target.name]: e.target.value
+    setData((prevArray) => {
+      const newArray = prevArray.map((item, index) => {
+        if (index === i) {
+          return {
+            ...item,
+            [e.target.name]: e.target.value
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setData(newArray)
   }
 
   const handleSelectChange = (e: SelectChangeEvent) => {
-    const newArray = data.map((item, index) => {
-      if (index === i) {
-        return {
-          ...item,
-          [e.target.name]: e.target.value
+    setData((prevArray) => {
+      const newArray = prevArray.map((item, index) => {
+        if (index === i) {
+          return {
+            ...item,
+            [e.target.name]: e.target.value
+          }
         }
-      }
-      return item
+        return item
+      })
+      return newArray
     })
-    setData(newArray)
   };
 
   // useEffect(() => {

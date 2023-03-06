@@ -9,48 +9,20 @@ import {
   useTheme,
   Collapse
 } from '@mui/material'
-
-export interface ISaleInfoData {
-  royalties: {
-    address: string;
-    percent: number; // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
-  }[];
-  dateStart: Date;
-  dateEnd: Date;
-  price: {
-    tokenId?: string; // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
-    price: number;
-    currency: 'erg' | 'sigusd'; // default to sigusd
-  }[];
-}
-
-export const saleInfoDataInit: ISaleInfoData = {
-  royalties: [
-    {
-      address: '',
-      percent: 1000, // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
-    },
-  ],
-  dateStart: new Date(1663353871000), // FIX DEFAULTS
-  dateEnd: new Date(1663353871000), // FIX DEFAULTS
-  price: [
-    {
-      tokenId: '', // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
-      price: 1,
-      currency: 'sigusd', // default to sigusd
-    },
-  ]
-}
-// END FORM INIT //
+import PackTokenSection from '@components/create/PackTokenSection';
+import { IRarityData } from '@pages/create';
+import { saleInfoDataInit, ISaleInfoData, packTokenDataInit } from '@pages/create';
 
 interface ISalesInfoProps {
   saleInfoData: ISaleInfoData;
   setSaleInfoData: React.Dispatch<React.SetStateAction<ISaleInfoData>>;
   clearForm: boolean;
   setClearForm: React.Dispatch<React.SetStateAction<boolean>>;
+  rarityData: IRarityData[];
 }
 
-const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearForm, setClearForm }) => {
+const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearForm, setClearForm, rarityData }) => {
+  const [packTokenData, setPackTokenData] = useState([packTokenDataInit])
   const theme = useTheme()
   
   // SALE DATA STATES //
@@ -62,8 +34,14 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
   // CLEAR FORM //
   useEffect(() => {
     setSaleInfoData(saleInfoDataInit) // this belongs to parent
+    setPackTokenData([packTokenDataInit])
     setClearForm(false)
   }, [clearForm])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setSaleInfoData(prev => ({ ...prev, packs: packTokenData })), 400);
+    return () => clearTimeout(timeout);
+  }, [JSON.stringify(packTokenData)])
 
   return (
     <Box>
@@ -91,7 +69,6 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
               Create Sales Portal
             </Typography>
           </Grid>
-          ROYALTY INFO
           <Grid item xs="auto">
             <Typography
               sx={{
@@ -131,6 +108,11 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
           </Grid>
         </Grid>
       </Collapse>
+      <PackTokenSection
+          data={packTokenData}
+          setData={setPackTokenData}
+          rarityData={rarityData}
+        />
       <Button onClick={() => console.log(saleInfoData)}>Console log data</Button>
       <Button onClick={() => setClearForm(true)}>Clear Form</Button>
     </Box>
