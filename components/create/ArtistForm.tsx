@@ -25,9 +25,15 @@ interface IArtistFormProps {
   setArtistData: React.Dispatch<React.SetStateAction<IArtistData>>;
   clearForm: boolean;
   setClearForm: React.Dispatch<React.SetStateAction<boolean>>;
+  disableArtist?: boolean;
 }
 
-const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm, setClearForm }) => {
+export const validateWebsiteUrl = (websiteUrl: string) => {
+  const urlRegExp: RegExp = /^((ftp|http|https):\/\/)?(www.)?(?!.*(ftp|http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+((\/)[\w#]+)*(\/\w+\?[a-zA-Z0-9_]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?\/?$/
+  return urlRegExp.test(String(websiteUrl).toLowerCase());
+}
+
+const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm, setClearForm, disableArtist }) => {
   const {
     walletAddress,
     setAddWalletModalOpen
@@ -38,7 +44,19 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
   const [artistAvatarImg, setArtistAvatarImg] = useState<IFileUrl[]>([])
   const [artistBannerImg, setArtistBannerImg] = useState<IFileUrl[]>([])
   const [artistSocials, setArtistSocials] = useState([artistSocialsInit])
+
+  // ERROR VALIDATION //
+  const [websiteError, setWebsiteError] = useState(false)
+  const [socialErrors, setSocialErrors] = useState([false])
+
   const handleArtistChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setArtistData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+  
+  const handleWebsiteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isUrl = validateWebsiteUrl(e.target.value)
+    if (isUrl) setWebsiteError(false)
+    else setWebsiteError(true)
     setArtistData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
   useEffect(() => {
@@ -71,10 +89,6 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
     setClearForm(false)
   }, [clearForm])
 
-  useEffect(() => {
-    
-  }, [JSON.stringify(artistData)])
-
   return (
     <Box>
       <Grid container spacing={2} sx={{ mb: '24px' }}>
@@ -96,7 +110,7 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
             fullWidth
             variant="filled"
             id="artist-name"
-            label="Artist Name"
+            label={disableArtist ? "Name" : "Artist Name"}
             name="name"
             onChange={handleArtistChange}
             value={artistData.name}
@@ -109,8 +123,10 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
             id="artist-website"
             label="Website"
             name="website"
-            onChange={handleArtistChange}
+            error={websiteError}
+            onChange={handleWebsiteChange}
             value={artistData.website}
+            helperText={websiteError && "Enter a valid URL"}
           />
         </Grid>
         <Grid item xs={12}>
@@ -128,7 +144,7 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
         </Grid>
         <Grid item xs={12}>
           <FileUploadArea
-            title="Artist Profile Image"
+            title={disableArtist ? "Profile Image" : "Artist Profile Image"}
             fileUrls={artistAvatarImg}
             setFileUrls={setArtistAvatarImg}
             expectedImgHeight={120}
@@ -140,7 +156,7 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
         </Grid>
         <Grid item xs={12}>
           <FileUploadArea
-            title="Artist Banner"
+            title={disableArtist ? "Banner" : "Artist Banner"}
             fileUrls={artistBannerImg}
             setFileUrls={setArtistBannerImg}
             expectedImgHeight={260}
@@ -150,7 +166,7 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
           />
         </Grid>
       </Grid>
-      <SocialSection data={artistSocials} setData={setArtistSocials} />
+      <SocialSection data={artistSocials} setData={setArtistSocials} errors={socialErrors} setErrors={setSocialErrors} />
     </Box>
   );
 };

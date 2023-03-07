@@ -17,7 +17,6 @@ const UserSettings: NextPage = () => {
   // const upSm = useMediaQuery(theme.breakpoints.up('sm'))
   const [artistData, setArtistData] = useState<IArtistData>(artistDataInit)
   const [clearArtistForm, setClearArtistForm] = useState(false)
-  console.log(artistData)
   return (
     <UserProfile
       address={artistData.address}
@@ -39,6 +38,7 @@ const UserSettings: NextPage = () => {
         setArtistData={setArtistData}
         clearForm={clearArtistForm}
         setClearForm={setClearArtistForm}
+        disableArtist={true}
       />
       <Box sx={{ width: '100%', textAlign: 'right' }}>
         <Button variant="contained">

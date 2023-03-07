@@ -12,6 +12,7 @@ import {
   TextField,
   SelectChangeEvent,
 } from '@mui/material'
+import { validateWebsiteUrl } from '@components/create/ArtistForm';
 
 interface IArtistSocial {
   id: string;
@@ -24,7 +25,9 @@ const SocialItem: FC<{
   id: string;
   socialData: IArtistSocial[];
   setSocialData: React.Dispatch<React.SetStateAction<IArtistSocial[]>>;
-}> = ({ index, id, socialData, setSocialData }) => {
+  errors: boolean[]
+  setErrors: React.Dispatch<React.SetStateAction<boolean[]>>;
+}> = ({ index, id, socialData, setSocialData, errors, setErrors }) => {
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
   const [sortOption, setSortOption] = useState("");
@@ -46,15 +49,34 @@ const SocialItem: FC<{
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isUrl = validateWebsiteUrl(e.target.value)
+    if (isUrl) setErrors((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        if (i === index) {
+          return false
+        }
+        return item
+      })
+      return newArray
+    })
+    else setErrors((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        if (i === index) {
+          return true
+        }
+        return item
+      })
+      return newArray
+    })
     setSocialData((prevArray) => {
-      const newArray = prevArray.map((c, i) => {
+      const newArray = prevArray.map((item, i) => {
         if (i === index) {
           return {
-            ...c,
+            ...item,
             [e.target.name]: e.target.value
           }
         }
-        return c
+        return item
       })
       return newArray
     })
@@ -62,6 +84,7 @@ const SocialItem: FC<{
 
   const removeItem = (idx: number) => {
     setSocialData(c => c.filter((_current, i) => i !== idx))
+    setErrors(c => c.filter((_current, i) => i !== idx))
   }
 
   return (
@@ -127,6 +150,7 @@ const SocialItem: FC<{
               name="url"
               value={socialData[index].url}
               onChange={handleUrlChange}
+              error={errors[index]}
             />
           </Grid>
           <Grid item xs="auto">

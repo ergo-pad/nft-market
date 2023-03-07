@@ -201,7 +201,7 @@ const UserProfile: FC<IUserProfileProps> = (
                     </Typography>
                   )}
 
-                  {socialLinks && (
+                  {socialLinks && socialLinks.length > 0 && socialLinks[0].url !== '' && (
                     <>
                       <Typography variant='h6' sx={{ mb: '6px' }}>
                         Social Links
