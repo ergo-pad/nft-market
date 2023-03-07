@@ -77,9 +77,6 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
 
   return (
     <Box>
-      <Typography variant="h4">
-        Artist Info
-      </Typography>
       <Grid container spacing={2} sx={{ mb: '24px' }}>
         <Grid item xs={12}>
           <TextField
@@ -154,7 +151,6 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
         </Grid>
       </Grid>
       <SocialSection data={artistSocials} setData={setArtistSocials} />
-      <Button onClick={() => console.log(artistData)}>Console log data</Button>
     </Box>
   );
 };

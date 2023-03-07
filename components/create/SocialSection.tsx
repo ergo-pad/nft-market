@@ -23,7 +23,7 @@ interface ISocialSectionProps {
 const SocialSection: FC<ISocialSectionProps> = ({ data, setData }) => {
   return (
     <>
-      <Typography variant="h6">
+      <Typography variant="h6" sx={{ mb: '12px' }}>
         Social Links
       </Typography>
       <TransitionGroup>
@@ -42,11 +42,6 @@ const SocialSection: FC<ISocialSectionProps> = ({ data, setData }) => {
           }]))
         }}>
           Add another
-        </Button>
-        <Button onClick={() => {
-          console.log(data)
-        }}>
-          Check array
         </Button>
       </Box>
     </>
