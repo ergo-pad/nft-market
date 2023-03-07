@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next'
 import {
   Grid,
@@ -203,7 +203,7 @@ const Create: NextPage = () => {
 
   // OTHER STATES //
   const [rarityData, setRarityData] = useState<IRarityData[]>(tokenDetailsDataInit.rarities)
-  
+
   // STEPPER LOGIC //
   const [stepperCompleted, setStepperCompleted] = React.useState<{
     [k: number]: boolean;
@@ -382,6 +382,9 @@ const Create: NextPage = () => {
             ) : (
               <>
                 <Collapse in={activeStep === 0}>
+                  <Typography variant="h4">
+                    Artist Info
+                  </Typography>
                   <ArtistForm
                     artistData={artistData}
                     setArtistData={setArtistData}

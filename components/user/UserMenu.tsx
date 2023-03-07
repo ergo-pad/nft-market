@@ -113,7 +113,7 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
               </ListItemIcon>
               Change Wallet
             </MenuItem>
-            <MenuItem>
+            <MenuItem onClick={() => router.push('/user-settings/')}>
               <ListItemIcon>
                 <Settings fontSize="small" />
               </ListItemIcon>
