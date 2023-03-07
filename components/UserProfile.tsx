@@ -206,9 +206,9 @@ const UserProfile: FC<IUserProfileProps> = (
                       <Typography variant='h6' sx={{ mb: '6px' }}>
                         Social Links
                       </Typography>
-                      {socialLinks.map((item) => {
+                      {socialLinks.map((item, i) => {
                         return (
-                          <Typography>
+                          <Typography key={i}>
                             {item.url}
                           </Typography>
                         )
