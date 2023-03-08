@@ -1,16 +1,25 @@
 import type { NextPage } from "next";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Typography, Button, Box } from "@mui/material";
 import ArtistForm from "@components/create/ArtistForm";
 import { IArtistData, artistDataInit } from "@pages/create";
 import UserProfile from "@components/UserProfile";
 import { getErgoWalletContext } from "@components/wallet/AddWallet";
 import { ApiContext, IApiContext } from "@contexts/ApiContext";
+import { WalletContext } from "@contexts/WalletContext";
 
 const UserSettings: NextPage = () => {
   const apiContext = useContext<IApiContext>(ApiContext);
   const [userData, setUserData] = useState<IArtistData>(artistDataInit);
   const [clearUserForm, setClearUserForm] = useState(false);
+
+  const { walletAddress } = useContext(WalletContext);
+  useEffect(() => {
+    setUserData((prev) => ({
+      ...prev,
+      address: walletAddress,
+    }));
+  }, [walletAddress]);
 
   const getAuthToken = async (address: string) => {
     const authResp = await apiContext.api.post("/auth", {
