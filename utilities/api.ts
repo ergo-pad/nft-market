@@ -30,7 +30,9 @@ export default class AppApi {
     this.setAlert([
       {
         severity: severity,
-        content: message.slice(0, 100) + (message.length > 100 ? "..." : ""),
+        content: message
+          ? message.slice(0, 100) + (message.length > 100 ? "..." : "")
+          : "Undefined Content",
         id: crypto.randomUUID(),
       },
     ]);
