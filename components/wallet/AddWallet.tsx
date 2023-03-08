@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useRouter } from 'next/router';
+import React, { useEffect, useState, useContext } from "react";
+import { useRouter } from "next/router";
 import {
   Button,
   Dialog,
@@ -23,19 +23,19 @@ import {
   Fade,
   useMediaQuery,
   IconButton,
-  Icon
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+  Icon,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckIcon from "@mui/icons-material/CheckCircle";
-import { WalletContext } from '@contexts/WalletContext'
-import { Address } from '@nautilus-wallet/ergo-ts';
-import DappWallet from '@components/wallet/DappWallet';
-import { ExpandMore } from '@mui/icons-material';
+import { WalletContext } from "@contexts/WalletContext";
+import { Address } from "@nautilus-wallet/ergo-ts";
+import DappWallet from "@components/wallet/DappWallet";
+import { ExpandMore } from "@mui/icons-material";
 
-const WALLET_ADDRESS = 'wallet_address_7621';
-const WALLET_ADDRESS_LIST = 'wallet_address_list_1283';
-const DAPP_CONNECTED = 'dapp_connected_6329';
-const DAPP_NAME = 'dapp_name_8930';
+const WALLET_ADDRESS = "wallet_address_7621";
+const WALLET_ADDRESS_LIST = "wallet_address_list_1283";
+const DAPP_CONNECTED = "dapp_connected_6329";
+const DAPP_NAME = "dapp_name_8930";
 
 /**
  * Note on es-lint disable lines:
@@ -52,7 +52,7 @@ const DAPP_NAME = 'dapp_name_8930';
 export const AddWallet = () => {
   const router = useRouter();
   const theme = useTheme();
-  const [walletInput, setWalletInput] = useState('');
+  const [walletInput, setWalletInput] = useState("");
   const {
     walletAddress,
     setWalletAddress,
@@ -61,7 +61,7 @@ export const AddWallet = () => {
     addWalletModalOpen,
     setAddWalletModalOpen,
     expanded,
-    setExpanded
+    setExpanded,
   } = useContext(WalletContext);
   const [init, setInit] = useState(false);
   const [mobileAdd, setMobileAdd] = useState(false);
@@ -78,58 +78,60 @@ export const AddWallet = () => {
   // const [dAppAddressTableData, setdAppAddressTableData] = useState([{}]); // table data
 
   useEffect(() => {
-    const isModalOpen = localStorage.getItem('modalOpen')
-    if (isModalOpen === 'true') {
-      setAddWalletModalOpen(true)
+    const isModalOpen = localStorage.getItem("modalOpen");
+    if (isModalOpen === "true") {
+      setAddWalletModalOpen(true);
     }
-    localStorage.setItem('modalOpen', 'false');
-  }, [])
+    localStorage.setItem("modalOpen", "false");
+  }, []);
 
-  const handleWalletChange =
-    (wallet: string | false) => {
-      setExpanded(typeof wallet === 'string' ? wallet : false);
-      if (wallet === 'nautilus') dAppConnect('nautilus')
-      if (wallet === 'safew') dAppConnect('safew')
-      if (wallet === 'mobile') setMobileAdd(!mobileAdd)
-    };
+  const handleWalletChange = (wallet: string | false) => {
+    setExpanded(typeof wallet === "string" ? wallet : false);
+    if (wallet === "nautilus") dAppConnect("nautilus");
+    if (wallet === "safew") dAppConnect("safew");
+    if (wallet === "mobile") setMobileAdd(!mobileAdd);
+  };
 
   useEffect(() => {
     // load primary address
-    const address = localStorage.getItem(WALLET_ADDRESS)
+    const address = localStorage.getItem(WALLET_ADDRESS);
     // load dApp state
     const dappConnected = localStorage.getItem(DAPP_CONNECTED);
     const dappName = localStorage.getItem(DAPP_NAME);
     const walletAddressList = localStorage.getItem(WALLET_ADDRESS_LIST);
-    if (address !== null && address !== '' && (dappName === null || dappName === '')) {
+    if (
+      address !== null &&
+      address !== "" &&
+      (dappName === null || dappName === "")
+    ) {
       setWalletAddress(address);
       setWalletInput(address);
-      handleWalletChange('mobile')
+      handleWalletChange("mobile");
     }
     if (
       dappConnected !== null &&
       dappName !== null &&
       walletAddressList !== null &&
-      dappConnected !== '' &&
-      dappName !== '' &&
-      walletAddressList !== ''
+      dappConnected !== "" &&
+      dappName !== "" &&
+      walletAddressList !== ""
     ) {
       setDAppWallet({
-        connected: dappConnected === 'true' ? true : false,
+        connected: dappConnected === "true" ? true : false,
         name: dappName,
         addresses: JSON.parse(walletAddressList),
       });
-      handleWalletChange(dappName.toLowerCase())
+      handleWalletChange(dappName.toLowerCase());
     }
     // refresh connection
     try {
-      if (localStorage.getItem(DAPP_CONNECTED) === 'true') {
+      if (localStorage.getItem(DAPP_CONNECTED) === "true") {
         window.ergoConnector[String(localStorage.getItem(DAPP_NAME))]
           .isConnected()
           .then((res: any) => {
-            console.log(res)
             if (!res)
               window.ergoConnector[String(localStorage.getItem(DAPP_NAME))]
-                .connect({createErgoObject: false})
+                .connect({ createErgoObject: false })
                 .then((res: any) => {
                   if (!res) clearWallet();
                 });
@@ -174,29 +176,29 @@ export const AddWallet = () => {
     setDAppError(false);
     setDAppWallet({
       connected: false,
-      name: '',
+      name: "",
       addresses: [],
     });
   };
 
   const clearWallet = async () => {
-    if (expanded === 'safew' || expanded === 'nautilus') {
+    if (expanded === "safew" || expanded === "nautilus") {
       // @ts-ignore
-      await ergoConnector[expanded].disconnect()
+      await ergoConnector[expanded].disconnect();
       // router.reload();
       // localStorage.setItem('modalOpen', 'true');
     }
     // clear state and local storage
-    setWalletInput('');
-    setWalletAddress('');
+    setWalletInput("");
+    setWalletAddress("");
     // clear dApp state
     setDAppError(false);
     setDAppWallet({
       connected: false,
-      name: '',
+      name: "",
       addresses: [],
     });
-    setExpanded(false)
+    setExpanded(false);
   };
 
   const handleWalletFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -217,7 +219,9 @@ export const AddWallet = () => {
         await dAppLoad(wallet);
         setLoading(false);
         return;
-      } else if (await walletMapper[wallet].connect({createErgoObject: false})) {
+      } else if (
+        await walletMapper[wallet].connect({ createErgoObject: false })
+      ) {
         await dAppLoad(wallet);
         setLoading(false);
         return;
@@ -240,7 +244,7 @@ export const AddWallet = () => {
       const address_unused = await context.get_unused_addresses(); // eslint-disable-line
       const addresses = [...address_used, ...address_unused];
       // use the first used address if available or the first unused one if not as default
-      const address = addresses.length ? addresses[0] : '';
+      const address = addresses.length ? addresses[0] : "";
       setWalletAddress(address);
       setWalletInput(address);
       // update dApp state
@@ -255,7 +259,7 @@ export const AddWallet = () => {
       // update dApp state
       setDAppWallet({
         connected: false,
-        name: '',
+        name: "",
         addresses: [],
       });
       setDAppError(true);
@@ -291,23 +295,23 @@ export const AddWallet = () => {
 
   const wallets = [
     {
-      name: 'Nautilus',
-      icon: '/images/wallets/nautilus-128.png',
-      description: 'Connect automatically signing with your wallet',
+      name: "Nautilus",
+      icon: "/images/wallets/nautilus-128.png",
+      description: "Connect automatically signing with your wallet",
     },
     {
-      name: 'SAFEW',
-      icon: '/images/wallets/safew_icon_128.png',
-      description: 'Connect automatically signing with your wallet',
+      name: "SAFEW",
+      icon: "/images/wallets/safew_icon_128.png",
+      description: "Connect automatically signing with your wallet",
     },
     {
-      name: 'Mobile',
-      icon: '/images/wallets/mobile.webp',
-      description: 'Enter your wallet address manually',
+      name: "Mobile",
+      icon: "/images/wallets/mobile.webp",
+      description: "Enter your wallet address manually",
     },
-  ]
+  ];
 
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <>
       <Dialog
@@ -317,12 +321,12 @@ export const AddWallet = () => {
       >
         <DialogTitle
           sx={{
-            textAlign: 'center',
-            fontWeight: '800',
-            fontSize: '32px',
+            textAlign: "center",
+            fontWeight: "800",
+            fontSize: "32px",
           }}
         >
-          {walletAddress != '' ? 'Wallet Connected' : 'Connect Wallet'}
+          {walletAddress != "" ? "Wallet Connected" : "Connect Wallet"}
         </DialogTitle>
         <DialogContent sx={{ pb: 0 }}>
           {/* <DialogContentText sx={{ textAlign: 'center', mb: '24px' }}>
@@ -330,32 +334,41 @@ export const AddWallet = () => {
           </DialogContentText> */}
           {wallets.map((props, i) => {
             return (
-              <Collapse in={expanded === props.name.toLowerCase() || expanded === false} mountOnEnter unmountOnExit key={i}>
+              <Collapse
+                in={expanded === props.name.toLowerCase() || expanded === false}
+                mountOnEnter
+                unmountOnExit
+                key={i}
+              >
                 <Button
                   fullWidth
-                  disabled={walletAddress != ''}
+                  disabled={walletAddress != ""}
                   sx={{
-                    borderRadius: '6px',
-                    p: '0.5rem',
-                    justifyContent: 'space-between',
-                    mb: '12px',
-                    display: 'flex',
-                    minWidth: fullScreen ? '90vw' : '500px',
+                    borderRadius: "6px",
+                    p: "0.5rem",
+                    justifyContent: "space-between",
+                    mb: "12px",
+                    display: "flex",
+                    minWidth: fullScreen ? "90vw" : "500px",
                   }}
-                  onClick={expanded === false ? () => handleWalletChange(props.name.toLowerCase()) : () => handleWalletChange(false)}
+                  onClick={
+                    expanded === false
+                      ? () => handleWalletChange(props.name.toLowerCase())
+                      : () => handleWalletChange(false)
+                  }
                 >
                   <Box
                     sx={{
                       fontSize: "1.2rem",
                       color: "text.primary",
-                      fontWeight: '400',
-                      textAlign: 'left',
-                      display: 'flex',
+                      fontWeight: "400",
+                      textAlign: "left",
+                      display: "flex",
                     }}
                   >
                     <Avatar
                       src={props.icon}
-                      variant={props.name === "SAFEW" ? 'square' : 'circular'}
+                      variant={props.name === "SAFEW" ? "square" : "circular"}
                       sx={{
                         height: "3rem",
                         width: "3rem",
@@ -367,7 +380,7 @@ export const AddWallet = () => {
                         sx={{
                           fontSize: "1.1rem",
                           color: "text.secondary",
-                          fontWeight: '400'
+                          fontWeight: "400",
                         }}
                       >
                         {props.name}
@@ -376,30 +389,35 @@ export const AddWallet = () => {
                         sx={{
                           fontSize: ".9rem",
                           color: "text.secondary",
-                          fontWeight: '400'
+                          fontWeight: "400",
                         }}
                       >
                         {props.description}
                       </Typography>
                     </Box>
                   </Box>
-                  <Box sx={{
-                    transform: expanded === props.name.toLowerCase() ? 'rotate(0deg)' : 'rotate(-90deg)',
-                    transition: 'transform 100ms ease-in-out',
-                    textAlign: 'right',
-                    lineHeight: '0',
-                    mr: '-0.5rem'
-                  }}>
+                  <Box
+                    sx={{
+                      transform:
+                        expanded === props.name.toLowerCase()
+                          ? "rotate(0deg)"
+                          : "rotate(-90deg)",
+                      transition: "transform 100ms ease-in-out",
+                      textAlign: "right",
+                      lineHeight: "0",
+                      mr: "-0.5rem",
+                    }}
+                  >
                     <ExpandMoreIcon />
                   </Box>
                 </Button>
               </Collapse>
-            )
+            );
           })}
 
-          <Collapse in={expanded === 'mobile'} mountOnEnter unmountOnExit>
+          <Collapse in={expanded === "mobile"} mountOnEnter unmountOnExit>
             <TextField
-              disabled={walletAddress != ''}
+              disabled={walletAddress != ""}
               autoFocus
               margin="dense"
               id="name"
@@ -411,17 +429,21 @@ export const AddWallet = () => {
               onChange={handleWalletFormChange}
               error={!isAddressValid(walletInput)}
               sx={{
-                '& .MuiOutlinedInput-input:-webkit-autofill': {
-                  boxShadow: '0 0 0 100px rgba(35, 35, 39, 1) inset',
+                "& .MuiOutlinedInput-input:-webkit-autofill": {
+                  boxShadow: "0 0 0 100px rgba(35, 35, 39, 1) inset",
                 },
               }}
             />
             <FormHelperText error={true}>
-              {!isAddressValid(walletInput) ? 'Invalid ergo address.' : ''}
+              {!isAddressValid(walletInput) ? "Invalid ergo address." : ""}
             </FormHelperText>
           </Collapse>
 
-          <Collapse in={expanded !== 'mobile' && expanded !== false} mountOnEnter unmountOnExit>
+          <Collapse
+            in={expanded !== "mobile" && expanded !== false}
+            mountOnEnter
+            unmountOnExit
+          >
             <DappWallet
               connect={dAppConnect}
               setLoading={setLoading}
@@ -435,16 +457,13 @@ export const AddWallet = () => {
           </Collapse>
 
           {loading && (
-            <CircularProgress
-              sx={{ ml: 2, color: 'white' }}
-              size={'1.2rem'}
-            />
+            <CircularProgress sx={{ ml: 2, color: "white" }} size={"1.2rem"} />
           )}
 
           <FormHelperText error={true}>
             {dAppError
-              ? 'Failed to connect to wallet. Please retry after refreshing page.'
-              : ''}
+              ? "Failed to connect to wallet. Please retry after refreshing page."
+              : ""}
           </FormHelperText>
 
           {/* 
@@ -470,10 +489,12 @@ export const AddWallet = () => {
         <DialogActions>
           <Button onClick={handleClose}>Close Window</Button>
           <Button
-            onClick={walletAddress == '' ? handleSubmitWallet : () => clearWallet()}
+            onClick={
+              walletAddress == "" ? handleSubmitWallet : () => clearWallet()
+            }
             disabled={!isAddressValid(walletInput)}
           >
-            {walletAddress == '' ? 'Connect' : 'Remove Wallet'}
+            {walletAddress == "" ? "Connect" : "Remove Wallet"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -488,5 +509,12 @@ export function isAddressValid(address: string) {
     return false;
   }
 }
+
+export const getErgoWalletContext = async () => {
+  const walletConnector =
+    window.ergoConnector[localStorage.getItem(DAPP_NAME) ?? DAPP_NAME];
+  const context = await walletConnector.getContext();
+  return context;
+};
 
 export default AddWallet;

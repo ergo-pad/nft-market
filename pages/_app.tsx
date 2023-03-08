@@ -1,35 +1,38 @@
 import React, { useState, useEffect } from "react";
-import '@styles/globals.css'
-import type { AppProps } from 'next/app'
+import "@styles/globals.css";
+import type { AppProps } from "next/app";
 import { DarkTheme, LightTheme } from "@theme/theme";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { useMediaQuery, Theme } from "@mui/material";
-import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import Layout from "components/Layout";
 import Head from "next/head";
 import { AnimatePresence } from "framer-motion";
-import { ColorizeSharp } from "@mui/icons-material";
 import { ThemeContext } from "@contexts/ThemeContext";
-import { WalletContext } from '@contexts/WalletContext'
+import { WalletContext } from "@contexts/WalletContext";
 import { UserContext } from "@contexts/UserContext";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import AlertWrapper, { IAlertMessages } from "@components/AlertWrapper";
+import { ApiContext } from "@contexts/ApiContext";
+import AppApi from "@utils/api";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [theme, setTheme] = useState(LightTheme);
-  const [walletAddress, setWalletAddress] = useState('')
+  const [walletAddress, setWalletAddress] = useState("");
   const [dAppWallet, setDAppWallet] = useState({
     connected: false,
-    name: '',
-    addresses: [''],
-  })
+    name: "",
+    addresses: [""],
+  });
   const [expanded, setExpanded] = useState<string | false>(false);
-  const [addWalletModalOpen, setAddWalletModalOpen] = useState(false)
-  const [userInfo, setUserInfo] = useState({ address: '' })
+  const [addWalletModalOpen, setAddWalletModalOpen] = useState(false);
+  const [userInfo, setUserInfo] = useState({ address: "" });
+  const [alert, setAlert] = useState<IAlertMessages[]>([]);
 
   useEffect(() => {
-    setTheme(localStorage.getItem('darkToggle') === 'dark' ? DarkTheme : LightTheme)
+    setTheme(
+      localStorage.getItem("darkToggle") === "dark" ? DarkTheme : LightTheme
+    );
   }, []);
 
   return (
@@ -41,37 +44,47 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
       <LocalizationProvider
-            // @ts-ignore
-            dateAdapter={AdapterDayjs}
-          >
-      <ThemeProvider theme={theme}>
-        <ThemeContext.Provider value={{ theme, setTheme }}>
-          <WalletContext.Provider
-            value={{
-              walletAddress,
-              setWalletAddress,
-              dAppWallet,
-              setDAppWallet,
-              addWalletModalOpen,
-              setAddWalletModalOpen,
-              expanded,
-              setExpanded
-            }}
-          >
-            <UserContext.Provider value={{ userInfo, setUserInfo }}>
-              <CssBaseline enableColorScheme />
-              <AnimatePresence exitBeforeEnter>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </AnimatePresence>
-            </UserContext.Provider>
-          </WalletContext.Provider>
-        </ThemeContext.Provider>
-      </ThemeProvider>
+        // @ts-ignore
+        dateAdapter={AdapterDayjs}
+      >
+        <ThemeProvider theme={theme}>
+          <ThemeContext.Provider value={{ theme, setTheme }}>
+            <WalletContext.Provider
+              value={{
+                walletAddress,
+                setWalletAddress,
+                dAppWallet,
+                setDAppWallet,
+                addWalletModalOpen,
+                setAddWalletModalOpen,
+                expanded,
+                setExpanded,
+              }}
+            >
+              <UserContext.Provider value={{ userInfo, setUserInfo }}>
+                <ApiContext.Provider value={{api: new AppApi(setAlert)}}>
+                  <CssBaseline enableColorScheme />
+                  <AnimatePresence exitBeforeEnter>
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                  </AnimatePresence>
+                  <AlertWrapper
+                    alerts={alert}
+                    close={(i: number) => {
+                      setAlert((prevState) =>
+                        prevState.filter((_item, idx) => idx !== i)
+                      );
+                    }}
+                  />
+                </ApiContext.Provider>
+              </UserContext.Provider>
+            </WalletContext.Provider>
+          </ThemeContext.Provider>
+        </ThemeProvider>
       </LocalizationProvider>
     </>
-  )
+  );
 }
 
-export default MyApp
+export default MyApp;

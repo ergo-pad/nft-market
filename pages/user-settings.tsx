@@ -1,64 +1,79 @@
-import type { NextPage } from 'next'
-import React, { useState, useEffect, useContext } from 'react';
-import {
-  // useTheme,
-  // useMediaQuery,
-  Typography,
-  Button,
-  Box
-} from '@mui/material'
-import ButtonLink from '@components/ButtonLink'
-import ArtistForm from '@components/create/ArtistForm'
-import { IArtistData, artistDataInit } from '@pages/create'
-import UserProfile from '@components/UserProfile';
-import { WalletContext } from '@contexts/WalletContext';
+import type { NextPage } from "next";
+import React, { useContext, useState } from "react";
+import { Typography, Button, Box } from "@mui/material";
+import ArtistForm from "@components/create/ArtistForm";
+import { IArtistData, artistDataInit } from "@pages/create";
+import UserProfile from "@components/UserProfile";
+import { getErgoWalletContext } from "@components/wallet/AddWallet";
+import { ApiContext, IApiContext } from "@contexts/ApiContext";
 
 const UserSettings: NextPage = () => {
-  // const theme = useTheme()
-  // const upSm = useMediaQuery(theme.breakpoints.up('sm'))
-  const [artistData, setArtistData] = useState<IArtistData>(artistDataInit)
-  const {
-    walletAddress
-  } = useContext(WalletContext);
-  useEffect(() => {
-    setArtistData((prev) => (
-      {
-        ...prev,
-        address: walletAddress,
-      }
-    ))
-  }, [walletAddress])
-  const [clearArtistForm, setClearArtistForm] = useState(false)
+  const apiContext = useContext<IApiContext>(ApiContext);
+  const [userData, setUserData] = useState<IArtistData>(artistDataInit);
+  const [clearUserForm, setClearUserForm] = useState(false);
+
+  const getAuthToken = async (address: string) => {
+    const authResp = await apiContext.api.post("/auth", {
+      address: address,
+    });
+    const auth = authResp.data;
+    const context = await getErgoWalletContext();
+    const response = await context.auth(address, auth.signingMessage);
+    response.proof = Buffer.from(response.proof, "hex").toString("base64");
+    const verifyResp = await apiContext.api.post(
+      auth.verificationUrl,
+      response
+    );
+    const verify = verifyResp.data;
+    return verify.verificationToken;
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const verificationToken = await getAuthToken(userData.address);
+      const updateUserData = {
+        ...userData,
+        pfpUrl: userData.avatarUrl,
+        social: userData.social ?? [],
+        verificationToken: verificationToken,
+        id: crypto.randomUUID(),
+      };
+      await apiContext.api.post("/user", updateUserData);
+      apiContext.api.ok("User Details Updated");
+    } catch (e: any) {
+      apiContext.api.error(e);
+    }
+  };
+
   return (
     <UserProfile
-      address={artistData.address}
-      username={artistData.name}
-      pfpUrl={artistData.avatarUrl}
-      bannerUrl={artistData.bannerUrl}
-      tagline={artistData.tagline}
-      website={artistData.website}
-      socialLinks={artistData.social}
+      address={userData.address}
+      username={userData.name}
+      pfpUrl={userData.avatarUrl}
+      bannerUrl={userData.bannerUrl}
+      tagline={userData.tagline}
+      website={userData.website}
+      socialLinks={userData.social}
     >
-      <Typography variant="h4">
-        Update Your Profile
-      </Typography>
+      <Typography variant="h4">Update Your Profile</Typography>
       <Typography variant="body2">
-        Change your user profile here. You must sign with your wallet to verify the changes.
+        Change your user profile here. You must sign with your wallet to verify
+        the changes.
       </Typography>
       <ArtistForm
-        artistData={artistData}
-        setArtistData={setArtistData}
-        clearForm={clearArtistForm}
-        setClearForm={setClearArtistForm}
+        artistData={userData}
+        setArtistData={setUserData}
+        clearForm={clearUserForm}
+        setClearForm={setClearUserForm}
         disableArtist={true}
       />
-      <Box sx={{ width: '100%', textAlign: 'right' }}>
-        <Button variant="contained">
+      <Box sx={{ width: "100%", textAlign: "right" }}>
+        <Button variant="contained" onClick={handleSubmit}>
           Save Changes
         </Button>
       </Box>
     </UserProfile>
-  )
-}
+  );
+};
 
-export default UserSettings
+export default UserSettings;
