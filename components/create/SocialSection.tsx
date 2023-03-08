@@ -18,9 +18,11 @@ interface ISocialItem {
 interface ISocialSectionProps {
   data: ISocialItem[];
   setData: React.Dispatch<React.SetStateAction<ISocialItem[]>>;
+  errors: boolean[]
+  setErrors: React.Dispatch<React.SetStateAction<boolean[]>>;
 }
 
-const SocialSection: FC<ISocialSectionProps> = ({ data, setData }) => {
+const SocialSection: FC<ISocialSectionProps> = ({ data, setData, errors, setErrors }) => {
   return (
     <>
       <Typography variant="h6" sx={{ mb: '12px' }}>
@@ -29,17 +31,22 @@ const SocialSection: FC<ISocialSectionProps> = ({ data, setData }) => {
       <TransitionGroup>
         {data.map((item, i) => (
           <Collapse key={item.id}>
-            <SocialItem socialData={data} setSocialData={setData} index={i} id={item.id} />
+            <SocialItem socialData={data} setSocialData={setData} index={i} id={item.id} errors={errors} setErrors={setErrors} />
           </Collapse>
         ))}
       </TransitionGroup>
       <Box sx={{ width: '100%', textAlign: 'center' }}>
         <Button onClick={() => {
-          setData(data.concat([{
-            id: uuidv4(),
-            network: '',
-            url: ''
-          }]))
+          setData((prev) => {
+            return prev.concat([{
+              id: uuidv4(),
+              network: '',
+              url: ''
+            }])
+          })
+          setErrors((prev) => {
+            return prev.concat(false)
+          })
         }}>
           Add another
         </Button>

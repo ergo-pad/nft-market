@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Grid,
   Container,
@@ -8,10 +8,15 @@ import {
   useTheme,
   useMediaQuery,
   Paper,
-  Divider
+  Divider,
+  MenuList,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material'
 import Link from '@components/Link'
 import Image from 'next/image';
+import SocialIcons from '@components/svgs/SocialIcons';
 
 interface IUserProfileProps {
   address?: string;
@@ -42,6 +47,27 @@ const UserProfile: FC<IUserProfileProps> = (
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
   const lessLg = useMediaQuery(theme.breakpoints.down('lg'))
+
+  const [websiteLink, setWebsiteLink] = useState({
+    link: '',
+    name: ''
+  })
+  useEffect(() => {
+    let link = ''
+    let url = ''
+    if (website !== undefined) {
+      link = website
+      if (!/(http[s]?:\/\/)/.test(link)) {
+        link = 'https://' + link
+      }
+      url = website.replace(/(http[s]?:\/\/)/, '')
+      url = url.replace(/(www\.)/, '')
+    }
+    setWebsiteLink({
+      link: link,
+      name: url
+    })
+  }, [website])
 
   return (
     <>
@@ -149,7 +175,7 @@ const UserProfile: FC<IUserProfileProps> = (
                     </Link>
                   </Box>
 
-                  <Grid container sx={{ textAlign: 'center', width: '100%' }}>
+                  {/* <Grid container sx={{ textAlign: 'center', width: '100%' }}>
                     <Grid item xs>
                       <Typography
                         sx={{
@@ -186,33 +212,66 @@ const UserProfile: FC<IUserProfileProps> = (
                         NFTs Sold
                       </Typography>
                     </Grid>
-                  </Grid>
+                  </Grid> */}
 
-                  <Divider sx={{ my: '24px' }} />
+
+
                   {tagline &&
-                    <Typography sx={{ mb: '12px' }}>
-                      {tagline}
-                    </Typography>
+                    <>
+                      <Divider sx={{ mb: '24px' }} />
+                      <Typography sx={{ mb: '24px' }}>
+                        {tagline}
+                      </Typography>
+                    </>
                   }
 
-                  {website && (
-                    <Typography sx={{ mb: '18px' }}>
-                      {website}
-                    </Typography>
+                  {(website || (socialLinks && socialLinks.length > 0)) && (
+                    <Divider sx={{ mb: '24px' }} />
                   )}
 
-                  {socialLinks && (
-                    <>
+                  {website && (
+                    <Box sx={{ mb: '18px' }}>
                       <Typography variant='h6' sx={{ mb: '6px' }}>
+                        Website
+                      </Typography>
+                      <Link href={websiteLink.link}>
+                        {websiteLink.name}
+                      </Link>
+                    </Box>
+                  )}
+
+                  {socialLinks && socialLinks.length > 0 && socialLinks[0].url !== '' && (
+                    <>
+                      <Typography variant='h6' sx={{ mb: '0' }}>
                         Social Links
                       </Typography>
-                      {socialLinks.map((item, i) => {
-                        return (
-                          <Typography key={i}>
-                            {item.url}
-                          </Typography>
-                        )
-                      })}
+                      <MenuList dense>
+                        {socialLinks.map((item, i) => {
+                          let link = item.url
+                          if (!/(http[s]?:\/\/)/.test(link)) {
+                            link = 'https://' + link
+                          }
+                          let url = item.url.replace(/(http[s]?:\/\/)/, '')
+                          url = url.replace(/(www\.)/, '')
+                          if (item.socialNetwork !== 'other' && item.socialNetwork !== '') {
+                            url = url.replace(/([^\/\s]+\/)/, '')
+                          }
+                          return (
+                            <MenuItem key={i} onClick={() => window.open(link, "_blank")} sx={{ pl: '6px', mb: 0, ml: '-6px', borderRadius: '6px' }}>
+                              {item.socialNetwork !== 'other' && item.socialNetwork !== '' && (
+                                <ListItemIcon>
+                                  <SocialIcons icon={item.socialNetwork.toLowerCase()} />
+                                </ListItemIcon>
+                              )}
+                              <ListItemText>
+                                <Typography sx={{ wordBreak: 'break-all', overflowWrap: 'break-word', whiteSpace: 'normal' }}>
+                                  {url}
+                                </Typography>
+                              </ListItemText>
+                            </MenuItem>
+                          )
+                        })}
+                      </MenuList>
                     </>
                   )}
                 </Paper>
