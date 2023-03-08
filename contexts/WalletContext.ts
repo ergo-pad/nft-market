@@ -1,9 +1,9 @@
 import React, { createContext } from "react";
 
 interface IDAppWallet {
-  connected: boolean,
-  name: string,
-  addresses: string[],
+  connected: boolean;
+  name: string;
+  addresses: string[];
 }
 
 export interface IWalletContext {
