@@ -107,18 +107,20 @@ const SocialItem: FC<{
                 label="Sort By"
                 onChange={handleChange}
               >
-                <MenuItem value={"telegram"}>Telegram</MenuItem>
-                <MenuItem value={"discord"}>Discord</MenuItem>
-                <MenuItem value={"twitter"}>Twitter</MenuItem>
-                <MenuItem value={"reddit"}>Reddit</MenuItem>
-                <MenuItem value={"tiktok"}>TikTok</MenuItem>
-                <MenuItem value={"medium"}>Medium</MenuItem>
-                <MenuItem value={"linkdin"}>Linkdin</MenuItem>
-                <MenuItem value={"twitch"}>Twitch</MenuItem>
                 <MenuItem value={"behance"}>Behance</MenuItem>
+                <MenuItem value={"discord"}>Discord</MenuItem>
+                <MenuItem value={"facebook"}>Facebook</MenuItem>
+                <MenuItem value={"github"}>Github</MenuItem>
+                <MenuItem value={"instagram"}>Instagram</MenuItem>
+                <MenuItem value={"linkedin"}>Linkedin</MenuItem>
+                <MenuItem value={"medium"}>Medium</MenuItem>
+                <MenuItem value={"reddit"}>Reddit</MenuItem>
+                <MenuItem value={"telegram"}>Telegram</MenuItem>
+                <MenuItem value={"tiktok"}>TikTok</MenuItem>
+                <MenuItem value={"twitch"}>Twitch</MenuItem>
+                <MenuItem value={"twitter"}>Twitter</MenuItem>
                 <MenuItem value={"youtube"}>YouTube</MenuItem>
                 <MenuItem value={"vimeo"}>Vimeo</MenuItem>
-                <MenuItem value={"instagram"}>Instagram</MenuItem>
                 <MenuItem value={"other"}>Other</MenuItem>
               </Select>
             </FormControl>

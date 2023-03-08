@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import type { NextPage } from 'next'
 import {
   Grid,
@@ -19,6 +19,7 @@ import CollectionForm from '@components/create/CollectionForm'
 import TokenDetailsForm, { ITraitsData, INftData } from '@components/create/TokenDetailsForm'
 import SaleInfoForm from '@components/create/SaleInfoForm'
 import { v4 as uuidv4 } from 'uuid';
+import { WalletContext } from '@contexts/WalletContext';
 
 const steps = [
   'Artist',
@@ -176,6 +177,9 @@ const Create: NextPage = () => {
   const theme = useTheme()
   // const upSm = useMediaQuery(theme.breakpoints.up('sm')) // not currently used
   const [activeStep, setActiveStep] = React.useState(0);
+  const {
+    walletAddress
+  } = useContext(WalletContext);
 
   // FORM DATA STATES //
   const [artistData, setArtistData] = useState<IArtistData>(artistDataInit)
@@ -194,6 +198,14 @@ const Create: NextPage = () => {
     if (localStorageData[2] !== null) setTokenDetailsData(JSON.parse(localStorageData[2]))
     if (localStorageData[3] !== null) setSaleInfoData(JSON.parse(localStorageData[3]))
   }, [])
+  useEffect(() => {
+    setArtistData((prev) => (
+      {
+        ...prev,
+        address: walletAddress,
+      }
+    ))
+  }, [walletAddress])
 
   // CLEAR FORM STATES //
   const [clearArtistForm, setClearArtistForm] = useState(false)

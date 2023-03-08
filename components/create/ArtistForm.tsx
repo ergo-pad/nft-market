@@ -29,7 +29,7 @@ interface IArtistFormProps {
 }
 
 export const validateWebsiteUrl = (websiteUrl: string) => {
-  const urlRegExp: RegExp = /^((ftp|http|https):\/\/)?(www.)?(?!.*(ftp|http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+((\/)[\w#]+)*(\/\w+\?[a-zA-Z0-9_]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?\/?$/
+  const urlRegExp: RegExp = /^((http|https):\/\/)?(www.)?(?!.*(http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+((\/)[\w#@.-]+)*(\/\w+\?[a-zA-Z0-9_]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?\/?$/
   return urlRegExp.test(String(websiteUrl).toLowerCase());
 }
 
