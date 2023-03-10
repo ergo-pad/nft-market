@@ -18,28 +18,30 @@ import Link from "@components/Link";
 import Image from "next/image";
 import SocialIcons from "@components/svgs/SocialIcons";
 
-interface IUserProfileProps {
+export interface ICollectionProfileProps {
   address?: string;
-  username?: string;
-  pfpUrl?: string;
+  collectionName?: string;
+  collectionLogo?: string;
   bannerUrl?: string;
-  tagline?: string;
+  description?: string;
   website?: string;
   socialLinks?: {
     socialNetwork: string;
     url: string;
   }[];
+  category: string;
   children?: React.ReactNode;
 }
 
-const UserProfile: FC<IUserProfileProps> = ({
+const CollectionProfile: FC<ICollectionProfileProps> = ({
   address,
-  username,
-  pfpUrl,
+  collectionName,
+  collectionLogo,
   bannerUrl,
   website,
-  tagline,
+  description,
   socialLinks,
+  category,
   children,
 }) => {
   const theme = useTheme();
@@ -110,7 +112,7 @@ const UserProfile: FC<IUserProfileProps> = ({
               {/* <Box
                 sx={{
                   // position: "sticky",
-                  top: "100px",
+                  // top: "100px",
                   // height: '100%',
                   width: "100%",
                 }}
@@ -124,8 +126,8 @@ const UserProfile: FC<IUserProfileProps> = ({
                   }}
                 >
                   <Avatar
-                    alt={username ? username : address}
-                    src={pfpUrl ? pfpUrl : ""}
+                    alt={collectionName ? collectionName : address}
+                    src={collectionLogo ? collectionLogo : ""}
                     sx={{
                       width: lessLg ? 180 : 120,
                       height: lessLg ? 180 : 120,
@@ -134,7 +136,7 @@ const UserProfile: FC<IUserProfileProps> = ({
                       bgcolor: theme.palette.primary.main,
                     }}
                   />
-                  {username && (
+                  {collectionName && (
                     <Typography
                       sx={{
                         fontSize: "1.2rem",
@@ -143,8 +145,8 @@ const UserProfile: FC<IUserProfileProps> = ({
                         textAlign: "center",
                       }}
                     >
-                      {username.slice(0, 12) +
-                        (username.length > 12 ? "..." : "")}
+                      {collectionName.slice(0, 12) +
+                        (collectionName.length > 12 ? "..." : "")}
                     </Typography>
                   )}
                   <Box
@@ -176,15 +178,15 @@ const UserProfile: FC<IUserProfileProps> = ({
                       {address}
                     </Link>
                   </Box>
-                  {/* <Grid container sx={{ textAlign: 'center', width: '100%' }}>
-                    <Grid item xs>
+                  <Grid container spacing={2} sx={{ textAlign: 'center', width: '100%', mb: '24px' }}>
+                    <Grid item xs={6} sm={3} lg={6}>
                       <Typography
                         sx={{
                           fontSize: "1.5rem",
                           fontWeight: "700",
                         }}
                       >
-                        -
+                        3000
                       </Typography>
                       <Typography
                         sx={{
@@ -192,32 +194,68 @@ const UserProfile: FC<IUserProfileProps> = ({
                           color: theme.palette.text.secondary,
                         }}
                       >
-                        NFTs Owned
+                        Total Tokens
                       </Typography>
                     </Grid>
-                    <Grid item xs>
+                    <Grid item xs={6} sm={3} lg={6}>
                       <Typography
                         sx={{
                           fontSize: "1.5rem",
                           fontWeight: "700",
                         }}
                       >
-                        -
+                        3.5k
                       </Typography>
                       <Typography
                         sx={{
                           fontSize: "0.8rem",
                           color: theme.palette.text.secondary,
                         }}
-                      >
-                        NFTs Sold
+                      > 
+                        Erg Volume
                       </Typography>
                     </Grid>
-                  </Grid> */}
-                  {tagline && (
+                    <Grid item xs={6} sm={3} lg={6}>
+                      <Typography
+                        sx={{
+                          fontSize: "1.5rem",
+                          fontWeight: "700",
+                        }}
+                      >
+                        40
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "0.8rem",
+                          color: theme.palette.text.secondary,
+                        }}
+                      > 
+                        Erg Floor
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={3} lg={6}>
+                      <Typography
+                        sx={{
+                          fontSize: "1.5rem",
+                          fontWeight: "700",
+                        }}
+                      >
+                        421
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "0.8rem",
+                          color: theme.palette.text.secondary,
+                        }}
+                      > 
+                        Owners
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  {description && (
                     <>
                       <Divider sx={{ mb: "24px" }} />
-                      <Typography sx={{ mb: "24px" }}>{tagline}</Typography>
+                      <Typography sx={{ mb: "24px" }}>{description}</Typography>
                     </>
                   )}
                   {(website || (socialLinks && socialLinks.length > 0)) && (
@@ -301,4 +339,4 @@ const UserProfile: FC<IUserProfileProps> = ({
   );
 };
 
-export default UserProfile;
+export default CollectionProfile;

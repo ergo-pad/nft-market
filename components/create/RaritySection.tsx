@@ -18,10 +18,10 @@ interface IRaritySectionProps {
 }
 
 const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
-  const [images, setImages] = useState(false)
-  const toggleImages = () => {
-    setImages(!images)
-  }
+  // const [images, setImages] = useState(false)
+  // const toggleImages = () => {
+  //   setImages(!images)
+  // }
   return (
     <>
       <Grid
@@ -36,7 +36,7 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
             Rarity
           </Typography>
         </Grid>
-        <Grid
+        {/* <Grid
           item
           xs="auto"
           onClick={() => toggleImages()}
@@ -54,7 +54,7 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
             disableRipple
             checked={images}
           />
-        </Grid>
+        </Grid> */}
       </Grid>
 
       <Typography variant="body2" sx={{ lineHeight: 1.3, mb: '12px', }}>
@@ -64,7 +64,12 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
       <TransitionGroup>
         {data.map((item, i) => (
           <Collapse key={item.id}>
-            <RarityItem data={data} setData={setData} i={i} images={images} />
+            <RarityItem
+              data={data}
+              setData={setData}
+              i={i}
+            // images={images} 
+            />
           </Collapse>
         ))}
       </TransitionGroup>
