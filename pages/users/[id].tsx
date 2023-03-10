@@ -147,13 +147,13 @@ const User: NextPage = () => {
       if (
         scrollPos <
         userProfileContainer.current.clientHeight -
-          userProfileCard.current.clientHeight
+        userProfileCard.current.clientHeight
       ) {
         setScrollY(scrollPos);
       } else {
         setScrollY(
           userProfileContainer.current.clientHeight -
-            userProfileCard.current.clientHeight
+          userProfileCard.current.clientHeight
         );
       }
     } else {
@@ -180,6 +180,46 @@ const User: NextPage = () => {
     if (id) getUserProfile();
   }, [id]);
 
+  const SearchAndFilter: FC = () => {
+    return (
+      <Grid container spacing={3} sx={{ mb: '24px' }}>
+        {useMediaQuery(theme.breakpoints.up("lg")) ? (
+          <>
+            <Grid item md={7}>
+              <SearchBar />
+            </Grid>
+            <Grid item md={5}>
+              <SortBy />
+            </Grid>
+          </>
+        ) : (
+          <>
+            <Grid item xs>
+              <SearchBar />
+            </Grid>
+            <Grid item xs="auto">
+              <Button
+                sx={{ height: "100%" }}
+                variant="outlined"
+                aria-label="filter"
+                onClick={handleDialogClick}
+              >
+                <FilterAltIcon />
+              </Button>
+              <ConfirmationDialogRaw
+                id="ringtone-menu"
+                keepMounted
+                open={filterDialogOpen}
+                onClose={handleDialogClose}
+                value={filterDialogvalue}
+              />
+            </Grid>
+          </>
+        )}
+      </Grid>
+    )
+  }
+
   return (
     <>
       <UserProfile
@@ -191,7 +231,7 @@ const User: NextPage = () => {
         socialLinks={userProfile.socialLinks ? user.socialLinks : []}
       >
         <TabContext value={tabValue}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider", mb: "24px" }}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList
               onChange={handleTabChange}
               aria-label="NFT Information Tabs"
@@ -201,45 +241,10 @@ const User: NextPage = () => {
             >
               <Tab label="On Sale" value="on-sale" />
               <Tab label="Owned" value="owned" />
-              <Tab label="Watch List" value="watch-list" />
               <Tab label="Activity" value="activity" />
             </TabList>
           </Box>
-          <Grid container spacing={3}>
-            {useMediaQuery(theme.breakpoints.up("lg")) ? (
-              <>
-                <Grid item md={7}>
-                  <SearchBar />
-                </Grid>
-                <Grid item md={5}>
-                  <SortBy />
-                </Grid>
-              </>
-            ) : (
-              <>
-                <Grid item xs>
-                  <SearchBar />
-                </Grid>
-                <Grid item xs="auto">
-                  <Button
-                    sx={{ height: "100%" }}
-                    variant="outlined"
-                    aria-label="filter"
-                    onClick={handleDialogClick}
-                  >
-                    <FilterAltIcon />
-                  </Button>
-                  <ConfirmationDialogRaw
-                    id="ringtone-menu"
-                    keepMounted
-                    open={filterDialogOpen}
-                    onClose={handleDialogClose}
-                    value={filterDialogvalue}
-                  />
-                </Grid>
-              </>
-            )}
-          </Grid>
+
           {/* ON SALE TAB */}
           <Slide
             direction="up"
@@ -248,9 +253,10 @@ const User: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="on-sale" sx={customTabPanelSx}>
+              <SearchAndFilter />
               <Grid
                 container
-                spacing={4}
+                spacing={3}
                 columns={{ xs: 1, sm: 2, md: 3 }}
                 sx={{ mb: "24px" }}
               >
@@ -290,6 +296,7 @@ const User: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="owned" sx={customTabPanelSx}>
+            <SearchAndFilter />
               <Grid
                 container
                 spacing={4}
@@ -322,50 +329,6 @@ const User: NextPage = () => {
                   Load more...
                 </Button>
               </Box>
-            </TabPanel>
-          </Slide>
-          {/* WATCH LIST TAB */}
-          <Slide
-            direction="up"
-            in={tabValue == "watch-list"}
-            mountOnEnter
-            unmountOnExit
-          >
-            <TabPanel value="watch-list" sx={customTabPanelSx}>
-              <Typography sx={{ mb: "24px" }}>
-                <Grid
-                  container
-                  spacing={4}
-                  columns={{ xs: 1, sm: 2, md: 3 }}
-                  sx={{ mb: "24px" }}
-                >
-                  {recentNfts.map((props, i) => {
-                    return (
-                      <Grid key={i} item xs={1}>
-                        <NftCard
-                          key={i}
-                          link={props.link}
-                          imgUrl={props.imgUrl}
-                          name={props.name}
-                          price={props.price}
-                          rarity={props.rarity}
-                          time={props.time}
-                          collection={props.collection}
-                          collectionLink={props.collectionLink}
-                          artist={props.artist}
-                          artistLink={props.artistLink}
-                          artistLogo={props.artistLogo}
-                        />
-                      </Grid>
-                    );
-                  })}
-                </Grid>
-                <Box sx={{ width: "100%", textAlign: "center" }}>
-                  <Button variant="contained" sx={{}}>
-                    Load more...
-                  </Button>
-                </Box>{" "}
-              </Typography>
             </TabPanel>
           </Slide>
           {/* ACTIVITY TAB */}

@@ -44,7 +44,7 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, c
     <Card
     elevation={0}
       sx={{
-        minWidth: '276px',
+        // minWidth: '276px',
         mb: '6px',
       }}
     >

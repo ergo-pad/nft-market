@@ -20,11 +20,16 @@ import { IFileUrl } from '@components/forms/FileUploadArea';
 const TraitItem: FC<{
   data: ITraitsData[];
   setData: React.Dispatch<React.SetStateAction<ITraitsData[]>>;
-  images?: boolean;
+  // images?: boolean;
   i: number;
-}> = ({ data, setData, i, images }) => {
+}> = ({ 
+  data, 
+  setData, 
+  i, 
+  // images 
+}) => {
   const [traitImg, setTraitImg] = useState<IFileUrl[]>([])
-  const [imgClearTrigger, setImgClearTrigger] = useState(false)
+  // const [imgClearTrigger, setImgClearTrigger] = useState(false)
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
 
@@ -94,7 +99,7 @@ const TraitItem: FC<{
 
   return (
     <>
-      <Collapse in={images} mountOnEnter unmountOnExit>
+      {/* <Collapse in={images} mountOnEnter unmountOnExit>
         <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="stretch">
           <Grid item xs={12} sm={3}>
             <FileUploadArea
@@ -194,8 +199,8 @@ const TraitItem: FC<{
             </Grid>
           </Grid>
         </Grid>
-      </Collapse>
-      <Collapse in={!images} mountOnEnter unmountOnExit>
+      </Collapse> */}
+      {/* <Collapse in={!images} mountOnEnter unmountOnExit> */}
         <Grid container spacing={1} sx={{ mb: '16px' }}>
           <Grid item xs={12}>
             <Grid
@@ -280,7 +285,7 @@ const TraitItem: FC<{
             </Grid>
           </Grid>
         </Grid>
-      </Collapse>
+      {/* </Collapse> */}
     </>
   )
 }

@@ -16,9 +16,14 @@ import { IFileUrl } from '@components/forms/FileUploadArea';
 const RarityItem: FC<{
   data: IRarityData[];
   setData: React.Dispatch<React.SetStateAction<IRarityData[]>>;
-  images?: boolean;
+  // images?: boolean;
   i: number;
-}> = ({ data, setData, i, images }) => {
+}> = ({ 
+  data, 
+  setData, 
+  i, 
+  // images 
+}) => {
   const [rarityImg, setRarityImg] = useState<IFileUrl[]>([])
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
@@ -60,7 +65,7 @@ const RarityItem: FC<{
 
   return (
     <>
-      <Collapse in={images} mountOnEnter unmountOnExit>
+      {/* <Collapse in={images} mountOnEnter unmountOnExit>
         <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="stretch">
           <Grid item xs={12} sm={3}>
             <FileUploadArea
@@ -124,8 +129,8 @@ const RarityItem: FC<{
             </Grid>
           </Grid>
         </Grid>
-      </Collapse>
-      <Collapse in={!images} mountOnEnter unmountOnExit>
+      </Collapse> */}
+      {/* <Collapse in={!images} mountOnEnter unmountOnExit> */}
         <Grid container spacing={1} sx={{ mb: '16px' }}>
           <Grid item xs={12} sm={3}>
             <Grid
@@ -182,7 +187,7 @@ const RarityItem: FC<{
             </Grid>
           </Grid>
         </Grid>
-      </Collapse>
+      {/* </Collapse> */}
     </>
   )
 }

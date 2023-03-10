@@ -18,10 +18,10 @@ interface ITraitSectionProps {
 }
 
 const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
-  const [images, setImages] = useState(false)
-  const toggleImages = () => {
-    setImages(!images)
-  }
+  // const [images, setImages] = useState(false)
+  // const toggleImages = () => {
+  //   setImages(!images)
+  // }
   return (
     <>
       <Grid
@@ -36,7 +36,7 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
             Additional Traits
           </Typography>
         </Grid>
-        <Grid
+        {/* <Grid
           item
           xs="auto"
           onClick={() => toggleImages()}
@@ -54,17 +54,22 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
             disableRipple
             checked={images}
           />
-        </Grid>
+        </Grid> */}
       </Grid>
 
       <Typography variant="body2" sx={{ lineHeight: 1.3, mb: '12px' }}>
-        Each NFT in a collection will have the same traits to choose from. Set as many as you&apos;d like here. 
+        Each NFT in a collection will have the same traits to choose from. Set as many as you&apos;d like here.
       </Typography>
 
       <TransitionGroup>
         {data.map((item, i) => (
           <Collapse key={item.id}>
-            <TraitItem data={data} setData={setData} i={i} images={images} />
+            <TraitItem
+              data={data}
+              setData={setData}
+              i={i}
+              // images={images}
+            />
           </Collapse>
         ))}
       </TransitionGroup>
