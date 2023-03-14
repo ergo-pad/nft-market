@@ -79,10 +79,30 @@ const mainTheme = [{
     },
   },
   components: {
+    MuiList: {
+      styleOverrides: {
+        root: {
+          paddingTop: 0,
+          paddoingBottom: 0,
+        }
+      }
+    },
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          marginBottom: 0,
+          paddingTop: 0,
+          paddingBottom: 0
+        },
+        root: {
+          margin: 0
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '12px',
+          borderRadius: '6px',
           fontWeight: '700',
           textTransform: 'none',
         },
@@ -91,7 +111,7 @@ const mainTheme = [{
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: '12px',
+          borderRadius: '6px',
         },
       },
     },

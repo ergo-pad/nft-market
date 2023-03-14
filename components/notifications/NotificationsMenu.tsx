@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
 import {
   IconButton,
   Icon,
@@ -135,6 +135,18 @@ const NotificationsMenu: FC = ({ }) => {
   }
 
   const Contents: FC = () => {
+    const heightOneRef = useRef<HTMLInputElement>()
+    const heightTwoRef = useRef<HTMLInputElement>()
+    const [subtractHeight, setSubtractHeight] = useState(0)
+
+    useEffect(() => {
+      const heightOne = heightOneRef.current
+      const heightTwo = heightTwoRef.current
+      if (heightOne !== undefined && heightTwo !== undefined) {
+        setSubtractHeight(heightOne.offsetHeight + heightTwo.offsetHeight)
+      }
+    }, [heightOneRef, heightTwoRef])
+
     return (
       <Box
         sx={{
@@ -142,12 +154,18 @@ const NotificationsMenu: FC = ({ }) => {
           maxWidth: isLg ? '420px' : '534px',
         }}
       >
-        <Box sx={{ width: '100%', px: '12px', py: '12px', display: 'block', }}>
+        <Box ref={heightOneRef} sx={{ width: '100%', px: '12px', py: '12px', display: 'block' }}>
           <Typography variant="h6">
             Notifications
           </Typography>
         </Box>
-        <Box sx={{ maxHeight: isLg ? '80vh' : '90vh', overflowY: 'scroll' }}>
+        <Box
+          sx={{
+            height: isLg ? '75vh' : `calc(100vh - ${subtractHeight}px)`,
+            overflowY: 'scroll',
+            display: 'block'
+          }}
+        >
           <MenuList sx={{ py: 0 }}>
             {currentMenuItems.map((item, i) => {
               return (
@@ -170,10 +188,11 @@ const NotificationsMenu: FC = ({ }) => {
             width: '100%',
             px: '6px',
             display: 'block',
-            position: isLg ? 'relative' : 'absolute',
+            // position: isLg ? 'relative' : 'absolute',
             bottom: 0
           }}
           onClick={markAllRead}
+          ref={heightTwoRef}
         >
           <Button fullWidth>
             Mark all as read
@@ -200,6 +219,7 @@ const NotificationsMenu: FC = ({ }) => {
         fullScreen
         open={dialogOpen}
         onClose={handleDialogClose}
+        sx={{ overflowY: 'hidden' }}
       >
         <IconButton
           edge="start"

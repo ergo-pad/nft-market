@@ -31,6 +31,7 @@ import Properties from "@components/collections/Properties";
 import { v4 as uuidv4 } from 'uuid';
 import { ITraitsData } from "@components/create/TokenDetailsForm";
 import { IRarityData } from "@pages/create";
+import Activity, { IActivity } from "@components/Activity";
 
 interface ICollectionDetailsProps {
   traits: ITraitsData[];
@@ -69,6 +70,47 @@ const collectionDetails: ICollectionDetailsProps = {
     }
   ],
 }
+const activities: IActivity[] = [
+  {
+    tokenImageUrl: '/images/character1.png',
+    tokenName: 'Blockheads 3 pack',
+    tokenUrl: '',
+    collectionName: 'Ergopad NFTs',
+    collectionUrl: '/collections/ergopad-nfts',
+    initiatorAvatarUrl: '/images/character4.png',
+    initiatorUsername: 'Phil',
+    initiatorAddress: 'address',
+    action: 'purchased',
+    date: new Date(1678521600000),
+    transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
+  },
+  {
+    tokenImageUrl: '/images/character1.png',
+    tokenName: 'Blockheads 3 pack',
+    tokenUrl: '',
+    collectionName: 'Ergopad NFTs',
+    collectionUrl: '/collections/ergopad-nfts',
+    initiatorAvatarUrl: '/images/character2.png',
+    initiatorUsername: 'John',
+    initiatorAddress: 'address',
+    action: 'opened',
+    date: new Date(1678701600000),
+    transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
+  },
+  {
+    tokenImageUrl: '/images/character1.png',
+    tokenName: 'Blockheads 3 pack',
+    tokenUrl: '',
+    collectionName: 'Ergopad NFTs',
+    collectionUrl: '/collections/ergopad-nfts',
+    initiatorAvatarUrl: '/images/users/alone-musk.png',
+    initiatorUsername: 'Alice',
+    initiatorAddress: 'address',
+    action: 'created',
+    date: new Date(1678608000000),
+    transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
+  },
+]
 // END PLACEHOLDER DATA ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
@@ -306,6 +348,26 @@ const Collection: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="activity" sx={customTabPanelSx}>
+              {activities.map((item, i) => {
+                return (
+                  <Activity
+                    tokenImageUrl={item.tokenImageUrl}
+                    tokenName={item.tokenName}
+                    tokenUrl={item.tokenUrl}
+                    collectionName={item.collectionName}
+                    collectionUrl={item.collectionUrl}
+                    initiatorAvatarUrl={item.initiatorAvatarUrl}
+                    initiatorUsername={item.initiatorUsername}
+                    initiatorAddress={item.initiatorAddress} // for URL 
+                    action={item.action}
+                    date={item.date}
+                    transactionUrl={item.transactionUrl}
+                    key={i}
+                    index={i}
+                  />
+                )
+              })}
+
 
 
             </TabPanel>

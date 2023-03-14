@@ -103,7 +103,7 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem onClick={() => router.push('/users/' + walletAddress)}>
+            <MenuItem sx={{ mt: '6px' }} onClick={() => router.push('/users/' + walletAddress)}>
               <Avatar /> View Profile
             </MenuItem>
             <Divider />
