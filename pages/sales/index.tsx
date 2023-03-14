@@ -141,7 +141,7 @@ const Sales: NextPage = () => {
             Sales
           </Typography>
           <Typography variant="body2">
-            Here you can find live sales direct from the artists. 
+            Here you can find live sales direct from the artists. You will be the original owner. 
           </Typography>
         </Grid>
         <Grid item md={6}>

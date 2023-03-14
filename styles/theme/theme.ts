@@ -140,7 +140,7 @@ const mainTheme = [{
         root: {
           paddingLeft: 0,
           paddingRight: 0,
-          paddingTop: '48px',
+          // paddingTop: '48px',
         }
       }
     },

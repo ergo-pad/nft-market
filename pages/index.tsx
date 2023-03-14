@@ -84,10 +84,10 @@ const Home: NextPage = () => {
                   Decentra&shy;lized Utility Driven NFTs
                 </Typography>
                 <Typography variant="body2" sx={{ mb: '32px' }}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Browse current live sales of curated Ergo token collections through our sales portal
                 </Typography>
-                <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
-                  Explore Marketplace
+                <Button href="/sales" variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
+                  Explore Sales
                 </Button>
               </Box>
             </Box>
@@ -338,7 +338,7 @@ const Home: NextPage = () => {
 
 
       {/* ABOUT SECTION */}
-      <Container sx={{ mb: '100px' }}>
+      {/* <Container sx={{ mb: '100px' }}>
         <Grid
           container
           direction="row"
@@ -384,10 +384,10 @@ const Home: NextPage = () => {
               }}
             >
               <Typography variant="h1">
-                About Ergo Cubes
+                Featured Collection: Blockheads
               </Typography>
               <Typography variant="body2" sx={{ mb: '32px' }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi.  Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Blockheads have tons of fun utilities built in! Explore the cross-chain breeding opportunities, collectable features, and airdrop potential. 
               </Typography>
               <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
                 Learn More
@@ -410,10 +410,10 @@ const Home: NextPage = () => {
             )
           })}
         </Grid>
-      </Container>
+      </Container> */}
 
       {/* RECENT NFTS */}
-      <Box sx={{ mb: '100px' }}>
+      {/* <Box sx={{ mb: '100px' }}>
         <CardSlider uniqueId="recent-nfts" buttonTop addMargin={24} header={
           <Typography variant="h4">
             Recent NFTs
@@ -438,7 +438,7 @@ const Home: NextPage = () => {
             )
           })}
         </CardSlider>
-      </Box>
+      </Box> */}
 
       {/* MINT YOUR OWN */}
       <Container>
@@ -450,36 +450,7 @@ const Home: NextPage = () => {
           columnSpacing={5}
           sx={{ mb: '100px' }}
         >
-          <Grid item md={6} xs={12}
-            sx={{
-              pr: { xs: 0, md: '24px' },
-              py: '24px',
-            }}
-          >
-            <Box
-              sx={{
-                height: '100%',
-                position: 'relative',
-              }}
-            >
-              <Box
-
-              >
-                <Typography variant="h1">
-                  Launch Your Project
-                </Typography>
-                <Typography variant="body2" sx={{ mb: '32px' }}>
-                  You can mass mint your own NFTs, create fungible tokens like our Cubes that users can open for unique NFTs, and create a sales portal through our website. You can even use our API and host your sale on your own website, with your own branding and graphics.
-                </Typography>
-                <Typography variant="body2" sx={{ mb: '32px' }}>
-                  Everything is done through smart contracts, and the backend code is handled for you. Not only that, but your NFTs will be added to our marketplace. You can even promote your project for more views!
-                </Typography>
-                <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
-                  Mint Now
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
+          
           <Grid
             item
             md={6}
@@ -502,6 +473,33 @@ const Home: NextPage = () => {
                 objectFit="contain"
                 alt="cube"
               />
+            </Box>
+          </Grid>
+          <Grid item md={6} xs={12}
+            sx={{
+              pr: { xs: 0, md: '24px' },
+              py: '24px',
+            }}
+          >
+            <Box
+              sx={{
+                height: '100%',
+                position: 'relative',
+              }}
+            >
+              <Box
+
+              >
+                <Typography variant="h1">
+                  Launch Your Project
+                </Typography>
+                <Typography variant="body2" sx={{ mb: '32px' }}>
+                  Mass mint your own NFT collection, create fungible tokens packs open for unique NFTs, and create a sales portal. You can even host your sale at your own domain with your own branding and graphics.
+                </Typography>
+                <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
+                  Mint Now
+                </Button>
+              </Box>
             </Box>
           </Grid>
         </Grid>
