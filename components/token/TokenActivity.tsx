@@ -15,7 +15,7 @@ import { timeFromNow } from '@utilities/daytime'
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Link from '@components/Link'
 
-export interface IActivity {
+export interface ITokenActivity {
   tokenImageUrl: string;
   tokenName: string;
   tokenUrl: string;
@@ -24,13 +24,13 @@ export interface IActivity {
   initiatorAvatarUrl?: string;
   initiatorUsername?: string;
   initiatorAddress: string; // for URL 
-  action: 'purchased' | 'opened' | 'created';
+  action: 'purchased' | 'opened' | 'sale-init' | 'auction-init' | 'auction-won' | 'minted';
   date: Date;
   transactionUrl: string;
   index?: number;
 }
 
-const Activity: FC<IActivity> = ({
+const TokenActivity: FC<ITokenActivity> = ({
   tokenImageUrl,
   tokenName,
   tokenUrl,
@@ -57,38 +57,14 @@ const Activity: FC<IActivity> = ({
         <Grid item xs="auto">
           <Avatar
             variant="rounded"
-            alt={tokenName}
-            src={tokenImageUrl}
-            sx={{ width: 64, height: 64 }}
+            alt={initiatorUsername ? initiatorUsername : initiatorAddress}
+            src={initiatorAvatarUrl}
+            sx={{ width: 48, height: 48 }}
           />
         </Grid>
         <Grid item xs>
           <Grid container alignItems="center">
             <Grid item xs>
-              <Box>
-                <Link href={tokenUrl} sx={{ display: 'inline-block' }}>
-                  {tokenName}
-                </Link>
-                {collectionUrl && collectionName && (
-                  <>
-                    &nbsp;
-                    <Typography variant="body1" sx={{ display: 'inline-block', color: theme.palette.text.secondary }}>
-                      from
-                    </Typography>
-                    &nbsp;
-                    <Link href={collectionUrl} sx={{ display: 'inline-block' }}>
-                      {collectionName}
-                    </Link>
-                  </>
-                )}
-              </Box>
-              <Box sx={{ display: 'inline-block', verticalAlign: 'text-bottom' }}>
-                <Avatar
-                  alt={initiatorUsername ? initiatorUsername : initiatorAddress}
-                  src={initiatorAvatarUrl ? initiatorAvatarUrl : ''}
-                  sx={{ width: 18, height: 18, mr: '6px' }}
-                />
-              </Box>
               <Typography component="span" variant="body1">
                 <Link href={'/users/' + initiatorAddress} sx={{ display: 'inline-block' }}>
                   {initiatorUsername ? initiatorUsername : initiatorAddress}
@@ -96,9 +72,12 @@ const Activity: FC<IActivity> = ({
                 &nbsp;
               </Typography>
               <Typography component="span" sx={{ color: theme.palette.text.secondary }}>
-                {action === 'purchased' && 'made a purchase'}
-                {action === 'opened' && 'opened packs'}
-                {action === 'created' && 'created a sale'}
+                {action === 'purchased' && 'purchased this token'}
+                {action === 'opened' && 'opened a pack'}
+                {action === 'sale-init' && 'created a sale'}
+                {action === 'auction-init' && 'began an auction'}
+                {action === 'auction-won' && 'won this at auction'}
+                {action === 'minted' && 'minted'}
               </Typography>
               <Box>
                 <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
@@ -121,4 +100,4 @@ const Activity: FC<IActivity> = ({
   );
 };
 
-export default Activity;
+export default TokenActivity;

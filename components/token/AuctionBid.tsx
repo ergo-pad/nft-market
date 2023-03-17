@@ -10,12 +10,13 @@ import {
   Tooltip
 } from '@mui/material'
 import Link from '@components/Link'
+import { timeFromNow } from '@utils/daytime';
 
-interface IUserInfoProps {
+interface IAuctionBidProps {
   name?: string;
   pfpUrl?: string;
   address: string;
-  date: string;
+  date: Date;
   price?: {
     price: number;
     currency: string;
@@ -25,7 +26,7 @@ interface IUserInfoProps {
   saleSize?: boolean;
 }
 
-const UserInfo: FC<IUserInfoProps> = (props) => {
+const AuctionBid: FC<IAuctionBidProps> = (props) => {
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
   return (
@@ -93,7 +94,7 @@ const UserInfo: FC<IUserInfoProps> = (props) => {
             >
               {props.timeIcon ? props.timeIcon : 'calendar_today'}
             </Icon>
-            <Box sx={{ display: 'inline-block' }}>{props.date}</Box>
+            <Box sx={{ display: 'inline-block' }}>{timeFromNow(props.date)}</Box>
           </Box>
         </Box>
       </Grid>
@@ -125,5 +126,5 @@ const UserInfo: FC<IUserInfoProps> = (props) => {
   );
 };
 
-export default UserInfo;
+export default AuctionBid;
 

@@ -31,7 +31,7 @@ import Properties from "@components/collections/Properties";
 import { v4 as uuidv4 } from 'uuid';
 import { ITraitsData } from "@components/create/TokenDetailsForm";
 import { IRarityData } from "@pages/create";
-import Activity, { IActivity } from "@components/Activity";
+import CollectionActivity, { ICollectionActivity } from "@components/collections/CollectionActivity";
 
 interface ICollectionDetailsProps {
   traits: ITraitsData[];
@@ -70,7 +70,7 @@ const collectionDetails: ICollectionDetailsProps = {
     }
   ],
 }
-const activities: IActivity[] = [
+const activities: ICollectionActivity[] = [
   {
     tokenImageUrl: '/images/character1.png',
     tokenName: 'Blockheads 3 pack',
@@ -350,7 +350,7 @@ const Collection: NextPage = () => {
             <TabPanel value="activity" sx={customTabPanelSx}>
               {activities.map((item, i) => {
                 return (
-                  <Activity
+                  <CollectionActivity
                     tokenImageUrl={item.tokenImageUrl}
                     tokenName={item.tokenName}
                     tokenUrl={item.tokenUrl}
@@ -367,9 +367,6 @@ const Collection: NextPage = () => {
                   />
                 )
               })}
-
-
-
             </TabPanel>
           </Slide>
         </TabContext>
