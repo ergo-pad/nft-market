@@ -79,19 +79,42 @@ const mainTheme = [{
     },
   },
   components: {
+    MuiList: {
+      styleOverrides: {
+        root: {
+          paddingTop: 0,
+          paddoingBottom: 0,
+        }
+      }
+    },
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          marginBottom: 0,
+          paddingTop: 0,
+          paddingBottom: 0
+        },
+        root: {
+          margin: 0
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '12px',
+          borderRadius: '6px',
           fontWeight: '700',
           textTransform: 'none',
         },
       },
     },
     MuiPaper: {
+      defaultProps: {
+        variant: 'outlined'
+      },
       styleOverrides: {
         root: {
-          borderRadius: '12px',
+          borderRadius: '6px',
         },
       },
     },
@@ -99,6 +122,8 @@ const mainTheme = [{
       styleOverrides: {
         root: {
           borderRadius: '6px',
+          borderStyle: 'solid',
+          borderWidth: '1px',
           '&::before': {
             display: 'none',
           },
@@ -120,7 +145,7 @@ const mainTheme = [{
         root: {
           paddingLeft: 0,
           paddingRight: 0,
-          paddingTop: '48px',
+          // paddingTop: '48px',
         }
       }
     },
@@ -283,6 +308,13 @@ let lightTheme = createTheme({
         }
       }
     },
+    MuiFilledInput: {
+      styleOverrides: {
+        root: {
+          borderColor: 'rgba(0, 0, 0, 0.12)'
+        }
+      }
+    },
   }
 }, ...mainTheme);
 
@@ -314,7 +346,7 @@ let darkTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          background: '#1c212b'
+          background: '#1c212b',
         },
       },
     },
@@ -346,6 +378,13 @@ let darkTheme = createTheme({
           '& .MuiSwitch-track': {
             backgroundColor: 'rgba(255, 255, 255, 0.09)',
           }
+        }
+      }
+    },
+    MuiFilledInput: {
+      styleOverrides: {
+        root: {
+          borderColor: 'rgba(255, 255, 255, 0.12)'
         }
       }
     },

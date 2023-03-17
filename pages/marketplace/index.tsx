@@ -141,7 +141,7 @@ const Marketplace: NextPage = () => {
             Marketplace
           </Typography>
           <Typography variant="body2">
-            The marketplace is where third party resellers list their NFT and FT sales. Sales from Sky Harbor and Auction House are also displayed, and you can access their smart contracts directly through this portal. 
+            Here you will find token sales from third party resellers. Sales from Sky Harbor and Auction House are also displayed, and you can access their smart contracts directly through this portal. 
           </Typography>
         </Grid>
         <Grid item md={6}>

@@ -152,7 +152,7 @@ const Collections: NextPage = () => {
         Collections
       </Typography>
       <Typography variant="body2" sx={{ mb: '48px' }}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dui ac nec molestie condimentum aliquam viverra sed nisi. Eu, nisl, integer ultricies fames pharetra sem eu commodo. Nam tellus, ut vel egestas pulvina.
+        Browse Ergo NFT and Fungible token collections. 
       </Typography>
       {collections.map((props, i) => {
         return (

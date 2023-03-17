@@ -17,6 +17,11 @@ import {
   Box,
   useTheme,
   useMediaQuery,
+  TextField,
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
+  FormHelperText
 } from '@mui/material';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
@@ -68,14 +73,23 @@ interface IConfirmSaleProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   tokenName: string;
-  qty: number;
-  openNow: boolean;
+  qty?: number;
+  openNow?: boolean;
   price: number;
   currency: string;
+  isBid?: boolean;
 }
 
-const ConfirmSale: FC<IConfirmSaleProps> = ({ open, setOpen, tokenName, qty, openNow, price, currency }) => {
+const ConfirmSale: FC<IConfirmSaleProps> = ({ open, setOpen, tokenName, qty, openNow, price, currency, isBid }) => {
   const [submitting, setSubmitting] = useState<"submitting" | "success" | "failed" | undefined>(undefined)
+  const [bidPrice, setBidPrice] = useState(price + (price * 0.1))
+  const [error, setError] = useState(false)
+
+  const handleBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBidPrice(Number(e.target.value))
+    if (Number(e.target.value) < (price + 1)) setError(true)
+    else setError(false)
+  }
 
   const handleClose = () => {
     setSubmitting(undefined)
@@ -167,7 +181,7 @@ const ConfirmSale: FC<IConfirmSaleProps> = ({ open, setOpen, tokenName, qty, ope
             <Table
               sx={{
                 minWidth: 'auto',
-                mb: '16px',
+                // mb: '16px',
               }}
               aria-label="Order Summary"
             >
@@ -183,24 +197,46 @@ const ConfirmSale: FC<IConfirmSaleProps> = ({ open, setOpen, tokenName, qty, ope
                   <TableCell>Name: </TableCell>
                   <TableCell align="right" sx={{ fontWeight: 600 }}>{tokenName}</TableCell>
                 </TableRow>
+                {qty && (
+                  <TableRow>
+                    <TableCell>Quantity: </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600 }}>{qty}</TableCell>
+                  </TableRow>
+                )}
                 <TableRow>
-                  <TableCell>Quantity: </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>{qty}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Total Price: </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>{(price) + ' ' + currency}</TableCell>
+                  <TableCell>{isBid ? 'Your Bid: ' : 'Total Price: '}</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600 }}>
+                    {isBid ? (
+                      <FormControl error={error} variant="outlined" sx={{ maxWidth: '160px' }}>
+                        <OutlinedInput
+                          // variant="filled"
+                          id="bid-value"
+                          size="small"
+                          // label="Your Bid"
+                          name="bid-value"
+                          type="number"
+                          value={bidPrice.toString()}
+                          onChange={handleBidChange}
+                          endAdornment={<InputAdornment position="end">{currency}</InputAdornment>}
+                        />
+                        {error && <FormHelperText>Minimum bid is {price + 1}{' ' + currency}</FormHelperText>}
+                      </FormControl>
+                    ) : (
+                      price + ' ' + currency
+                    )}
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
-            <Typography variant="body2" sx={{ mb: 0 }}>
-              Note:
-              {openNow ? (
-                ' You have chosen to open the packs right away. You will receive the NFTs immediately and not be sent pack tokens. '
-              ) : (
-                " You have chosen to receive the pack tokens to your wallet, and will be able to open them when you're ready, or trade them. "
-              )}
-            </Typography>
+            {openNow !== undefined && (
+              <Typography variant="body2" sx={{ mb: 0, mt: '24px' }}>
+                {openNow ? (
+                  'Note: You have chosen to open the packs right away. You will receive the NFTs immediately and not be sent pack tokens. '
+                ) : (
+                  "Note:  You have chosen to receive the pack tokens to your wallet, and will be able to open them when you're ready, or trade them. "
+                )}
+              </Typography>
+            )}
           </>
         )
     }
