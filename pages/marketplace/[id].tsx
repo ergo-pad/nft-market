@@ -14,21 +14,21 @@ const SalesThing: ISalesCardProps = {
   postDate: new Date(1663786534000),
   artistAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
   tokenName: 'Monk & Fox #0017',
-  // sale: {
-  //   currency: 'Erg',
-  //   price: 10,
-  //   link: '/',
-  //   discountCurrency: 'Ergopad',
-  //   discount: 0.1
-  // },
-  auction: {
+  sale: {
     currency: 'Erg',
-    currentBidPrice: 10,
-    currentBidLink: '/',
-    buyNowPrice: 100,
-    buyNowLink: '/',
-    endTime: new Date(1680201614000),
-  }
+    price: 10,
+    link: '/',
+    discountCurrency: 'Ergopad',
+    discount: 0.1
+  },
+  // auction: {
+  //   currency: 'Erg',
+  //   currentBidPrice: 10,
+  //   currentBidLink: '/',
+  //   buyNowPrice: 100,
+  //   buyNowLink: '/',
+  //   endTime: new Date(1680201614000),
+  // }
 }
 
 const Nft: NextPage = () => {

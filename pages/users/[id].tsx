@@ -260,25 +260,14 @@ const User: NextPage = () => {
                 columns={{ xs: 1, sm: 2, md: 3 }}
                 sx={{ mb: "24px" }}
               >
-                {recentNfts.map((props, i) => {
+                {recentNfts.map((item, i) => {
                   return (
                     <Grid key={i} item xs={1}>
                       <NftCard
-                        key={i}
-                        link={props.link}
-                        imgUrl={props.imgUrl}
-                        name={props.name}
-                        price={props.price}
-                        rarity={props.rarity}
-                        time={props.time}
-                        collection={props.collection}
-                        collectionLink={props.collectionLink}
-                        artist={props.artist}
-                        artistLink={props.artistLink}
-                        artistLogo={props.artistLogo}
+                        nftData={item}
                       />
                     </Grid>
-                  );
+                  )
                 })}
               </Grid>
               <Box sx={{ width: "100%", textAlign: "center" }}>
@@ -303,25 +292,14 @@ const User: NextPage = () => {
                 columns={{ xs: 1, sm: 2, md: 3 }}
                 sx={{ mb: "24px" }}
               >
-                {recentNfts.map((props, i) => {
+                {recentNfts.map((item, i) => {
                   return (
                     <Grid key={i} item xs={1}>
                       <NftCard
-                        key={i}
-                        link={props.link}
-                        imgUrl={props.imgUrl}
-                        name={props.name}
-                        price={props.price}
-                        rarity={props.rarity}
-                        time={props.time}
-                        collection={props.collection}
-                        collectionLink={props.collectionLink}
-                        artist={props.artist}
-                        artistLink={props.artistLink}
-                        artistLogo={props.artistLogo}
+                        nftData={item}
                       />
                     </Grid>
-                  );
+                  )
                 })}
               </Grid>
               <Box sx={{ width: "100%", textAlign: "center" }}>

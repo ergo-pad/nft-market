@@ -13,6 +13,8 @@ const timeRemaining = (endTime: Date) => {
     hours: string | number = Math.floor((diff / (60 * 60)) % 24),
     days: string | number = Math.floor((diff / (60 * 60)) / 24);
 
+  if (diff < 0) return 'No current sale'
+
   return days + "d, " + hours + "h, " + minutes + "m, " + seconds + "s";
 }
 
