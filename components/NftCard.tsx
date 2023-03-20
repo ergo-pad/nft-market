@@ -10,13 +10,16 @@ import {
   Typography,
   useTheme
 } from '@mui/material'
+import dynamic from 'next/dynamic'
 import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Image from 'next/image';
 import Link from '@components/Link';
 import { ThemeContext } from '@emotion/react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useRouter } from 'next/router'
-import TimeRemaining from '@components/TimeRemaining';
+const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
+  ssr: false,
+});
 
 export interface INftItem {
   imgUrl?: string;
@@ -167,7 +170,6 @@ const NftCard: FC<INftCard> = ({
               )}
               {' '}
               <Typography
-
                 sx={{
                   fontStyle: 'italic'
                 }}

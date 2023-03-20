@@ -31,7 +31,14 @@ interface IPackCardProps {
   artistLink?: string;
 }
 
-const PackCard: FC<IPackCardProps> = ({ imgUrl, link, name, price, rarity, collection, collectionLink, artist, artistLogo, artistLink }) => {
+const PackCard: FC<IPackCardProps> = ({
+  imgUrl,
+  link,
+  name,
+  collection,
+  collectionLink,
+  artist,
+}) => {
   const router = useRouter();
 
   const randomInteger = (min: number, max: number) => {
@@ -60,145 +67,44 @@ const PackCard: FC<IPackCardProps> = ({ imgUrl, link, name, price, rarity, colle
           <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
             <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" alt="placeholder" />
           </Box>
-          {price && (
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                p: '8px',
-                background: 'rgba(255,255,255,0.1)',
-                backdropFilter: 'blur(6px)',
-                color: '#fff',
-                borderRadius: '6px',
-              }}
-            >
-              <Typography sx={{ fontWeight: '700', }}>
-                {price}
-              </Typography>
-            </Box>
-          )}
-          <CardContent sx={{ position: 'relative', p: '12px' }}>
-            {rarity && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: '-16px',
-                  right: '16px',
-                  height: '28px',
-                  p: '2px 8px',
-                  background: theme.palette.primary.main,
-                  color: theme.palette.background.default,
-                  borderRadius: '50px',
-                }}
-              >
-                <Typography sx={{ fontWeight: '700', }}>
-                  {/* {rarity} */}
-                  Pack
-                </Typography>
-              </Box>
-            )}
+          <CardContent>
             <Typography
-              sx={{
-                fontWeight: '700',
-                fontSize: '1rem',
-              }}
+              variant="h6"
+              sx={{ mb: '6px' }}
             >
               {name}
             </Typography>
-
-          </CardContent>
-        </CardActionArea>
-        <CardActions
-          sx={{
-            p: 0,
-            flexDirection: 'column'
-          }}
-        >
-          <Grid2
-            container
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{
-              width: '100%',
-              p: '12px'
-            }}
-          >
-            <Grid2>
-              <Typography
-                sx={{
-                  fontWeight: '700',
-                }}
-              >
-                {collectionLink ? (
-                  <Link
-                    href={collectionLink}
-                    sx={{
-                      color: theme.palette.text.secondary,
-                      textDecoration: 'none',
-                      '&:hover': {
-                        textDecoration: 'underline'
-                      }
-                    }}
-                  >
-                    {collection}
-                  </Link>
-                ) : (
-                  collection
-                )}
-                {' '}
-                <Typography
-                  component="span"
-                  sx={{
-                    fontStyle: 'italic'
-                  }}
-                >
-                  by
-                  {' '}
-                  {artistLink ? (
-                    <Link
-                      href={artistLink}
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        textDecoration: 'none',
-                        '&:hover': {
-                          textDecoration: 'underline'
-                        }
-                      }}
-                    >
-                      {artist}
-                    </Link>
-                  ) : (
-                    artist
-                  )}
-                </Typography>
-              </Typography>
-            </Grid2>
-            <Grid2>
-              {artistLink && artistLogo ? (
+            <Box
+              sx={{
+                fontSize: '0.85rem'
+              }}
+            >
+              {collectionLink ? (
                 <Link
-                  href={artistLink}
+                  href={collectionLink}
                   sx={{
                     color: theme.palette.text.secondary,
                     textDecoration: 'none',
                     '&:hover': {
                       textDecoration: 'underline'
                     },
+                    zIndex: 100
                   }}
                 >
-                  <Image src={artistLogo} layout="fixed" width={32} height={32} alt="Artist Logo" />
+                  {collection}
                 </Link>
               ) : (
-                ''
+                collection
               )}
-            </Grid2>
-          </Grid2>
-
-          <Button fullWidth sx={{ borderRadius: '0 0 12px 12px' }} onClick={() => setConfirmationOpen(true)}>
-            Open Now
+            </Box>
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          <Button
+            onClick={() => setConfirmationOpen(true)}
+          >
+            Open
           </Button>
-
         </CardActions>
       </Card>
       <OpenPacks
