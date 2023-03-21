@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import {
   Card,
   CardMedia,
@@ -17,9 +17,9 @@ import Link from '@components/Link';
 import { ThemeContext } from '@emotion/react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useRouter } from 'next/router'
-const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
-  ssr: false,
-});
+// const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
+//   ssr: false,
+// });
 
 export interface INftItem {
   imgUrl?: string;
@@ -28,7 +28,7 @@ export interface INftItem {
   price?: number;
   currency?: string;
   rarity?: string;
-  saleEnd?: Date;
+  saleType?: 'mint' | 'auction' | 'sale';
   collection?: string;
   collectionLink?: string;
   artist: string;
@@ -49,12 +49,24 @@ const NftCard: FC<INftCard> = ({
   const router = useRouter();
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
   const theme = useTheme()
+  const SaleTypeSwitch = (saleType: 'mint' | 'auction' | 'sale') => {
+    switch (saleType) {
+      case "mint":
+        return 'Mint';
+      case "auction":
+        return 'Auction';
+      case "sale":
+        return 'Sale';
+    }
+  }
+
   return (
     <Card
       elevation={0}
       sx={{
         // minWidth: '276px',
         mb: '6px',
+        height: '100%',
       }}
     >
       <CardActionArea
@@ -62,8 +74,8 @@ const NftCard: FC<INftCard> = ({
           nftData.link && router.push(nftData.link);
         }}
       >
-        <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
-          <Image src={nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" alt="logo" />
+        <Box sx={{ position: 'relative', display: 'block', height: '265px' }}>
+          <Image src={nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" objectFit="cover" draggable="false" alt="nft-image" />
         </Box>
         {nftData.price && (
           <Box
@@ -84,7 +96,7 @@ const NftCard: FC<INftCard> = ({
           </Box>
         )}
         <CardContent sx={{ position: 'relative' }}>
-          {nftData.rarity && (
+          {nftData.saleType && (
             <Box
               sx={{
                 position: 'absolute',
@@ -98,20 +110,22 @@ const NftCard: FC<INftCard> = ({
               }}
             >
               <Typography sx={{ fontWeight: '700', }}>
-                {nftData.rarity}
+                {SaleTypeSwitch(nftData.saleType)}
               </Typography>
             </Box>
           )}
           <Typography
             sx={{
-              fontWeight: '700',
-              fontSize: '1.1rem',
-              mb: '6px',
+              fontWeight: '600',
+              fontSize: '1.27rem',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}
           >
             {nftData.name}
           </Typography>
-          {nftData.saleEnd && (
+          {/* {nftData.saleEnd && (
             <Box>
               <AccessTimeIcon
                 sx={{
@@ -129,12 +143,13 @@ const NftCard: FC<INftCard> = ({
                 />
               </Box>
             </Box>
-          )}
+          )} */}
         </CardContent>
       </CardActionArea>
       <CardActions
         sx={{
           p: '16px',
+          pt: 0
         }}
       >
         <Grid2
@@ -150,6 +165,9 @@ const NftCard: FC<INftCard> = ({
             <Box
               sx={{
                 fontWeight: '700',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
             >
               {nftData.collectionLink ? (
@@ -171,7 +189,10 @@ const NftCard: FC<INftCard> = ({
               {' '}
               <Typography
                 sx={{
-                  fontStyle: 'italic'
+                  fontStyle: 'italic',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}
               >
                 by

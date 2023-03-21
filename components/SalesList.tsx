@@ -79,7 +79,6 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
       open={open}
       {...other}
     >
-      <DialogTitle>Filter &amp; Sort</DialogTitle>
       <DialogContent dividers>
         {!desktop && <SortBy sx={{ mb: "24px" }} />}
         <FilterOptions />

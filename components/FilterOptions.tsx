@@ -47,6 +47,7 @@ const FilterAccordionItem: FC<IAccordionProps> = ({
         sx={{
           background: "transparent",
           boxShadow: "none",
+          border: 'none',
           "&:before": {
             background: "transparent",
           },
@@ -80,66 +81,59 @@ const FilterAccordionItem: FC<IAccordionProps> = ({
   );
 };
 
-const collectionOptions = [
-  "Ergopad Cubes",
-  "Wrath of Gods",
-  "Hello",
-  "Is it me",
-  "You're looking for?"
+const saleStatus = [
+  "On Sale",
+  "Auction",
+  "Not For Sale",
 ]
 
 const FilterOptions = () => {
   const priceRange = [0, 500];
   const [ergPriceRange, setErgPriceRange] = useState<number[]>(priceRange);
-  const [collectionChecks, setCollectionChecks] = useState<boolean[]>([])
-  const [collectionSelectAll, setCollectionSelectAll] = useState<boolean>(true);
+  const [saleStatusChecks, setSaleStatusChecks] = useState<boolean[]>([])
+  const [saleStatusSelectAll, setSaleStatusSelectAll] = useState<boolean>(true);
 
   const handleChange = (event: Event, newValue: number | number[]) => {
     setErgPriceRange(newValue as number[]);
   };
 
   useMemo(() => {
-    const array = Array.from(collectionOptions, () => true);
-    setCollectionChecks(array)
-  }, [collectionOptions])
+    const array = Array.from(saleStatus, () => true);
+    setSaleStatusChecks(array)
+  }, [saleStatus])
 
-  const collectionCheckHandleChange = (key: number) => {
-    setCollectionChecks(collectionChecks => collectionChecks.map((item, i) => i === key ? !item : item))
+  const saleStatusCheckHandleChange = (key: number) => {
+    setSaleStatusChecks(saleStatusChecks => saleStatusChecks.map((item, i) => i === key ? !item : item))
   }
 
-  const collectionCheckSelectAll = (all: boolean) => {
-    setCollectionChecks(collectionChecks => collectionChecks.map(() => all ? true : false))
-    setCollectionSelectAll(!collectionSelectAll)
+  const saleStatusCheckSelectAll = (all: boolean) => {
+    setSaleStatusChecks(saleStatusChecks => saleStatusChecks.map(() => all ? true : false))
+    setSaleStatusSelectAll(!saleStatusSelectAll)
   }
 
   useEffect(() => {
-    const check = collectionChecks.every(Boolean)
+    const check = saleStatusChecks.every(Boolean)
     if (check) {
-      setCollectionSelectAll(true)
+      setSaleStatusSelectAll(true)
     }
     if (!check) {
-      setCollectionSelectAll(false)
+      setSaleStatusSelectAll(false)
     }
-  }, [collectionCheckHandleChange])
+  }, [saleStatusCheckHandleChange])
 
   return (
-    <Paper
-    elevation={0}
-      sx={{
-        p: "24px",
-      }}
-    >
-      <Typography variant="h6" sx={{ mb: '24px' }}>Filters</Typography>
+    <>
+      <Typography variant="h6" sx={{ mb: '24px' }}>Filter</Typography>
 
-      {/* FILTER BY COLLECTION */}
-      <FilterAccordionItem title="Collections">
+      {/* FILTER BY SALE STATUS */}
+      <FilterAccordionItem title="Sale Status">
         <Box sx={{ mx: "6px" }}>
-          {collectionOptions.map((option, i) => {
+          {saleStatus.map((option, i) => {
             return (
               <FormControlLabel
                 key={i}
-                checked={collectionChecks[i]}
-                onChange={() => collectionCheckHandleChange(i)}
+                checked={saleStatusChecks[i]}
+                onChange={() => saleStatusCheckHandleChange(i)}
                 control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
                 label={option}
                 sx={{ display: 'block' }}
@@ -147,8 +141,8 @@ const FilterOptions = () => {
             )
           })}
           <FormControlLabel
-            checked={collectionSelectAll}
-            onChange={() => collectionCheckSelectAll(!collectionSelectAll)}
+            checked={saleStatusSelectAll}
+            onChange={() => saleStatusCheckSelectAll(!saleStatusSelectAll)}
             control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
             label="Select All"
           />
@@ -170,7 +164,7 @@ const FilterOptions = () => {
       </FilterAccordionItem>
 
       {/* FILTER BY DATE CREATED */}
-      <FilterAccordionItem title="Initiation Date">
+      <FilterAccordionItem title="Initiation Date" noDivider>
         <Box sx={{ mx: "6px" }}>
           <FormControlLabel
             control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
@@ -194,7 +188,7 @@ const FilterOptions = () => {
           />
         </Box>
       </FilterAccordionItem>
-    </Paper>
+    </>
   );
 };
 

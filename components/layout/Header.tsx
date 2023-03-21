@@ -27,10 +27,6 @@ const pages = [
     link: "/collections",
   },
   {
-    name: "Sales",
-    link: "/sales",
-  },
-  {
     name: "Marketplace",
     link: "/marketplace",
   },
