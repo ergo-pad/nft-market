@@ -32,7 +32,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ITraitsData } from "@components/create/TokenDetailsForm";
 import { IRarityData } from "@pages/create";
 import CollectionActivity, { ICollectionActivity } from "@components/collections/CollectionActivity";
-import SalesList from "@components/SalesList";
+import TokenList from "@components/TokenList";
 import { ICollectionTraits, ICollectionRarities } from "@components/collections/Properties";
 
 ///////////////////////////////////////////////////////////////////
@@ -330,7 +330,7 @@ const Collection: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="sales" sx={customTabPanelSx}>
-              <SalesList
+              <TokenList
                 nftListArray={recentNfts}
                 setDisplayNumber={setNumberNftsShowing}
                 notFullWidth

@@ -24,7 +24,7 @@ export interface ConfirmationDialogRawProps {
   onClose: (value?: string) => void;
 }
 
-export interface ISalesListProps {
+export interface ITokenListProps {
   nftListArray: INftItem[];
   setDisplayNumber: React.Dispatch<React.SetStateAction<number>>;
   notFullWidth?: boolean;
@@ -32,7 +32,7 @@ export interface ISalesListProps {
   rarities?: ICollectionRarities[];
 }
 
-const SalesList: FC<ISalesListProps> = ({ nftListArray, setDisplayNumber, notFullWidth, traits, rarities }) => {
+const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFullWidth, traits, rarities }) => {
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [filterDialogvalue, setFilterDialogValue] = React.useState("What");
 
@@ -186,4 +186,4 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
   );
 }
 
-export default SalesList
+export default TokenList
