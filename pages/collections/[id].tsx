@@ -32,11 +32,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { ITraitsData } from "@components/create/TokenDetailsForm";
 import { IRarityData } from "@pages/create";
 import CollectionActivity, { ICollectionActivity } from "@components/collections/CollectionActivity";
-
-interface ICollectionDetailsProps {
-  traits: ITraitsData[];
-  rarities: IRarityData[];
-}
+import TokenList from "@components/TokenList";
+import { ICollectionTraits, ICollectionRarities } from "@components/collections/Properties";
 
 ///////////////////////////////////////////////////////////////////
 // BEGIN PLACEHOLDER DATA /////////////////////////////////////////
@@ -50,26 +47,63 @@ const collection: ICollectionProfileProps = {
   category: '',
   website: 'http://ergopad.io',
 };
-const collectionDetails: ICollectionDetailsProps = {
-  traits: [
-    {
-      traitName: '', // the name of the trait type (eg: sex, speed, age)
-      id: uuidv4(),
-      description: '', // used only on our front-end and not required
-      // image: '', // this is only used on our front-end and not required. 
-      type: 'Property',
-      // max: 1, // if trait is a Level or Stat, this is the highest possible value
-    }
-  ],
-  rarities: [
-    {
-      rarity: '',
-      id: uuidv4(),
-      description: '',
-      // image: '',
-    }
-  ],
-}
+const collectionTraits: ICollectionTraits[] = [
+  {
+    traitName: 'Level',
+    id: uuidv4(),
+    description: 'The level the character has achieved',
+    type: 'Level',
+    max: 200
+  },
+  {
+    traitName: 'Speed',
+    id: uuidv4(),
+    description: 'The stat',
+    type: 'Stat',
+  },
+  {
+    traitName: 'Color',
+    id: uuidv4(),
+    description: 'The fur color of the character',
+    type: 'Property',
+    options: [
+      {
+        property: 'Red',
+        amount: 631
+      },
+      {
+        property: 'Green',
+        amount: 225
+      },
+      {
+        property: 'Blue',
+        amount: 67
+      },
+      {
+        property: 'Purple',
+        amount: 12
+      }
+    ]
+  },
+];
+const collectionRarities: ICollectionRarities[] = [
+  {
+    rarity: 'Common',
+    amount: 1605
+  },
+  {
+    rarity: 'Uncommon',
+    amount: 842
+  },
+  {
+    rarity: 'Rare',
+    amount: 320
+  },
+  {
+    rarity: 'Legendary',
+    amount: 16
+  }
+];
 const activities: ICollectionActivity[] = [
   {
     tokenImageUrl: '/images/character1.png',
@@ -110,7 +144,7 @@ const activities: ICollectionActivity[] = [
     date: new Date(1678608000000),
     transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
   },
-]
+];
 // END PLACEHOLDER DATA ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
@@ -221,7 +255,7 @@ const Collection: NextPage = () => {
 
   const SearchAndFilter: FC = () => {
     return (
-      <Grid container spacing={3} sx={{ mb: '24px' }}>
+      <Grid container spacing={2} sx={{ mb: 2 }}>
         {useMediaQuery(theme.breakpoints.up("lg")) ? (
           <>
             <Grid item md={7}>
@@ -259,6 +293,8 @@ const Collection: NextPage = () => {
     )
   }
 
+  const [numberNftsShowing, setNumberNftsShowing] = useState(24)
+
   return (
     <>
       {/* Could refactor to have one object passed to CollectionProfile */}
@@ -294,28 +330,13 @@ const Collection: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="sales" sx={customTabPanelSx}>
-              <SearchAndFilter />
-              <Grid
-                container
-                spacing={3}
-                columns={{ xs: 1, sm: 2, md: 3 }}
-                sx={{ mb: "24px" }}
-              >
-                {recentNfts.map((item, i) => {
-                  return (
-                    <Grid key={i} item xs={1}>
-                      <NftCard
-                        nftData={item}
-                      />
-                    </Grid>
-                  )
-                })}
-              </Grid>
-              <Box sx={{ width: "100%", textAlign: "center" }}>
-                <Button variant="contained" sx={{}}>
-                  Load more...
-                </Button>
-              </Box>
+              <TokenList
+                nftListArray={recentNfts}
+                setDisplayNumber={setNumberNftsShowing}
+                notFullWidth
+                traits={collectionTraits}
+                rarities={collectionRarities}
+              />
             </TabPanel>
           </Slide>
           {/* PROPERTIES TAB */}
@@ -326,7 +347,7 @@ const Collection: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="properties" sx={customTabPanelSx}>
-              <Properties traits={collectionDetails.traits} rarities={collectionDetails.rarities} />
+              <Properties traits={collectionTraits} rarities={collectionRarities} />
             </TabPanel>
           </Slide>
           {/* ACTIVITY TAB */}

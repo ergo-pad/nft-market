@@ -74,7 +74,14 @@ const NftCard: FC<INftCard> = ({
           nftData.link && router.push(nftData.link);
         }}
       >
-        <Box sx={{ position: 'relative', display: 'block', height: '265px' }}>
+        <Box sx={{
+          position: 'relative',
+          display: 'block',
+          height: '265px',
+          borderBottomWidth: '1px',
+          borderBottomStyle: 'solid',
+          borderBottomColor: theme.palette.divider
+        }}>
           <Image src={nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" objectFit="cover" draggable="false" alt="nft-image" />
         </Box>
         {nftData.price && (

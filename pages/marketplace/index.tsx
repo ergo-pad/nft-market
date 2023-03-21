@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import { recentNfts } from '@components/placeholders/recentNfts'
-import SalesList from '@components/SalesList';
+import TokenList from '@components/TokenList';
 
 // const marketStats = [
 //   {
@@ -29,7 +29,7 @@ import SalesList from '@components/SalesList';
 
 const Sales: NextPage = () => {
   // USE THIS FOR API CALL TO KNOW THE NUMBER OF NFT CARDS TO FETCH
-  // CAN BE CHANGED IN <SalesList>
+  // CAN BE CHANGED IN <TokenList>
   const [numberNftsShowing, setNumberNftsShowing] = useState(24)
 
   return (
@@ -79,7 +79,7 @@ const Sales: NextPage = () => {
           </Grid> */}
         </Grid>
       </Grid>
-      <SalesList
+      <TokenList
         nftListArray={recentNfts}
         setDisplayNumber={setNumberNftsShowing}
       />

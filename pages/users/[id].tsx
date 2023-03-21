@@ -26,6 +26,7 @@ import SortBy from "@components/SortBy";
 import UserProfile from "@components/UserProfile";
 import { useRouter } from "next/router";
 import { ApiContext, IApiContext } from "@contexts/ApiContext";
+import TokenList from "@components/TokenList";
 
 ///////////////////////////////////////////////////////////////////
 // BEGIN PLACEHOLDER DATA /////////////////////////////////////////
@@ -220,6 +221,10 @@ const User: NextPage = () => {
     )
   }
 
+  // USE THIS FOR API CALL TO KNOW THE NUMBER OF NFT CARDS TO FETCH
+  // CAN BE CHANGED IN <TokenList>
+  const [numberNftsShowing, setNumberNftsShowing] = useState(24)
+
   return (
     <>
       <UserProfile
@@ -253,28 +258,11 @@ const User: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="on-sale" sx={customTabPanelSx}>
-              <SearchAndFilter />
-              <Grid
-                container
-                spacing={3}
-                columns={{ xs: 1, sm: 2, md: 3 }}
-                sx={{ mb: "24px" }}
-              >
-                {recentNfts.map((item, i) => {
-                  return (
-                    <Grid key={i} item xs={1}>
-                      <NftCard
-                        nftData={item}
-                      />
-                    </Grid>
-                  )
-                })}
-              </Grid>
-              <Box sx={{ width: "100%", textAlign: "center" }}>
-                <Button variant="contained" sx={{}}>
-                  Load more...
-                </Button>
-              </Box>
+              <TokenList
+                nftListArray={recentNfts}
+                setDisplayNumber={setNumberNftsShowing}
+                notFullWidth
+              />
             </TabPanel>
           </Slide>
           {/* OWNED TAB */}
@@ -285,28 +273,11 @@ const User: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="owned" sx={customTabPanelSx}>
-            <SearchAndFilter />
-              <Grid
-                container
-                spacing={4}
-                columns={{ xs: 1, sm: 2, md: 3 }}
-                sx={{ mb: "24px" }}
-              >
-                {recentNfts.map((item, i) => {
-                  return (
-                    <Grid key={i} item xs={1}>
-                      <NftCard
-                        nftData={item}
-                      />
-                    </Grid>
-                  )
-                })}
-              </Grid>
-              <Box sx={{ width: "100%", textAlign: "center" }}>
-                <Button variant="contained" sx={{}}>
-                  Load more...
-                </Button>
-              </Box>
+              <TokenList
+                nftListArray={recentNfts}
+                setDisplayNumber={setNumberNftsShowing}
+                notFullWidth
+              />
             </TabPanel>
           </Slide>
           {/* ACTIVITY TAB */}
