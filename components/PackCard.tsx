@@ -8,27 +8,21 @@ import {
   Button,
   Box,
   Typography,
-  useTheme
+  useTheme,
 } from '@mui/material'
-import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
+import Grid2 from '@mui/material/Unstable_Grid2'
 import Image from 'next/image';
 import Link from '@components/Link';
-import { ThemeContext } from '@emotion/react';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useRouter } from 'next/router'
 import OpenPacks from '@components/dialogs/OpenPacks';
 
 interface IPackCardProps {
   imgUrl: string;
-  link?: string;
+  link: string;
   name: string;
-  price?: string;
-  rarity?: string;
   collection?: string;
   collectionLink?: string;
   artist: string;
-  artistLogo?: string;
-  artistLink?: string;
 }
 
 const PackCard: FC<IPackCardProps> = ({
@@ -39,15 +33,11 @@ const PackCard: FC<IPackCardProps> = ({
   collectionLink,
   artist,
 }) => {
-  const router = useRouter();
-
   const randomInteger = (min: number, max: number) => {
     return (min + Math.random() * (max - min)).toFixed();
   };
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
-
   const theme = useTheme()
-
   const [confirmationOpen, setConfirmationOpen] = useState(false)
 
   return (
@@ -60,52 +50,82 @@ const PackCard: FC<IPackCardProps> = ({
         }}
       >
         <CardActionArea
-          onClick={() => {
-            link && router.push(link);
-          }}
+          onClick={() => setConfirmationOpen(true)}
         >
           <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
             <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" alt="placeholder" />
           </Box>
           <CardContent>
             <Typography
-              variant="h6"
-              sx={{ mb: '6px' }}
+              sx={{
+                fontWeight: '600',
+                fontSize: '1.27rem',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
             >
               {name}
             </Typography>
-            <Box
-              sx={{
-                fontSize: '0.85rem'
-              }}
-            >
-              {collectionLink ? (
-                <Link
-                  href={collectionLink}
-                  sx={{
-                    color: theme.palette.text.secondary,
-                    textDecoration: 'none',
-                    '&:hover': {
-                      textDecoration: 'underline'
-                    },
-                    zIndex: 100
-                  }}
-                >
-                  {collection}
-                </Link>
-              ) : (
-                collection
-              )}
-            </Box>
           </CardContent>
         </CardActionArea>
-        <CardActions>
-          <Button
-            onClick={() => setConfirmationOpen(true)}
+        <CardActions
+          sx={{
+            p: '16px',
+            pt: 0
+          }}
+        >
+          <Box
+            sx={{
+              fontWeight: '700',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
           >
-            Open
-          </Button>
+            {collectionLink ? (
+              <Link
+                href={collectionLink}
+                sx={{
+                  color: theme.palette.text.secondary,
+                  textDecoration: 'none',
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  }
+                }}
+              >
+                {collection}
+              </Link>
+            ) : (
+              collection
+            )}
+            {' '}
+            <Typography
+              sx={{
+                fontStyle: 'italic',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              by
+              {' '}
+              <Link
+                href={'/users/' + artist.replace(/\s/g, "-").toLowerCase()}
+                sx={{
+                  color: theme.palette.text.secondary,
+                  textDecoration: 'none',
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  }
+                }}
+              >
+                {artist}
+              </Link>
+            </Typography>
+          </Box>
         </CardActions>
+
       </Card>
       <OpenPacks
         open={confirmationOpen}

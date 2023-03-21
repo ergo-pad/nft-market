@@ -86,8 +86,8 @@ const Home: NextPage = () => {
                 <Typography variant="body2" sx={{ mb: '32px' }}>
                   Browse current live sales of curated Ergo token collections through our sales portal
                 </Typography>
-                <Button href="/sales" variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
-                  Explore Sales
+                <Button href="/marketplace" variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
+                  Explore Marketplace
                 </Button>
               </Box>
             </Box>
@@ -496,7 +496,7 @@ const Home: NextPage = () => {
                 <Typography variant="body2" sx={{ mb: '32px' }}>
                   Mass mint your own NFT collection, create fungible tokens packs open for unique NFTs, and create a sales portal. You can even host your sale at your own domain with your own branding and graphics.
                 </Typography>
-                <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
+                <Button href="/create" variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
                   Mint Now
                 </Button>
               </Box>

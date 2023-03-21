@@ -64,7 +64,7 @@ const Dashboard: NextPage = () => {
         <Grid container sx={{ mb: '12px' }}>
           <Grid item md={6}>
             <Typography variant="h4">
-              Unopened Packs
+              Open Packs
             </Typography>
           </Grid>
           <Grid item md={6} sx={{ textAlign: 'right' }}>
@@ -98,7 +98,7 @@ const Dashboard: NextPage = () => {
         <Grid container sx={{ mb: '12px' }}>
           <Grid item md={6}>
             <Typography variant="h4">
-              Current Sales
+              Live Sales
             </Typography>
           </Grid>
           <Grid item md={6} sx={{ textAlign: 'right' }}>
