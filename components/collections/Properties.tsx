@@ -6,88 +6,34 @@ import {
   ListItemText,
   useTheme
 } from '@mui/material'
-import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, {
   AccordionSummaryProps,
 } from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import { styled } from '@mui/material/styles';
-import { ITraitsData } from '@components/create/TokenDetailsForm'
-import { IRarityData } from '@pages/create';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { v4 as uuidv4 } from 'uuid';
 
-///////////////////////////////
-// BEGIN SAMPLE DATA //////////
+export interface ICollectionTraits {
+  traitName: string;
+  id: string;
+  description: string;
+  type: 'Property' | 'Level' | 'Stat',
+  max?: number;
+  options?: {
+    property: string;
+    amount: number;
+  }[]
+}
 
-const traits = [
-  {
-    traitName: 'Level',
-    id: uuidv4(),
-    description: 'The level the character has achieved',
-    type: 'Level',
-    max: 200
-  },
-  {
-    traitName: 'Speed',
-    id: uuidv4(),
-    description: 'The stat',
-    type: 'Stat',
-  },
-  {
-    traitName: 'Color',
-    id: uuidv4(),
-    description: 'The fur color of the character',
-    type: 'Property',
-    options: [
-      {
-        property: 'Red',
-        amount: 631
-      },
-      {
-        property: 'Green',
-        amount: 225
-      },
-      {
-        property: 'Blue',
-        amount: 67
-      },
-      {
-        property: 'Purple',
-        amount: 12
-      }
-    ]
-  },
-]
-// if the NFT collection has pre-defined rarities that aren't determined simply by trait selection
-const rarities = [
-  {
-    rarity: 'Common',
-    amount: 1605
-  },
-  {
-    rarity: 'Uncommon',
-    amount: 842
-  },
-  {
-    rarity: 'Rare',
-    amount: 320
-  },
-  {
-    rarity: 'Legendary',
-    amount: 16
-  }
-]
-
-// END SAMPLE DATA ////////////
-///////////////////////////////
+export interface ICollectionRarities {
+  rarity: string;
+  amount: number;
+}
 
 interface IPropertiesProps {
-  traits: {
-
-  }[];
-  rarities: IRarityData[];
+  traits: ICollectionTraits[];
+  rarities: ICollectionRarities[];
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -126,7 +72,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   // borderTop: '1px solid rgba(0, 0, 0, .125)',
 }));
 
-const Properties: FC<IPropertiesProps> = ({ }) => {
+const Properties: FC<IPropertiesProps> = ({ traits, rarities }) => {
   const theme = useTheme()
   return (
     <>

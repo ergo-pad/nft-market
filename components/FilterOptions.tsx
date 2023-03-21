@@ -82,7 +82,8 @@ const FilterAccordionItem: FC<IAccordionProps> = ({
 };
 
 const saleStatus = [
-  "On Sale",
+  "Mint",
+  "Sale",
   "Auction",
   "Not For Sale",
 ]
