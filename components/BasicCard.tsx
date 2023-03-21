@@ -41,9 +41,7 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name }) => {
       }}
     >
       <CardActionArea
-        onClick={() => {
-          link && router.push(link);
-        }}
+        href={link ? link : ''}
       >
         <CardContent
           sx={{

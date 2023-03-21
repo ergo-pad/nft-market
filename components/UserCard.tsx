@@ -1,20 +1,13 @@
 import React, { FC, useMemo } from 'react';
 import {
   Card,
-  CardMedia,
   CardContent,
-  CardActions,
   CardActionArea,
-  Button,
   Box,
   Typography,
   useTheme
 } from '@mui/material'
-import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Image from 'next/image';
-import Link from '@components/Link';
-import { ThemeContext } from '@emotion/react';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useRouter } from 'next/router'
 
 interface INftCardProps {
@@ -24,8 +17,6 @@ interface INftCardProps {
 }
 
 const UserCard: FC<INftCardProps> = (props) => {
-  const router = useRouter();
-  
   const randomInteger = (min: number, max: number) => {
     return (min + Math.random() * (max - min)).toFixed();
   };
@@ -42,9 +33,7 @@ const UserCard: FC<INftCardProps> = (props) => {
       }}
     >
       <CardActionArea
-        onClick={() => {
-          router.push('/users/' + props.address);
-        }}
+        href={'/users/' + props.address}
       >
         <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
           <Image src={props.pfpUrl ? props.pfpUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" alt="placeholder" />

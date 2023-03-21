@@ -70,9 +70,7 @@ const NftCard: FC<INftCard> = ({
       }}
     >
       <CardActionArea
-        onClick={() => {
-          nftData.link && router.push(nftData.link);
-        }}
+        href={nftData.link}
       >
         <Box sx={{
           position: 'relative',
