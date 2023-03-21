@@ -31,10 +31,12 @@ interface ISortByProps {
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          <MenuItem value={"oldest"}>Oldest</MenuItem>
-          <MenuItem value={"newest"}>Newest</MenuItem>
-          <MenuItem value={"most members"}>Most Members</MenuItem>
-          <MenuItem value={"least members"}>Least Members</MenuItem>
+          <MenuItem value={"price-lowtohigh"}>Price: low to high</MenuItem>
+          <MenuItem value={"price-hightolow"}>Price: high to low</MenuItem>
+          <MenuItem value={"rarity-lowtohigh"}>Rarity: low to high</MenuItem>
+          <MenuItem value={"rarity-hightolow"}>Rarity: high to low</MenuItem>
+          <MenuItem value={"newest-first"}>Newest First</MenuItem>
+          <MenuItem value={"oldest-first"}>Oldest First</MenuItem>
         </Select>
       </FormControl>
     );

@@ -3,26 +3,10 @@ import type { NextPage } from 'next';
 import {
   Grid,
   Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  useMediaQuery,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Dialog,
   Container,
   Typography,
-  Box,
-  Paper
 } from "@mui/material";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
-import FilterOptions from "@components/FilterOptions";
-import { SxProps } from "@mui/material";
-import BasicCard from '@components/BasicCard';
-import SearchBar from '@components/SearchBar'
-import SortBy from '@components/SortBy'
 import PackCard from '@components/PackCard';
 import { recentNfts } from '@components/placeholders/recentNfts'
 import OpenPacks from '@components/dialogs/OpenPacks';
@@ -99,18 +83,12 @@ const Dashboard: NextPage = () => {
             return (
               <Grid key={i} item xs={1}>
                 <PackCard
-                  key={i}
                   link={props.link}
-                  imgUrl={props.imgUrl}
+                  imgUrl={props.imgUrl ? props.imgUrl : ''}
                   name={props.name}
-                  // price={props.price}
-                  rarity={props.rarity}
-                  // time={props.time}
                   collection={props.collection}
                   collectionLink={props.collectionLink}
                   artist={props.artist}
-                  artistLink={props.artistLink}
-                  artistLogo={props.artistLogo}
                 />
               </Grid>
             )
@@ -139,7 +117,7 @@ const Dashboard: NextPage = () => {
               name: item.name,
               collection: item.collection ? item.collection : undefined,
               artist: item.artist,
-              imgUrl: item.imgUrl,
+              imgUrl: item.imgUrl ? item.imgUrl : '',
             }
           )
         })}

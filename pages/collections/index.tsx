@@ -1,7 +1,6 @@
 import { FC, useMemo } from 'react'
 import type { NextPage } from 'next'
 import {
-  Button,
   Container,
   Typography,
   Box,
@@ -9,8 +8,6 @@ import {
   Divider
 } from '@mui/material'
 import Image from 'next/image'
-import NextLink from 'next/link'
-import Link from '@components/Link'
 import ButtonLink from '@components/ButtonLink'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 

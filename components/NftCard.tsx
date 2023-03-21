@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import {
   Card,
   CardMedia,
@@ -10,53 +10,74 @@ import {
   Typography,
   useTheme
 } from '@mui/material'
+import dynamic from 'next/dynamic'
 import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Image from 'next/image';
 import Link from '@components/Link';
 import { ThemeContext } from '@emotion/react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useRouter } from 'next/router'
+// const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
+//   ssr: false,
+// });
 
-interface INftCardProps {
+export interface INftItem {
   imgUrl?: string;
-  link?: string;
-  name?: string;
-  price?: string;
+  link: string;
+  name: string;
+  price?: number;
+  currency?: string;
   rarity?: string;
-  time?: string;
+  saleType?: 'mint' | 'auction' | 'sale';
   collection?: string;
   collectionLink?: string;
-  artist?: string;
-  artistLogo?: string;
-  artistLink?: string;
+  artist: string;
+  artistLink: string;
 }
 
-const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, collection, collectionLink, artist, artistLogo, artistLink }) => {
-  const router = useRouter();
-  
-  const randomInteger = (min: number, max: number) => {
-    return (min + Math.random() * (max - min)).toFixed();
-  };
-  const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
+interface INftCard {
+  nftData: INftItem;
+}
 
+const randomInteger = (min: number, max: number) => {
+  return (min + Math.random() * (max - min)).toFixed();
+};
+
+const NftCard: FC<INftCard> = ({
+  nftData
+}) => {
+  const router = useRouter();
+  const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
   const theme = useTheme()
+  const SaleTypeSwitch = (saleType: 'mint' | 'auction' | 'sale') => {
+    switch (saleType) {
+      case "mint":
+        return 'Mint';
+      case "auction":
+        return 'Auction';
+      case "sale":
+        return 'Sale';
+    }
+  }
+
   return (
     <Card
-    elevation={0}
+      elevation={0}
       sx={{
         // minWidth: '276px',
         mb: '6px',
+        height: '100%',
       }}
     >
       <CardActionArea
         onClick={() => {
-          link && router.push(link);
+          nftData.link && router.push(nftData.link);
         }}
       >
-        <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
-          <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" alt="logo" />
+        <Box sx={{ position: 'relative', display: 'block', height: '265px' }}>
+          <Image src={nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" objectFit="cover" draggable="false" alt="nft-image" />
         </Box>
-        {price && (
+        {nftData.price && (
           <Box
             sx={{
               position: 'absolute',
@@ -70,12 +91,12 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, c
             }}
           >
             <Typography sx={{ fontWeight: '700', }}>
-              {price}
+              {nftData.price + ' ' + nftData.currency}
             </Typography>
           </Box>
         )}
         <CardContent sx={{ position: 'relative' }}>
-          {rarity && (
+          {nftData.saleType && (
             <Box
               sx={{
                 position: 'absolute',
@@ -89,39 +110,46 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, c
               }}
             >
               <Typography sx={{ fontWeight: '700', }}>
-                {rarity}
+                {SaleTypeSwitch(nftData.saleType)}
               </Typography>
             </Box>
           )}
           <Typography
             sx={{
-              fontWeight: '700',
-              fontSize: '1.1rem',
-              mb: '6px',
+              fontWeight: '600',
+              fontSize: '1.27rem',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}
           >
-            {name}
+            {nftData.name}
           </Typography>
-          <Box>
-            <AccessTimeIcon
-              sx={{
-                verticalAlign: '-0.25em',
-                mr: '5px',
-              }}
-            />
-            <Typography
-              sx={{
-                display: 'inline-block',
-              }}
-            >
-              {time}
-            </Typography>
-          </Box>
+          {/* {nftData.saleEnd && (
+            <Box>
+              <AccessTimeIcon
+                sx={{
+                  verticalAlign: '-0.25em',
+                  mr: '5px',
+                }}
+              />
+              <Box
+                sx={{
+                  display: 'inline-block',
+                }}
+              >
+                <TimeRemaining
+                  endTime={nftData.saleEnd}
+                />
+              </Box>
+            </Box>
+          )} */}
         </CardContent>
       </CardActionArea>
       <CardActions
         sx={{
           p: '16px',
+          pt: 0
         }}
       >
         <Grid2
@@ -134,14 +162,17 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, c
           }}
         >
           <Grid2>
-            <Typography
+            <Box
               sx={{
                 fontWeight: '700',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
             >
-              {collectionLink ? (
+              {nftData.collectionLink ? (
                 <Link
-                  href={collectionLink}
+                  href={nftData.collectionLink}
                   sx={{
                     color: theme.palette.text.secondary,
                     textDecoration: 'none',
@@ -150,23 +181,25 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, c
                     }
                   }}
                 >
-                  {collection}
+                  {nftData.collection}
                 </Link>
               ) : (
-                collection
+                nftData.collection
               )}
               {' '}
               <Typography
-                component="span"
                 sx={{
-                  fontStyle: 'italic'
+                  fontStyle: 'italic',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}
               >
                 by
                 {' '}
-                {artistLink ? (
+                {nftData.artistLink ? (
                   <Link
-                    href={artistLink}
+                    href={nftData.artistLink}
                     sx={{
                       color: theme.palette.text.secondary,
                       textDecoration: 'none',
@@ -175,31 +208,13 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name, price, rarity, time, c
                       }
                     }}
                   >
-                    {artist}
+                    {nftData.artist}
                   </Link>
                 ) : (
-                  artist
+                  nftData.artist
                 )}
               </Typography>
-            </Typography>
-          </Grid2>
-          <Grid2>
-            {artistLink && artistLogo ? (
-              <Link
-                href={artistLink}
-                sx={{
-                  color: theme.palette.text.secondary,
-                  textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline'
-                  },
-                }}
-              >
-                <Image src={artistLogo} layout="fixed" width={32} height={32} alt="Artist Logo" />
-              </Link>
-            ) : (
-              ''
-            )}
+            </Box>
           </Grid2>
         </Grid2>
       </CardActions>

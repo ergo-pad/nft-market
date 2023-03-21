@@ -265,7 +265,10 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       <Box
         sx={{
           background: theme.palette.mode == 'dark' ? '#242932' : theme.palette.background.paper,
+          borderStyle: 'solid',
+          borderWidth: '1px',
           borderRadius: '6px',
+          borderColor: theme.palette.divider,
           p: '12px',
           display: 'flex',
           flexDirection: 'column',
