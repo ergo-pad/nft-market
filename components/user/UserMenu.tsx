@@ -15,6 +15,8 @@ import Divider from '@mui/material/Divider';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import RedeemIcon from '@mui/icons-material/Redeem';
+import SellIcon from '@mui/icons-material/Sell';
 
 interface IUserMenuProps {
 
@@ -110,17 +112,29 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
               <Avatar /> View Profile
             </MenuItem>
             <Divider />
-            <MenuItem onClick={() => setAddWalletModalOpen(true)}>
+            <MenuItem onClick={() => router.push('/open-packs')}>
               <ListItemIcon>
-                <AccountBalanceWalletIcon fontSize="small" />
+                <RedeemIcon fontSize="small" />
               </ListItemIcon>
-              Change Wallet
+              Open Packs
+            </MenuItem>
+            <MenuItem onClick={() => router.push('/sell')}>
+              <ListItemIcon>
+                <SellIcon fontSize="small" />
+              </ListItemIcon>
+              Sell Tokens
             </MenuItem>
             <MenuItem onClick={() => router.push('/user-settings/')}>
               <ListItemIcon>
                 <Settings fontSize="small" />
               </ListItemIcon>
-              User Settings
+              Edit Profile
+            </MenuItem>
+            <MenuItem onClick={() => setAddWalletModalOpen(true)}>
+              <ListItemIcon>
+                <AccountBalanceWalletIcon fontSize="small" />
+              </ListItemIcon>
+              Change Wallet
             </MenuItem>
             <MenuItem onClick={() => clearWallet()}>
               <ListItemIcon>

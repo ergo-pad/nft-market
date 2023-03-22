@@ -7,9 +7,9 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import RaritySection from '@components/create/RaritySection'
 import TraitSection from '@components/create/TraitSection';
-import { IRarityData } from '@pages/create';
+import { IRarityData } from '@pages/mint';
 import NftSection from '@components/create/NftSection';
-import { ITokenDetailsData, tokenDetailsDataInit } from '@pages/create';
+import { ITokenDetailsData, tokenDetailsDataInit } from '@pages/mint';
 
 export interface ITraitsData {
   traitName: string; // the name of the trait type (eg: sex, speed, age)

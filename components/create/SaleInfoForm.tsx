@@ -10,8 +10,8 @@ import {
   Collapse
 } from '@mui/material'
 import PackTokenSection from '@components/create/PackTokenSection';
-import { IRarityData } from '@pages/create';
-import { saleInfoDataInit, ISaleInfoData, packTokenDataInit } from '@pages/create';
+import { IRarityData } from '@pages/mint';
+import { saleInfoDataInit, ISaleInfoData, packTokenDataInit } from '@pages/mint';
 
 interface ISalesInfoProps {
   saleInfoData: ISaleInfoData;

@@ -17,6 +17,7 @@ import Link from '@components/Link';
 import { ThemeContext } from '@emotion/react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useRouter } from 'next/router'
+import OpenPacks from '@components/dialogs/OpenPacks';
 // const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
 //   ssr: false,
 // });
@@ -37,6 +38,7 @@ export interface INftItem {
 
 interface INftCard {
   nftData: INftItem;
+  cardType?: 'pack' | 'sale'
 }
 
 const randomInteger = (min: number, max: number) => {
@@ -44,7 +46,8 @@ const randomInteger = (min: number, max: number) => {
 };
 
 const NftCard: FC<INftCard> = ({
-  nftData
+  nftData,
+  cardType
 }) => {
   const router = useRouter();
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
@@ -60,77 +63,87 @@ const NftCard: FC<INftCard> = ({
     }
   }
 
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
+
   return (
-    <Card
-      elevation={0}
-      sx={{
-        // minWidth: '276px',
-        mb: '6px',
-        height: '100%',
-      }}
-    >
-      <CardActionArea
-        href={nftData.link}
+    <>
+      <Card
+        elevation={0}
+        sx={{
+          // minWidth: '276px',
+          mb: '6px',
+          height: '100%',
+        }}
       >
-        <Box sx={{
-          position: 'relative',
-          display: 'block',
-          height: '265px',
-          borderBottomWidth: '1px',
-          borderBottomStyle: 'solid',
-          borderBottomColor: theme.palette.divider
-        }}>
-          <Image src={nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" objectFit="cover" draggable="false" alt="nft-image" />
-        </Box>
-        {nftData.price && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              p: '8px',
-              background: 'rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(6px)',
-              color: '#fff',
-              borderRadius: '6px',
-            }}
-          >
-            <Typography sx={{ fontWeight: '700', }}>
-              {nftData.price + ' ' + nftData.currency}
-            </Typography>
+        <CardActionArea 
+          href={cardType === undefined ? nftData.link : ''}
+          onClick={() => cardType === 'pack' && setConfirmationOpen(true)}
+        >
+          <Box sx={{
+            position: 'relative',
+            display: 'block',
+            height: '235px',
+            borderBottomWidth: '1px',
+            borderBottomStyle: 'solid',
+            borderBottomColor: theme.palette.divider
+          }}>
+            <Image
+              src={nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`}
+              layout="fill"
+              objectFit="cover"
+              draggable="false"
+              alt="nft-image"
+            />
           </Box>
-        )}
-        <CardContent sx={{ position: 'relative' }}>
-          {nftData.saleType && (
+          {nftData.price && cardType === undefined && (
             <Box
               sx={{
                 position: 'absolute',
-                top: '-16px',
+                top: '16px',
                 right: '16px',
-                height: '28px',
-                p: '2px 8px',
-                background: theme.palette.primary.main,
-                color: theme.palette.background.default,
-                borderRadius: '50px',
+                p: '8px',
+                background: 'rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(6px)',
+                color: '#fff',
+                borderRadius: '6px',
               }}
             >
               <Typography sx={{ fontWeight: '700', }}>
-                {SaleTypeSwitch(nftData.saleType)}
+                {nftData.price + ' ' + nftData.currency}
               </Typography>
             </Box>
           )}
-          <Typography
-            sx={{
-              fontWeight: '600',
-              fontSize: '1.27rem',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}
-          >
-            {nftData.name}
-          </Typography>
-          {/* {nftData.saleEnd && (
+          <CardContent sx={{ position: 'relative' }}>
+            {nftData.saleType && cardType === undefined && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '-16px',
+                  right: '16px',
+                  height: '28px',
+                  p: '2px 8px',
+                  background: theme.palette.primary.main,
+                  color: theme.palette.background.default,
+                  borderRadius: '50px',
+                }}
+              >
+                <Typography sx={{ fontWeight: '700', }}>
+                  {SaleTypeSwitch(nftData.saleType)}
+                </Typography>
+              </Box>
+            )}
+            <Typography
+              sx={{
+                fontWeight: '600',
+                fontSize: '1.27rem',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {nftData.name}
+            </Typography>
+            {/* {nftData.saleEnd && (
             <Box>
               <AccessTimeIcon
                 sx={{
@@ -149,62 +162,35 @@ const NftCard: FC<INftCard> = ({
               </Box>
             </Box>
           )} */}
-        </CardContent>
-      </CardActionArea>
-      <CardActions
-        sx={{
-          p: '16px',
-          pt: 0
-        }}
-      >
-        <Grid2
-          container
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+          </CardContent>
+        </CardActionArea>
+        <CardActions
           sx={{
-            width: '100%',
+            p: '16px',
+            pt: 0
           }}
         >
-          <Grid2>
-            <Box
-              sx={{
-                fontWeight: '700',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}
-            >
-              {nftData.collectionLink ? (
-                <Link
-                  href={nftData.collectionLink}
-                  sx={{
-                    color: theme.palette.text.secondary,
-                    textDecoration: 'none',
-                    '&:hover': {
-                      textDecoration: 'underline'
-                    }
-                  }}
-                >
-                  {nftData.collection}
-                </Link>
-              ) : (
-                nftData.collection
-              )}
-              {' '}
-              <Typography
+          <Grid2
+            container
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{
+              width: '100%',
+            }}
+          >
+            <Grid2>
+              <Box
                 sx={{
-                  fontStyle: 'italic',
+                  fontWeight: '700',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis'
                 }}
               >
-                by
-                {' '}
-                {nftData.artistLink ? (
+                {nftData.collectionLink ? (
                   <Link
-                    href={nftData.artistLink}
+                    href={nftData.collectionLink}
                     sx={{
                       color: theme.palette.text.secondary,
                       textDecoration: 'none',
@@ -213,17 +199,55 @@ const NftCard: FC<INftCard> = ({
                       }
                     }}
                   >
-                    {nftData.artist}
+                    {nftData.collection}
                   </Link>
                 ) : (
-                  nftData.artist
+                  nftData.collection
                 )}
-              </Typography>
-            </Box>
+                {' '}
+                <Typography
+                  sx={{
+                    fontStyle: 'italic',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  by
+                  {' '}
+                  {nftData.artistLink ? (
+                    <Link
+                      href={nftData.artistLink}
+                      sx={{
+                        color: theme.palette.text.secondary,
+                        textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline'
+                        }
+                      }}
+                    >
+                      {nftData.artist}
+                    </Link>
+                  ) : (
+                    nftData.artist
+                  )}
+                </Typography>
+              </Box>
+            </Grid2>
           </Grid2>
-        </Grid2>
-      </CardActions>
-    </Card>
+        </CardActions>
+      </Card>
+      <OpenPacks
+        open={confirmationOpen}
+        setOpen={setConfirmationOpen}
+        packs={[{
+          name: nftData.name,
+          collection: nftData.collection ? nftData.collection : undefined,
+          artist: nftData.artist,
+          imgUrl: nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`,
+        }]}
+      />
+    </>
   );
 };
 

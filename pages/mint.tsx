@@ -173,7 +173,7 @@ export const saleInfoDataInit: ISaleInfoData = {
   ]
 }
 
-const Create: NextPage = () => {
+const Mint: NextPage = () => {
   const theme = useTheme()
   // const upSm = useMediaQuery(theme.breakpoints.up('sm')) // not currently used
   const [activeStep, setActiveStep] = React.useState(0);
@@ -300,7 +300,7 @@ const Create: NextPage = () => {
       <Container sx={{ my: '50px', mb: { xs: '-12px', md: 0 } }}>
         <Box>
           <Typography variant="h1">
-            Create New Tokens
+            Mint New Tokens
           </Typography>
           <Typography variant="body2" sx={{ mb: '24px' }}>
             You can mint a single NFT, create your own collections, and even set up your own sales platform through this page.
@@ -475,4 +475,4 @@ const Create: NextPage = () => {
   )
 }
 
-export default Create
+export default Mint

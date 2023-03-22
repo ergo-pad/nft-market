@@ -21,7 +21,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { IRarityData, IPackData } from '@pages/create';
+import { IRarityData, IPackData } from '@pages/mint';
 import NumberIncrementNftArray from '@components/forms/NumberIncrementNftArray';
 import { v4 as uuidv4 } from 'uuid';
 

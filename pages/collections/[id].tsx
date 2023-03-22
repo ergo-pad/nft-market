@@ -30,7 +30,7 @@ import { ICollectionProfileProps } from "@components/CollectionProfile";
 import Properties from "@components/collections/Properties";
 import { v4 as uuidv4 } from 'uuid';
 import { ITraitsData } from "@components/create/TokenDetailsForm";
-import { IRarityData } from "@pages/create";
+import { IRarityData } from "@pages/mint";
 import CollectionActivity, { ICollectionActivity } from "@components/collections/CollectionActivity";
 import TokenList from "@components/TokenList";
 import { ICollectionTraits, ICollectionRarities } from "@components/collections/Properties";

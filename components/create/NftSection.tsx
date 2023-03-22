@@ -27,7 +27,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useCSVReader } from 'react-papaparse';
 import { IFileUrl } from '@components/forms/FileUploadArea';
 import { ITraitsData, INftData, IRoyaltyItem } from '@components/create/TokenDetailsForm';
-import { IRarityData } from '@pages/create';
+import { IRarityData } from '@pages/mint';
 import NftItem from '@components/create/NftItem';
 import { TransitionGroup } from 'react-transition-group';
 import RoyaltySection from '@components/create/RoyaltySection';

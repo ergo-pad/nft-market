@@ -12,7 +12,7 @@ import FileUploadArea from '@components/forms/FileUploadArea'
 import { v4 as uuidv4 } from 'uuid';
 import SocialSection from '@components/create/SocialSection';
 import { IFileUrl } from '@components/forms/FileUploadArea';
-import { IArtistData, artistDataInit } from '@pages/create';
+import { IArtistData, artistDataInit } from '@pages/mint';
 
 const artistSocialsInit = {
   id: uuidv4(),
