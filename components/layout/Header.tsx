@@ -30,10 +30,6 @@ const pages = [
     name: "Marketplace",
     link: "/marketplace",
   },
-  {
-    name: "Dashboard",
-    link: "/dashboard",
-  },
 ];
 
 interface INavItemProps {

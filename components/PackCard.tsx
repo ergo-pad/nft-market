@@ -52,8 +52,21 @@ const PackCard: FC<IPackCardProps> = ({
         <CardActionArea
           onClick={() => setConfirmationOpen(true)}
         >
-          <Box sx={{ position: 'relative', display: 'block', height: '205px' }}>
-            <Image src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`} layout="fill" draggable="false" alt="placeholder" />
+          <Box sx={{
+            position: 'relative',
+            display: 'block',
+            height: '235px',
+            borderBottomWidth: '1px',
+            borderBottomStyle: 'solid',
+            borderBottomColor: theme.palette.divider
+          }}>
+            <Image
+              src={imgUrl ? imgUrl : `/images/placeholder/${rand}.jpg`}
+              layout="fill"
+              objectFit="cover"
+              draggable="false"
+              alt="nft image"
+            />
           </Box>
           <CardContent>
             <Typography

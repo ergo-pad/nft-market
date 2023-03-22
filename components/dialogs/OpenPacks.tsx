@@ -180,10 +180,18 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
                   key={i}
                 >
                   <Grid2 xs="auto">
-                    <Image src={item.imgUrl} layout="fixed" width={48} height={48} alt="image" />
+                    <Image
+                      src={item.imgUrl}
+                      layout="fixed"
+                      width={48}
+                      height={48}
+                      alt="nft-image"
+                      sizes="48px"
+                      objectFit="cover"
+                    />
                   </Grid2>
                   <Grid2 xs>
-                    <Typography sx={{ fontWeight: '700'}}>
+                    <Typography sx={{ fontWeight: '700' }}>
                       {item.name}
                     </Typography>
                     {item.collection && (

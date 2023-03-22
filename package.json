@@ -16,6 +16,7 @@
     "@mui/lab": "^5.0.0-alpha.100",
     "@mui/material": "^5.11.8",
     "@mui/system": "^5.11.8",
+    "@mui/x-data-grid": "^6.0.2",
     "@mui/x-date-pickers": "^5.0.6",
     "@nautilus-wallet/ergo-ts": "^0.3.3",
     "@types/elliptic": "^6.4.14",

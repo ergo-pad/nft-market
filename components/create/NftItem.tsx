@@ -22,7 +22,7 @@ import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 import { ITraitsData, INftData, IRoyaltyItem } from '@components/create/TokenDetailsForm';
 import RoyaltySection from '@components/create/RoyaltySection';
-import { IRarityData } from '@pages/create';
+import { IRarityData } from '@pages/mint';
 
 interface INftItemProps {
   rarityData: IRarityData[];

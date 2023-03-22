@@ -10,7 +10,7 @@ import {
   Divider
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
-import { IRarityData } from '@pages/create';
+import { IRarityData } from '@pages/mint';
 import { IFileUrl } from '@components/forms/FileUploadArea';
 
 const RarityItem: FC<{

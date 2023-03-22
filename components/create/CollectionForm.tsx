@@ -16,7 +16,7 @@ import TraitSection from '@components/create/TraitSection';
 import dayjs, { Dayjs } from 'dayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { IFileUrl } from '@components/forms/FileUploadArea';
-import { ICollectionData, collectionDataInit } from '@pages/create';
+import { ICollectionData, collectionDataInit } from '@pages/mint';
 
 interface ICollectionFormProps {
   collectionData: ICollectionData;

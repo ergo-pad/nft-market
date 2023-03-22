@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import React, { useContext, useEffect, useState } from "react";
 import { Typography, Button, Box } from "@mui/material";
 import ArtistForm from "@components/create/ArtistForm";
-import { IArtistData, artistDataInit } from "@pages/create";
+import { IArtistData, artistDataInit } from "@pages/mint";
 import UserProfile from "@components/UserProfile";
 import { getErgoWalletContext } from "@components/wallet/AddWallet";
 import { ApiContext, IApiContext } from "@contexts/ApiContext";
