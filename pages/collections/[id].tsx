@@ -19,7 +19,6 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterOptions from "@components/FilterOptions";
-import NftCard from "@components/NftCard";
 import { recentNfts } from "@components/placeholders/recentNfts";
 import SearchBar from "@components/SearchBar";
 import SortBy from "@components/SortBy";
@@ -29,8 +28,6 @@ import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import { ICollectionProfileProps } from "@components/CollectionProfile";
 import Properties from "@components/collections/Properties";
 import { v4 as uuidv4 } from 'uuid';
-import { ITraitsData } from "@components/create/TokenDetailsForm";
-import { IRarityData } from "@pages/mint";
 import CollectionActivity, { ICollectionActivity } from "@components/collections/CollectionActivity";
 import TokenList from "@components/TokenList";
 import { ICollectionTraits, ICollectionRarities } from "@components/collections/Properties";
@@ -51,20 +48,17 @@ const collectionTraits: ICollectionTraits[] = [
   {
     traitName: 'Level',
     id: uuidv4(),
-    description: 'The level the character has achieved',
     type: 'Level',
     max: 200
   },
   {
     traitName: 'Speed',
     id: uuidv4(),
-    description: 'The stat',
     type: 'Stat',
   },
   {
     traitName: 'Color',
     id: uuidv4(),
-    description: 'The fur color of the character',
     type: 'Property',
     options: [
       {

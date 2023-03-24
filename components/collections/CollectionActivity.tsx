@@ -2,9 +2,8 @@ import React, { FC, useState, useEffect } from 'react';
 import {
   Typography,
   Box,
-  Button,
   Avatar,
-  useMediaQuery,
+  // useMediaQuery,
   useTheme,
   Paper,
   Grid,
@@ -12,7 +11,6 @@ import {
   Icon
 } from '@mui/material'
 import { timeFromNow } from '@utilities/daytime'
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Link from '@components/Link'
 
 export interface ICollectionActivity {
@@ -45,7 +43,7 @@ const CollectionActivity: FC<ICollectionActivity> = ({
   index
 }) => {
   const theme = useTheme()
-  const desktop = useMediaQuery(theme.breakpoints.up('md'))
+  // const desktop = useMediaQuery(theme.breakpoints.up('md'))
   return (
     <Paper elevation={0} sx={{ p: '12px', mb: '12px' }}>
       <Grid
@@ -114,7 +112,6 @@ const CollectionActivity: FC<ICollectionActivity> = ({
               </IconButton>
             </Grid>
           </Grid>
-
         </Grid>
       </Grid>
     </Paper>

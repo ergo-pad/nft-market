@@ -14,7 +14,6 @@ import { ITokenDetailsData, tokenDetailsDataInit } from '@pages/mint';
 export interface ITraitsData {
   traitName: string; // the name of the trait type (eg: sex, speed, age)
   id: string;
-  description?: string; // used only on our front-end and not required
   type: 'Property' | 'Level' | 'Stat';
   max?: number; // if trait is a Level or Stat, this is the highest possible value
 }

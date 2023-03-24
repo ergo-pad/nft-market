@@ -78,7 +78,6 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
           setData(data.concat([{
             traitName: '',
             id: uuidv4(),
-            description: '',
             // image: '',
             type: 'Property'
           }]))

@@ -3,34 +3,22 @@ import {
   Grid,
   Typography,
   Box,
-  TextField,
   Button,
   Switch,
-  Link,
-  Icon,
-  IconButton,
   useTheme,
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Collapse
 } from '@mui/material'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import FileUploadArea from '@components/forms/FileUploadArea'
 import FileUploadAreaTest from '@components/forms/FileUploadAreaTest'
-import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 import { useCSVReader } from 'react-papaparse';
 import { IFileUrl } from '@components/forms/FileUploadArea';
 import { ITraitsData, INftData, IRoyaltyItem } from '@components/create/TokenDetailsForm';
 import { IRarityData } from '@pages/mint';
 import NftItem from '@components/create/NftItem';
-import { TransitionGroup } from 'react-transition-group';
 import RoyaltySection from '@components/create/RoyaltySection';
 
 interface INftSectionProps {
