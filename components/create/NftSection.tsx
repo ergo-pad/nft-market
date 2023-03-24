@@ -22,6 +22,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FileUploadArea from '@components/forms/FileUploadArea'
+import FileUploadAreaTest from '@components/forms/FileUploadAreaTest'
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 import { useCSVReader } from 'react-papaparse';
@@ -244,7 +245,7 @@ const NftSection: FC<INftSectionProps> = (
       <Typography variant="h5">
         Upload Images
       </Typography>
-      <FileUploadArea
+      <FileUploadAreaTest
         multiple
         ipfsFlag
         title="NFT Images"
