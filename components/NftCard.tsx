@@ -26,6 +26,8 @@ export interface INftItem {
   imgUrl?: string;
   link: string;
   name: string;
+  tokenId: string;
+  qty?: number;
   price?: number;
   currency?: string;
   rarity?: string;
@@ -38,7 +40,9 @@ export interface INftItem {
 
 interface INftCard {
   nftData: INftItem;
-  cardType?: 'pack' | 'sale'
+  index?: number;
+  selected?: boolean[];
+  setSelected?: React.Dispatch<React.SetStateAction<boolean[]>>;
 }
 
 const randomInteger = (min: number, max: number) => {
@@ -47,7 +51,9 @@ const randomInteger = (min: number, max: number) => {
 
 const NftCard: FC<INftCard> = ({
   nftData,
-  cardType
+  index,
+  selected,
+  setSelected
 }) => {
   const router = useRouter();
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
@@ -63,7 +69,19 @@ const NftCard: FC<INftCard> = ({
     }
   }
 
-  const [confirmationOpen, setConfirmationOpen] = useState(false)
+  const handleSelect = () => {
+    if (setSelected != undefined && index != undefined) {
+      setSelected(prev => {
+        const newArray = prev.map((item, i) => {
+          if (index === i) {
+            return !prev[index]
+          }
+          return item
+        })
+        return newArray
+      })
+    }
+  }
 
   return (
     <>
@@ -71,13 +89,14 @@ const NftCard: FC<INftCard> = ({
         elevation={0}
         sx={{
           // minWidth: '276px',
+          borderColor: selected !== undefined && index !== undefined && selected[index] ? '#f00' : theme.palette.divider,
           mb: '6px',
           height: '100%',
         }}
       >
-        <CardActionArea 
-          href={cardType === undefined ? nftData.link : ''}
-          onClick={() => cardType === 'pack' && setConfirmationOpen(true)}
+        <CardActionArea
+          href={setSelected === undefined ? nftData.link : ''}
+          onClick={() => setSelected != undefined && handleSelect()}
         >
           <Box sx={{
             position: 'relative',
@@ -95,7 +114,7 @@ const NftCard: FC<INftCard> = ({
               alt="nft-image"
             />
           </Box>
-          {nftData.price && cardType === undefined && (
+          {nftData.price && setSelected === undefined && (
             <Box
               sx={{
                 position: 'absolute',
@@ -114,7 +133,7 @@ const NftCard: FC<INftCard> = ({
             </Box>
           )}
           <CardContent sx={{ position: 'relative' }}>
-            {nftData.saleType && cardType === undefined && (
+            {nftData.saleType && setSelected === undefined && (
               <Box
                 sx={{
                   position: 'absolute',
@@ -237,16 +256,6 @@ const NftCard: FC<INftCard> = ({
           </Grid2>
         </CardActions>
       </Card>
-      <OpenPacks
-        open={confirmationOpen}
-        setOpen={setConfirmationOpen}
-        packs={[{
-          name: nftData.name,
-          collection: nftData.collection ? nftData.collection : undefined,
-          artist: nftData.artist,
-          imgUrl: nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`,
-        }]}
-      />
     </>
   );
 };

@@ -5,6 +5,8 @@ export const recentNfts: INftItem[] = [
     imgUrl: '/images/nft-cube.png',
     link: '/marketplace/mint',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b937602c7099bfa783875c04f04ebb4e90545c8e7',
+    qty: 10,
     price: 17,
     currency: 'Erg',
     rarity: 'Common',
@@ -17,6 +19,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/auction',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b94099bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -28,6 +31,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/mint',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e765c7099bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -39,6 +43,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/sale',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e766c7099bfa783875c04f04ebb4e90545c8e7',
     collection: 'Wrath of Gods',
     collectionLink: '/collections/test',
     artist: 'Blitz Trading Cards',
@@ -48,6 +53,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/sale',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e76079bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     rarity: 'Rare',
@@ -60,6 +66,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/auction',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e802c7099bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -71,6 +78,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/mint',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e792c7099bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -83,6 +91,7 @@ export const recentNfts: INftItem[] = [
     imgUrl: '/images/nft-cube.png',
     link: '/marketplace/sale',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e76007099bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -94,6 +103,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/sale',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e7611c7099bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -105,6 +115,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/sale',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e76012099bfa783875c04f04ebb4e90545c8e7',
     price: 12,
     currency: 'SigUSD',
     collection: 'Wrath of Gods',
@@ -116,6 +127,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/sale',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e76021437099bfa783875c04f04ebb4e90545c8e7',
     collection: 'Wrath of Gods',
     rarity: 'Common',
     collectionLink: '/collections/test',
@@ -127,6 +139,7 @@ export const recentNfts: INftItem[] = [
     imgUrl: '/images/nft-cube.png',
     link: '/marketplace/sale',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e76021499bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     rarity: 'Common',
@@ -139,6 +152,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/sale',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e760157099bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     rarity: 'Common',
@@ -152,6 +166,7 @@ export const recentNfts: INftItem[] = [
     imgUrl: '/images/nft-cube.png',
     link: '/marketplace/sale',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e760216099bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -163,6 +178,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/auction',
     name: 'Cyber Citizen Cyber Egg #323',
+    tokenId: '6a66e5c3edd65e2cc2e806c679b1759ed9a0556d3605af8cd00051ac0e9fe',
     price: 25,
     currency: 'SigUSD',
     rarity: 'Common',
@@ -176,6 +192,7 @@ export const recentNfts: INftItem[] = [
     imgUrl: '/images/nft-cube.png',
     link: '/marketplace/mint',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e7602c1899bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -187,6 +204,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/hello',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e7602c71999bfa783875c04f04ebb4e90545c8e7',
     collection: 'Wrath of Gods',
     collectionLink: '/collections/test',
     artist: 'Blitz Trading Cards',
@@ -195,6 +213,7 @@ export const recentNfts: INftItem[] = [
   {
     link: '/marketplace/hello',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e7602c7220bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -206,6 +225,7 @@ export const recentNfts: INftItem[] = [
     imgUrl: '/images/nft-cube.png',
     link: '/marketplace/hello',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e7602c7219bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',
@@ -218,6 +238,7 @@ export const recentNfts: INftItem[] = [
     imgUrl: '/images/nft-cube.png',
     link: '/marketplace/hello',
     name: 'Obsidian Cube',
+    tokenId: 'a9d161f278e9fac670cb04b92e7602c7023bfa783875c04f04ebb4e90545c8e7',
     price: 17,
     currency: 'Erg',
     collection: 'Wrath of Gods',

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import type { NextPage } from 'next'
 import {
   Container,
@@ -26,7 +26,12 @@ const Sell: NextPage = () => {
     setAddWalletModalOpen,
   } = useContext(WalletContext);
 
+  const [selected, setSelected] = useState<boolean[]>([])
+
   const apiCallGETnfts = recentNfts
+  useEffect(() => {
+    setSelected(apiCallGETnfts.map((item) => false))
+  }, [apiCallGETnfts])
 
   return (
     <Container sx={{ my: '50px' }}>
@@ -35,7 +40,7 @@ const Sell: NextPage = () => {
           Create a Sale
         </Typography>
         <Typography variant="body2" sx={{ mb: '48px' }}>
-          Put any Ergo token up for sale.
+          Select the tokens you'd like to sell.
         </Typography>
       </Box>
       {walletAddress !== '' ? (
@@ -50,7 +55,9 @@ const Sell: NextPage = () => {
               <Grid key={i} item xs={1}>
                 <NftCard
                   nftData={item}
-                  cardType="sale"
+                  index={i}
+                  selected={selected}
+                  setSelected={setSelected}
                 />
               </Grid>
             )

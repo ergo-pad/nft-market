@@ -28,6 +28,7 @@
     "formidable": "^2.0.1",
     "framer-motion": "^7.0.0",
     "next": "12.2.4",
+    "nft.storage": "^7.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-papaparse": "^4.1.0",
@@ -36,6 +37,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/mime": "^3.0.1",
     "@types/node": "18.6.5",
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import type { NextPage } from 'next';
 import {
   Grid,
@@ -25,8 +25,14 @@ const Open: NextPage = () => {
     walletAddress,
     setAddWalletModalOpen,
   } = useContext(WalletContext);
-  
+
+  const [selected, setSelected] = useState<boolean[]>([])
+
   const apiCallGETnfts = recentNfts
+  useEffect(() => {
+    setSelected(apiCallGETnfts.map((item) => false))
+  }, [apiCallGETnfts])
+
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
   return (
@@ -42,17 +48,17 @@ const Open: NextPage = () => {
             </Typography>
           </Grid>
           <Grid item md={6} sx={{ textAlign: 'right' }}>
-          {walletAddress !== '' && apiCallGETnfts.length > 1 && (
-            <Button variant="contained" onClick={() => setConfirmationOpen(true)}>
-              Open All
-            </Button>
-          )}
+            {walletAddress !== '' && apiCallGETnfts.length > 1 && (
+              <Button variant="contained" onClick={() => setConfirmationOpen(true)}>
+                Open All
+              </Button>
+            )}
           </Grid>
         </Grid>
         {walletAddress !== '' ? (
           <Grid
             container
-            spacing={3}
+            spacing={2}
             columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}
             sx={{ mb: "80px" }}
           >
@@ -61,7 +67,9 @@ const Open: NextPage = () => {
                 <Grid key={i} item xs={1}>
                   <NftCard
                     nftData={item}
-                    cardType="pack"
+                    index={i}
+                    selected={selected}
+                    setSelected={setSelected}
                   />
                 </Grid>
               )
