@@ -40,7 +40,7 @@ const Sell: NextPage = () => {
           Create a Sale
         </Typography>
         <Typography variant="body2" sx={{ mb: '48px' }}>
-          Select the tokens you'd like to sell.
+          Select the tokens you&apos;d like to sell.
         </Typography>
       </Box>
       {walletAddress !== '' ? (
