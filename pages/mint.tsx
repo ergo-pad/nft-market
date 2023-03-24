@@ -59,7 +59,6 @@ export interface ICollectionData {
   collectionLogoUrl: string;
   category: string;
   mintingExpiry: number | -1; //unix timestamp of last date of expiry. If no expiry, must be -1. May not be undefined
-
 }
 
 export const collectionDataInit: ICollectionData = {
@@ -75,7 +74,6 @@ export const collectionDataInit: ICollectionData = {
 export interface IRarityData {
   rarity: string;
   id: string;
-  description?: string;
   image?: string;
 }
 
@@ -96,44 +94,30 @@ export interface IPackData {
 }
 
 export interface ISaleInfoData {
-  // royalties: {
-  //   address: string;
-  //   percent: number; // 1000 * royalty percentage of this recipient (e.g. 50 if the receipient receives 5% of the sale)
-  // }[];
   packs: IPackData[];
   dateStart: Date;
   dateEnd: Date;
-  price: {
-    tokenId?: string; // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
-    price: number;
-    currency: 'erg' | 'sigusd'; // default to sigusd
-  }[];
+  hasPacks: boolean;
 }
 
 export interface ITokenDetailsData {
-  // packs: IPackData[];
-  nfts: INftData[];
+  nfts: INftData[]; // contains royalty info
   rarities: IRarityData[];
   availableTraits: ITraitsData[];
 }
 
 export const tokenDetailsDataInit: ITokenDetailsData = {
-  // packs: [packTokenDataInit],
   nfts: [],
   rarities: [
     {
       rarity: '',
       id: uuidv4(),
-      description: '',
-      // image: '',
     }
   ],
   availableTraits: [
     {
       traitName: '', // the name of the trait type (eg: sex, speed, age)
       id: uuidv4(),
-      description: '', // used only on our front-end and not required
-      // image: '', // this is only used on our front-end and not required. 
       type: 'Property',
       // max: 1, // if trait is a Level or Stat, this is the highest possible value
     }
@@ -161,16 +145,10 @@ export const packTokenDataInit: IPackData = {
 }
 
 export const saleInfoDataInit: ISaleInfoData = {
-  packs: [packTokenDataInit],
+  packs: [packTokenDataInit],  // IF THE USER CHOOSES NOT TO HAVE PACKS, PRICE FOR THE SALE WILL BE packs[0].price
   dateStart: new Date(1663353871000), // FIX DEFAULTS
   dateEnd: new Date(1663353871000), // FIX DEFAULTS
-  price: [
-    {
-      tokenId: '', // if there are multiple packs to sell, this is the token ID of the pack. Don't use for sales without pack tokens
-      price: 1,
-      currency: 'sigusd', // default to sigusd
-    },
-  ]
+  hasPacks: false,
 }
 
 const Mint: NextPage = () => {

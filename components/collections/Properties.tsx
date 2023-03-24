@@ -17,7 +17,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 export interface ICollectionTraits {
   traitName: string;
   id: string;
-  description: string;
   type: 'Property' | 'Level' | 'Stat',
   max?: number;
   options?: {
@@ -113,13 +112,6 @@ const Properties: FC<IPropertiesProps> = ({ traits, rarities }) => {
             </AccordionSummary>
             <AccordionDetails>
               <List dense>
-                {item.description && (
-                  <ListItem>
-                    <ListItemText>
-                      <Typography component="span" sx={{ color: theme.palette.text.primary, fontWeight: '600' }}>Description:</Typography> {item.description}
-                    </ListItemText>
-                  </ListItem>
-                )}
                 <ListItem>
                   <ListItemText>
                     <Typography component="span" sx={{ color: theme.palette.text.primary, fontWeight: '600' }}>Type:</Typography> {item.type}
@@ -151,7 +143,6 @@ const Properties: FC<IPropertiesProps> = ({ traits, rarities }) => {
                   </ListItem>
                 )}
               </List>
-
             </AccordionDetails>
           </Accordion>
         )
