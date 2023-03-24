@@ -78,7 +78,6 @@ const RaritySection: FC<IRaritySectionProps> = ({ data, setData }) => {
           setData(data.concat([{
             rarity: '',
             id: uuidv4(),
-            description: '',
             image: ''
           }]))
         }}>
