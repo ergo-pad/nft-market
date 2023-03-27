@@ -37,7 +37,7 @@ const user = {
   bannerUrl: undefined,
   tagline:
     "A psychological phenomenon known as the mere exposure effect is where we develop a preference just because we are familiar with things.",
-  socialLinks: [],
+  socials: [],
 };
 // END PLACEHOLDER DATA ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -233,7 +233,7 @@ const User: NextPage = () => {
         pfpUrl={userProfile.pfpUrl}
         bannerUrl={userProfile.bannerUrl}
         tagline={userProfile.tagline}
-        socialLinks={userProfile.socialLinks ? user.socialLinks : []}
+        socialLinks={userProfile.socials ?? []}
       >
         <TabContext value={tabValue}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
