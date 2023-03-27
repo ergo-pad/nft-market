@@ -5,7 +5,6 @@ import {
   TextField,
   useTheme,
   Button,
-  Slider,
   IconButton,
   InputLabel,
   MenuItem,
@@ -148,37 +147,61 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
     })
   };
 
+  // const handleChangeNum = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, max?: number) => {
+  //   setData((prevArray) => {
+  //     const newArray = prevArray.map((item, i) => {
+  //       if (i === index) {
+  //         var regex = /^[0-9]+$/;
+  //         if (e.target.value.match(regex)) {
+  //           if ((max && Number(e.target.value) <= max) || max === undefined) {
+  //             return {
+  //               ...item,
+  //               [e.target.name]: Number(e.target.value)
+  //             }
+  //           }
+  //           else if (max && Number(e.target.value) > max) {
+  //             return {
+  //               ...item,
+  //               [e.target.name]: max
+  //             }
+  //           }
+  //         }
+  //         else if (e.target.value === '' || e.target.value === undefined || e.target.value === null) {
+  //           return {
+  //             ...item,
+  //             [e.target.name]: ''
+  //           }
+  //         }
+  //       }
+  //       return item
+  //     })
+  //     return newArray
+  //   })
+  // }
+
+  // CHATGPT'S VERSION
   const handleChangeNum = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, max?: number) => {
     setData((prevArray) => {
       const newArray = prevArray.map((item, i) => {
         if (i === index) {
-          var regex = /^[0-9]+$/;
-          if (e.target.value.match(regex)) {
-            if ((max && Number(e.target.value) <= max) || max === undefined) {
-              return {
-                ...item,
-                [e.target.name]: Number(e.target.value)
-              }
+          const inputValue = e.target.value.trim();
+          const regex = /^\d+(\.\d{1,2})?$/;
+          if (inputValue.match(regex)) {
+            const floatValue = parseFloat(inputValue);
+            if ((max !== undefined && floatValue <= max) || max === undefined) {
+              return { ...item, [e.target.name]: floatValue };
+            } else {
+              return { ...item, [e.target.name]: max };
             }
-            else if (max && Number(e.target.value) > max) {
-              return {
-                ...item,
-                [e.target.name]: max
-              }
-            }
-          }
-          else if (e.target.value === '' || e.target.value === undefined || e.target.value === null) {
-            return {
-              ...item,
-              [e.target.name]: ''
-            }
+          } else if (inputValue === '' || inputValue === undefined || inputValue === null) {
+            return { ...item, [e.target.name]: '' };
           }
         }
-        return item
-      })
-      return newArray
-    })
-  }
+        return item;
+      });
+      return newArray;
+    });
+  };
 
   const handleChangeProbability = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -284,12 +307,10 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({ data, setData, index, rarityDa
             variant="filled"
             id="price"
             label="Price Per Pack"
-            inputProps={{
-              inputMode: 'numeric',
-            }}
+            type="number"
             name="price"
             value={data[index].price}
-            onChange={handleChangeNum}
+            onChange={handleChange}
           />
         </Grid>
         <Grid item xs={12} md={4}>

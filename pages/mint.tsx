@@ -145,10 +145,10 @@ export const packTokenDataInit: IPackData = {
 }
 
 export const saleInfoDataInit: ISaleInfoData = {
-  packs: [packTokenDataInit],  // IF THE USER CHOOSES NOT TO HAVE PACKS, PRICE FOR THE SALE WILL BE packs[0].price
-  dateStart: new Date(1663353871000), // FIX DEFAULTS
-  dateEnd: new Date(1663353871000), // FIX DEFAULTS
-  hasPacks: false,
+  packs: [packTokenDataInit],  // If user chooses not to have packs, price for sale will be {packs[0].price}
+  dateStart: new Date(new Date().getTime() + (8.64e+7)), 
+  dateEnd: new Date(new Date().getTime() + (2.6298e+9)),
+  hasPacks: false, // If false, packs[0].price is used for all NFT prices as mentioned above. 
 }
 
 const Mint: NextPage = () => {

@@ -17,11 +17,12 @@ interface IPackTokenSectionProps {
   data: IPackData[];
   setData: React.Dispatch<React.SetStateAction<IPackData[]>>;
   rarityData: IRarityData[];
+  packToggle: boolean;
+  setPackToggle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityData }) => {
+const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityData, packToggle, setPackToggle }) => {
   const theme = useTheme()
-  const [packToggle, setPackToggle] = useState(false)
   const handlePackToggle = () => {
     setPackToggle(!packToggle);
   };
@@ -63,7 +64,7 @@ const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityDat
         </Grid>
       </Grid>
       <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
-        If you want to sell or give away tokens that represent &quot;packs&quot; of NFTs, such as for card packs or other bundles, select this box to create them. If you choose not to now, you won&apos;t be able to make them later for this collection.
+        If you want to sell or give away tokens that represent &quot;packs&quot; of NFTs, such as for card packs or other bundles, select this box to create them. 
       </Typography>
       <Collapse in={packToggle}>
         <TransitionGroup>
