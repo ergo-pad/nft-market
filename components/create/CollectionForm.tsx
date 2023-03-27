@@ -10,9 +10,6 @@ import {
   useTheme
 } from '@mui/material'
 import FileUploadArea from '@components/forms/FileUploadArea'
-import { v4 as uuidv4 } from 'uuid';
-import RaritySection from '@components/create/RaritySection'
-import TraitSection from '@components/create/TraitSection';
 import dayjs, { Dayjs } from 'dayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { IFileUrl } from '@components/forms/FileUploadArea';
