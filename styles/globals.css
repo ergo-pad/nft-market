@@ -10,6 +10,7 @@ body {
 body {
   overflow-y: overlay;
   overflow-x: hidden;
+  height: 100%;
 }
 
 a {

@@ -123,14 +123,11 @@ const Header: FC<IHeaderProps> = ({ }) => {
         // color="transparent"
         elevation={0}
         sx={{
-          zIndex: "24",
+          zIndex: "101",
           borderBottom: theme.palette.mode == 'dark' ? "1px solid #1d242f" : "1px solid rgba(140,140,140,0.2)",
-          backdropFilter: `${trigger ? "blur(25px)" : ""}`,
+          backdropFilter: "blur(25px)",
           borderRadius: '0px',
-          background:
-            //`${trigger ? 
-            theme.palette.mode == 'dark' ? "rgba(8,12,20,0.8)" : "rgba(245,245,245,0.8)",
-          //: ""}`,
+          background: theme.palette.mode == 'dark' ? "rgba(12,18,28,0.9)" : "rgba(245,245,245,0.9)",
         }}
       >
         <Container sx={{ px: "24px" }}>
@@ -139,8 +136,8 @@ const Header: FC<IHeaderProps> = ({ }) => {
             justifyContent="space-between"
             alignItems="center"
             sx={{
-              height: trigger ? "60px" : "89px",
-              transition: 'height 0.2s linear'
+              height: trigger ? "59px" : "89px",
+              transition: 'height 200ms linear'
             }}
           >
             <Grid

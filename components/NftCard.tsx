@@ -88,9 +88,6 @@ const NftCard: FC<INftCard> = ({
           backgroundColor: selected !== undefined && index !== undefined && selected[index] ?
             theme.palette.divider :
             theme.palette.background.paper,
-          // boxShadow: selected !== undefined && index !== undefined && selected[index] ?
-          //   `0 0 3px 0px ${theme.palette.primary.main}` :
-          //   'none',
           mb: '6px',
           height: '100%',
           transform: selected !== undefined && index !== undefined && selected[index] ?

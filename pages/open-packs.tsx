@@ -5,10 +5,10 @@ import {
   Button,
   Container,
   Typography,
-  Box
+  Box,
+  useScrollTrigger
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import PackCard from '@components/PackCard';
 import { recentNfts } from '@components/placeholders/recentNfts'
 import OpenPacks from '@components/dialogs/OpenPacks';
 import { WalletContext } from '@contexts/WalletContext';
@@ -28,6 +28,18 @@ const Open: NextPage = () => {
 
   const [selected, setSelected] = useState<boolean[]>([])
 
+  const selectAll = () => {
+    setSelected(prev => (
+      prev.map(() => true)
+    ))
+  }
+
+  const selectNone = () => {
+    setSelected(prev => (
+      prev.map(() => false)
+    ))
+  }
+
   const apiCallGETnfts = recentNfts
   useEffect(() => {
     setSelected(apiCallGETnfts.map((item) => false))
@@ -35,9 +47,55 @@ const Open: NextPage = () => {
 
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+  });
+
   return (
     <>
-      <Container sx={{ my: '50px' }}>
+      {walletAddress !== '' && apiCallGETnfts.length > 1 && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: trigger ? "60px" : "90px",
+            transition: 'top 200ms linear',
+            background: theme.palette.mode == 'dark' ? "rgba(15,21,32,0.9)" : "rgba(235,235,235,0.9)",
+            borderBottom: theme.palette.mode == 'dark' ? "1px solid #1d242f" : "1px solid rgba(140,140,140,0.2)",
+            backdropFilter: "blur(25px)",
+            zIndex: 100,
+            width: '100%',
+          }}
+        >
+          <Container sx={{ textAlign: 'right', py: '6px' }}>
+            <Button
+              size="small"
+              variant="text"
+              sx={{ mr: '6px' }}
+              onClick={() => selectAll()}
+            >
+              Select All
+            </Button>
+            <Button
+              size="small"
+              variant="text"
+              sx={{ mr: '6px' }}
+              onClick={() => selectNone()}
+            >
+              Select None
+            </Button>
+            <Button
+              size="small"
+              variant="text"
+              onClick={() => setConfirmationOpen(true)}
+            >
+              Open Selected
+            </Button>
+          </Container>
+
+        </Box>
+      )}
+      <Container sx={{ mt: '70px', mb: '50px' }}>
         <Grid container sx={{ mb: '36px' }} alignItems="flex-end">
           <Grid item md={6}>
             <Typography variant="h1">
@@ -48,11 +106,7 @@ const Open: NextPage = () => {
             </Typography>
           </Grid>
           <Grid item md={6} sx={{ textAlign: 'right' }}>
-            {walletAddress !== '' && apiCallGETnfts.length > 1 && (
-              <Button variant="contained" onClick={() => setConfirmationOpen(true)}>
-                Open All
-              </Button>
-            )}
+
           </Grid>
         </Grid>
         {walletAddress !== '' ? (
@@ -90,15 +144,15 @@ const Open: NextPage = () => {
       <OpenPacks
         open={confirmationOpen}
         setOpen={setConfirmationOpen}
-        packs={recentNfts.map((item) => {
-          return (
-            {
-              name: item.name,
-              collection: item.collection ? item.collection : undefined,
-              artist: item.artist,
-              imgUrl: item.imgUrl ? item.imgUrl : `/images/placeholder/${rand}.jpg`,
-            }
-          )
+        packs={recentNfts.filter((_item, i) => selected[i] === true).map((item) => {
+            return (
+              {
+                name: item.name,
+                collection: item.collection ? item.collection : undefined,
+                artist: item.artist,
+                imgUrl: item.imgUrl ? item.imgUrl : `/images/placeholder/${rand}.jpg`,
+              }
+            )
         })}
       />
     </>
