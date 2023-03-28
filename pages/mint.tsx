@@ -289,12 +289,12 @@ const Mint: NextPage = () => {
       <Box sx={{
         display: { xs: "block", lg: "none" },
         position: 'sticky',
-        top: 61,
+        top: '60px',
         background: theme.palette.background.default,
         p: '12px',
         mb: '12px',
         zIndex: 60,
-        // borderBottom: `1px solid ${theme.palette.divider}`
+        borderBottom: `1px solid ${theme.palette.divider}`
       }}>
         {/* STEPPER MOBILE */}
         <Stepper nonLinear activeStep={activeStep}>

@@ -5,11 +5,17 @@ import {
   Typography,
   Box,
   Grid,
-  Divider
+  Divider,
+  useTheme
 } from '@mui/material'
 import Image from 'next/image'
 import ButtonLink from '@components/ButtonLink'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from 'swiper';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 const collections = [
   {
@@ -52,119 +58,150 @@ const Collection: FC<ICollectionProps> = (props) => {
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
   return (
-    <>
-      <Grid container spacing={3} alignItems="center" sx={{ mb: '32px' }}>
-        <Grid item sm={6} xs={12}>
+    <Grid container spacing={3} alignItems="center" sx={{ mb: '32px' }}>
+      <Grid item sm={6} xs={12}>
+        <Box
+          sx={{
+            position: 'relative',
+            background: '#000',
+            height: '320px',
+            borderRadius: '16px',
+            overflow: 'hidden',
+          }}
+        >
+          <Image
+            src={props.imgUrl ? props.imgUrl : `/images/placeholder/${rand}.jpg`}
+            layout="fill"
+            objectFit="cover"
+            alt="placeholder"
+          />
+        </Box>
+      </Grid>
+      <Grid item sm={6} xs={12}>
+        <Box
+          sx={{
+            height: '100%',
+            position: 'relative',
+          }}
+        >
           <Box
             sx={{
-              position: 'relative',
-              background: '#000',
-              height: '320px',
-              borderRadius: '16px',
-              overflow: 'hidden',
-            }}
-          >
-            <Image
-              src={props.imgUrl ? props.imgUrl : `/images/placeholder/${rand}.jpg`}
-              layout="fill"
-              objectFit="cover"
-              alt="placeholder"
-            />
-          </Box>
-        </Grid>
-        <Grid item sm={6} xs={12}>
-          <Box
-            sx={{
-              height: '100%',
-              position: 'relative',
+              mb: '24px'
             }}
           >
             <Box
               sx={{
-                mb: '24px'
+                display: 'inline-block',
+                verticalAlign: 'middle',
+                mr: '8px',
+                height: '32px',
+                width: '32px',
+                borderRadius: "32px",
+                overflow: 'hidden',
               }}
             >
-              <Box
-                sx={{
-                  display: 'inline-block',
-                  verticalAlign: 'middle',
-                  mr: '8px',
-                  height: '32px',
-                  width: '32px',
-                  borderRadius: "32px",
-                  overflow: 'hidden',
-                }}
-              >
-                <Image
-                  src={props.logoUrl ? props.logoUrl : `/images/placeholder/${rand}.jpg`}
-                  layout="fixed"
-                  height={32}
-                  width={32}
-                  alt="logo"
-                />
-              </Box>
-              <Typography
-                sx={{
-                  textTransform: 'uppercase',
-                  fontSize: '0.75rem',
-                  display: 'inline-block',
-                }}
-              >
-                By {props.artist}
-              </Typography>
+              <Image
+                src={props.logoUrl ? props.logoUrl : `/images/placeholder/${rand}.jpg`}
+                layout="fixed"
+                height={32}
+                width={32}
+                alt="logo"
+              />
             </Box>
-            <Typography variant="h5">
-              {props.title}
-            </Typography>
             <Typography
-              variant="body2"
               sx={{
-                mb: '32px',
-                lineHeight: '1.5',
-                whiteSpace: "normal",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: "-webkit-box",
-                WebkitLineClamp: "3",
-                WebkitBoxOrient: "vertical",
+                textTransform: 'uppercase',
+                fontSize: '0.75rem',
+                display: 'inline-block',
               }}
             >
-              {props.description}
+              By {props.artist}
             </Typography>
-            <ButtonLink href={props.link} endIcon={<ArrowForwardIcon />}>
-              Explore collection
-            </ButtonLink>
           </Box>
-        </Grid>
+          <Typography variant="h5">
+            {props.title}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              mb: '32px',
+              lineHeight: '1.5',
+              whiteSpace: "normal",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitLineClamp: "3",
+              WebkitBoxOrient: "vertical",
+            }}
+          >
+            {props.description}
+          </Typography>
+          <ButtonLink href={props.link} endIcon={<ArrowForwardIcon />}>
+            Explore collection
+          </ButtonLink>
+        </Box>
       </Grid>
-      <Divider sx={{ mb: '32px' }} />
-    </>
+    </Grid>
   )
 }
 
 const Collections: NextPage = () => {
+  const theme = useTheme()
   return (
     <Container sx={{ my: '50px' }}>
       <Typography variant="h1">
         Collections
       </Typography>
       <Typography variant="body2" sx={{ mb: '48px' }}>
-        Browse Ergo NFT and Fungible token collections. 
+        Browse Ergo NFT and Fungible token collections.
       </Typography>
-      {collections.map((props, i) => {
-        return (
-          <Collection
-            imgUrl={props.imgUrl}
-            logoUrl={props.logoUrl}
-            title={props.title}
-            artist={props.artist}
-            description={props.description}
-            link={props.link}
-            key={i}
-          />
-        )
-      })}
-    </Container>
+      <Box
+        sx={{
+          '& .swiper-button-next, .swiper-button-prev': {
+            color: theme.palette.divider,
+            '&:hover': {
+              color: theme.palette.primary.main,
+            }
+          },
+          '& .swiper-pagination-bullet': {
+            background: theme.palette.text.secondary,
+          },
+          '& .swiper-pagination-bullet-active': {
+            background: theme.palette.primary.main,
+          }
+        }}
+      >
+      <Swiper
+        pagination={{
+          clickable: true,
+        }}
+        autoplay={{
+          delay: 3000,
+          disableOnInteraction: true,
+        }}
+        loop={true}
+        navigation={true}
+        modules={[Pagination, Navigation, Autoplay]}
+        className="mySwiper"
+      >
+        {collections.map((props, i) => {
+          return (
+            <SwiperSlide>
+              <Collection
+                imgUrl={props.imgUrl}
+                logoUrl={props.logoUrl}
+                title={props.title}
+                artist={props.artist}
+                description={props.description}
+                link={props.link}
+                key={i}
+              />
+            </SwiperSlide>
+          )
+        })}
+      </Swiper>
+    </Box>
+    </Container >
   )
 }
 

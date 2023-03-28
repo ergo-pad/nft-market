@@ -244,7 +244,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
       <Fade in={navbarOpen} style={{ transitionDuration: "400ms" }}>
         <Box
           sx={{
-            zIndex: "35",
+            zIndex: "103",
             position: "fixed",
             width: "26px",
             height: "40px",
@@ -298,7 +298,7 @@ const Header: FC<IHeaderProps> = ({ }) => {
             width: "100vw",
             position: "fixed",
             bottom: "0px",
-            zIndex: "25",
+            zIndex: "102",
             background: theme.palette.background.default,
             backdropFilter: "blur(55px)",
             p: "24px",
