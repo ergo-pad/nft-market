@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react'
+import { FC, useMemo, useState } from 'react'
 import type { NextPage } from 'next'
 import {
   Container,
@@ -11,11 +11,13 @@ import {
 import Image from 'next/image'
 import ButtonLink from '@components/ButtonLink'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CollectionList from '@components/CollectionList'
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from 'swiper';
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { recentNfts } from '@components/placeholders/recentNfts' // change for collections
 
 const collections = [
   {
@@ -147,8 +149,9 @@ const Collection: FC<ICollectionProps> = (props) => {
 
 const Collections: NextPage = () => {
   const theme = useTheme()
+  const [numberCollectionsShowing, setNumberCollectionsShowing] = useState(24)
   return (
-    <Container sx={{ my: '50px' }}>
+    <Container sx={{ mt: '30px', mb: '50px' }}>
       <Typography variant="h1">
         Collections
       </Typography>
@@ -157,6 +160,7 @@ const Collections: NextPage = () => {
       </Typography>
       <Box
         sx={{
+          mb: 2,
           '& .swiper-button-next, .swiper-button-prev': {
             color: theme.palette.divider,
             '&:hover': {
@@ -171,35 +175,40 @@ const Collections: NextPage = () => {
           }
         }}
       >
-      <Swiper
-        pagination={{
-          clickable: true,
-        }}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: true,
-        }}
-        loop={true}
-        navigation={true}
-        modules={[Pagination, Navigation, Autoplay]}
-        className="mySwiper"
-      >
-        {collections.map((props, i) => {
-          return (
-            <SwiperSlide key={i}>
-              <Collection
-                imgUrl={props.imgUrl}
-                logoUrl={props.logoUrl}
-                title={props.title}
-                artist={props.artist}
-                description={props.description}
-                link={props.link}
-              />
-            </SwiperSlide>
-          )
-        })}
-      </Swiper>
-    </Box>
+        <Swiper
+          pagination={{
+            clickable: true,
+          }}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: true,
+          }}
+          loop={true}
+          navigation={true}
+          modules={[Pagination, Navigation, Autoplay]}
+          className="mySwiper"
+        >
+          {collections.map((props, i) => {
+            return (
+              <SwiperSlide key={i}>
+                <Collection
+                  imgUrl={props.imgUrl}
+                  logoUrl={props.logoUrl}
+                  title={props.title}
+                  artist={props.artist}
+                  description={props.description}
+                  link={props.link}
+                />
+              </SwiperSlide>
+            )
+          })}
+        </Swiper>
+      </Box>
+      <CollectionList
+        nftListArray={recentNfts}
+        setDisplayNumber={setNumberCollectionsShowing}
+      />
+
     </Container >
   )
 }

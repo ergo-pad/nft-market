@@ -33,7 +33,7 @@ const Sales: NextPage = () => {
   const [numberNftsShowing, setNumberNftsShowing] = useState(24)
 
   return (
-    <Container sx={{ my: '50px' }}>
+    <Container sx={{ mt: '30px', mb: '50px' }}>
       <Grid container>
         <Grid item md={6}>
           <Typography variant="h1">

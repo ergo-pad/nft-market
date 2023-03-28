@@ -1,27 +1,27 @@
 import React, { FC, useState, useEffect, useRef, useContext } from "react";
 import type { NextPage } from "next";
 import {
-  Grid,
-  Typography,
+  // Grid,
+  // Typography,
   Box,
   useTheme,
-  useMediaQuery,
+  // useMediaQuery,
   Slide,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  // Button,
+  // Dialog,
+  // DialogActions,
+  // DialogContent,
+  // DialogTitle,
 } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import FilterOptions from "@components/FilterOptions";
+// import FilterAltIcon from "@mui/icons-material/FilterAlt";
+// import FilterOptions from "@components/FilterOptions";
 import { recentNfts } from "@components/placeholders/recentNfts";
-import SearchBar from "@components/SearchBar";
-import SortBy from "@components/SortBy";
+// import SearchBar from "@components/SearchBar";
+// import SortBy from "@components/SortBy";
 import CollectionProfile from "@components/CollectionProfile";
 import { useRouter } from "next/router";
 import { ApiContext, IApiContext } from "@contexts/ApiContext";
@@ -142,68 +142,68 @@ const activities: ICollectionActivity[] = [
 // END PLACEHOLDER DATA ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
-export interface ConfirmationDialogRawProps {
-  id: string;
-  keepMounted: boolean;
-  value: string;
-  open: boolean;
-  onClose: (value?: string) => void;
-}
+// export interface ConfirmationDialogRawProps {
+//   id: string;
+//   keepMounted: boolean;
+//   value: string;
+//   open: boolean;
+//   onClose: (value?: string) => void;
+// }
 
-const ConfirmationDialogRaw: FC<ConfirmationDialogRawProps> = (props) => {
-  const { onClose, value: valueProp, open, ...other } = props;
-  const [value, setValue] = useState(valueProp);
-  const radioGroupRef = useRef<HTMLElement>(null);
+// const ConfirmationDialogRaw: FC<ConfirmationDialogRawProps> = (props) => {
+//   const { onClose, value: valueProp, open, ...other } = props;
+//   const [value, setValue] = useState(valueProp);
+//   const radioGroupRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    if (!open) {
-      setValue(valueProp);
-    }
-  }, [valueProp, open]);
+//   useEffect(() => {
+//     if (!open) {
+//       setValue(valueProp);
+//     }
+//   }, [valueProp, open]);
 
-  const handleEntering = () => {
-    if (radioGroupRef.current != null) {
-      radioGroupRef.current.focus();
-    }
-  };
+//   const handleEntering = () => {
+//     if (radioGroupRef.current != null) {
+//       radioGroupRef.current.focus();
+//     }
+//   };
 
-  const handleCancel = () => {
-    onClose();
-  };
+//   const handleCancel = () => {
+//     onClose();
+//   };
 
-  const handleOk = () => {
-    onClose(value);
-  };
+//   const handleOk = () => {
+//     onClose(value);
+//   };
 
-  return (
-    <Dialog
-      sx={{
-        "& .MuiDialog-paper": {
-          background: "rgb(14, 20, 33)",
-          width: "100%",
-          maxWidth: "400px",
-          maxHeight: "80vh",
-        },
-      }}
-      maxWidth="xs"
-      TransitionProps={{ onEntering: handleEntering }}
-      open={open}
-      {...other}
-    >
-      <DialogTitle>Filter &amp; Sort</DialogTitle>
-      <DialogContent dividers>
-        <SortBy sx={{ mb: "24px" }} />
-        <FilterOptions />
-      </DialogContent>
-      <DialogActions>
-        <Button autoFocus onClick={handleCancel}>
-          Cancel
-        </Button>
-        <Button onClick={handleOk}>Ok</Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
+//   return (
+//     <Dialog
+//       sx={{
+//         "& .MuiDialog-paper": {
+//           background: "rgb(14, 20, 33)",
+//           width: "100%",
+//           maxWidth: "400px",
+//           maxHeight: "80vh",
+//         },
+//       }}
+//       maxWidth="xs"
+//       TransitionProps={{ onEntering: handleEntering }}
+//       open={open}
+//       {...other}
+//     >
+//       <DialogTitle>Filter &amp; Sort</DialogTitle>
+//       <DialogContent dividers>
+//         <SortBy sx={{ mb: "24px" }} />
+//         <FilterOptions />
+//       </DialogContent>
+//       <DialogActions>
+//         <Button autoFocus onClick={handleCancel}>
+//           Cancel
+//         </Button>
+//         <Button onClick={handleOk}>Ok</Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
+// };
 
 const customTabPanelSx = {
   pt: "24px",
@@ -216,19 +216,19 @@ const Collection: NextPage = () => {
   const apiContext = useContext<IApiContext>(ApiContext);
   const { id } = router.query;
 
-  const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
-  const [filterDialogvalue, setFilterDialogValue] = React.useState("Dione");
+  // const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
+  // const [filterDialogvalue, setFilterDialogValue] = React.useState("Dione");
   const [collectionProfile, setCollectionProfile] = useState(collection);
 
-  const handleDialogClick = () => {
-    setFilterDialogOpen(true);
-  };
-  const handleDialogClose = (newValue?: string) => {
-    setFilterDialogOpen(false);
-    if (newValue) {
-      setFilterDialogValue(newValue);
-    }
-  };
+  // const handleDialogClick = () => {
+  //   setFilterDialogOpen(true);
+  // };
+  // const handleDialogClose = (newValue?: string) => {
+  //   setFilterDialogOpen(false);
+  //   if (newValue) {
+  //     setFilterDialogValue(newValue);
+  //   }
+  // };
 
   const [tabValue, setTabValue] = React.useState("sales");
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -247,45 +247,45 @@ const Collection: NextPage = () => {
     if (id) getCollectionProfile();
   }, [id]);
 
-  const SearchAndFilter: FC = () => {
-    return (
-      <Grid container spacing={2} sx={{ mb: 2 }}>
-        {useMediaQuery(theme.breakpoints.up("lg")) ? (
-          <>
-            <Grid item md={7}>
-              <SearchBar />
-            </Grid>
-            <Grid item md={5}>
-              <SortBy />
-            </Grid>
-          </>
-        ) : (
-          <>
-            <Grid item xs>
-              <SearchBar />
-            </Grid>
-            <Grid item xs="auto">
-              <Button
-                sx={{ height: "100%" }}
-                variant="outlined"
-                aria-label="filter"
-                onClick={handleDialogClick}
-              >
-                <FilterAltIcon />
-              </Button>
-              <ConfirmationDialogRaw
-                id="ringtone-menu"
-                keepMounted
-                open={filterDialogOpen}
-                onClose={handleDialogClose}
-                value={filterDialogvalue}
-              />
-            </Grid>
-          </>
-        )}
-      </Grid>
-    )
-  }
+  // const SearchAndFilter: FC = () => {
+  //   return (
+  //     <Grid container spacing={2} sx={{ mb: 2 }}>
+  //       {useMediaQuery(theme.breakpoints.up("lg")) ? (
+  //         <>
+  //           <Grid item md={7}>
+  //             <SearchBar />
+  //           </Grid>
+  //           <Grid item md={5}>
+  //             <SortBy />
+  //           </Grid>
+  //         </>
+  //       ) : (
+  //         <>
+  //           <Grid item xs>
+  //             <SearchBar />
+  //           </Grid>
+  //           <Grid item xs="auto">
+  //             <Button
+  //               sx={{ height: "100%" }}
+  //               variant="outlined"
+  //               aria-label="filter"
+  //               onClick={handleDialogClick}
+  //             >
+  //               <FilterAltIcon />
+  //             </Button>
+  //             <ConfirmationDialogRaw
+  //               id="ringtone-menu"
+  //               keepMounted
+  //               open={filterDialogOpen}
+  //               onClose={handleDialogClose}
+  //               value={filterDialogvalue}
+  //             />
+  //           </Grid>
+  //         </>
+  //       )}
+  //     </Grid>
+  //   )
+  // }
 
   const [numberNftsShowing, setNumberNftsShowing] = useState(24)
 
@@ -328,8 +328,6 @@ const Collection: NextPage = () => {
                 nftListArray={recentNfts}
                 setDisplayNumber={setNumberNftsShowing}
                 notFullWidth
-                traits={collectionTraits}
-                rarities={collectionRarities}
               />
             </TabPanel>
           </Slide>

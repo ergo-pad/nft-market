@@ -275,7 +275,7 @@ const Mint: NextPage = () => {
 
   return (
     <>
-      <Container sx={{ my: '50px', mb: { xs: '-12px', md: 0 } }}>
+      <Container sx={{ mt: '30px', mb: { xs: '-12px', md: 0 } }}>
         <Box>
           <Typography variant="h1">
             Mint New Tokens
