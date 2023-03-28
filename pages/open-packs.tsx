@@ -87,12 +87,12 @@ const Open: NextPage = () => {
             <Button
               size="small"
               variant="text"
+              disabled={selected.filter(item => item === true).length < 1}
               onClick={() => setConfirmationOpen(true)}
             >
               Open Selected
             </Button>
           </Container>
-
         </Box>
       )}
       <Container sx={{ mt: '70px', mb: '50px' }}>

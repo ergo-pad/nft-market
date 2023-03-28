@@ -69,7 +69,7 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
   );
 }
 
-interface IConfirmSaleProps {
+interface IConfirmPurchaseProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   tokenName: string;
@@ -80,7 +80,7 @@ interface IConfirmSaleProps {
   isBid?: boolean;
 }
 
-const ConfirmSale: FC<IConfirmSaleProps> = ({ open, setOpen, tokenName, qty, openNow, price, currency, isBid }) => {
+const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, tokenName, qty, openNow, price, currency, isBid }) => {
   const [submitting, setSubmitting] = useState<"submitting" | "success" | "failed" | undefined>(undefined)
   const [bidPrice, setBidPrice] = useState(price + (price * 0.1))
   const [error, setError] = useState(false)
@@ -271,4 +271,4 @@ const ConfirmSale: FC<IConfirmSaleProps> = ({ open, setOpen, tokenName, qty, ope
   );
 }
 
-export default ConfirmSale;
+export default ConfirmPurchase;

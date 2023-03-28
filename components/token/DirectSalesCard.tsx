@@ -14,7 +14,7 @@ import {
   Button
 } from '@mui/material'
 import NumberIncrement from '@components/forms/NumberIncrement';
-import ConfirmSale from '@components/dialogs/ConfirmSale';
+import ConfirmSale from '@components/dialogs/ConfirmPurchase';
 
 /// API NEEDED ////////
 const ApiPriceConversion: { [key: string]: number } = {

@@ -12,7 +12,7 @@ import {
 } from '@mui/material'
 import ButtonLink from '@components/ButtonLink'
 import dynamic from 'next/dynamic'
-import ConfirmSale from '@components/dialogs/ConfirmSale';
+import ConfirmSale from '@components/dialogs/ConfirmPurchase';
 
 const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
   ssr: false,
