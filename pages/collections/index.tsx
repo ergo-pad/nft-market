@@ -186,7 +186,7 @@ const Collections: NextPage = () => {
       >
         {collections.map((props, i) => {
           return (
-            <SwiperSlide>
+            <SwiperSlide key={i}>
               <Collection
                 imgUrl={props.imgUrl}
                 logoUrl={props.logoUrl}
@@ -194,7 +194,6 @@ const Collections: NextPage = () => {
                 artist={props.artist}
                 description={props.description}
                 link={props.link}
-                key={i}
               />
             </SwiperSlide>
           )
