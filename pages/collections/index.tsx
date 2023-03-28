@@ -57,6 +57,8 @@ const Collection: FC<ICollectionProps> = (props) => {
   };
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
+  console.log('hello')
+
   return (
     <Grid container spacing={3} alignItems="center" sx={{ mb: '32px' }}>
       <Grid item sm={6} xs={12}>
