@@ -83,6 +83,17 @@ const NftItem: FC<INftItemProps> = (
   }, [id])
 
   useEffect(() => {
+    if (nftData[index].royaltyLocked === false) {
+      setThisNft(prev => ({
+          ...prev,
+          royalties: nftData[index].royalties,
+          royaltyLocked: false
+      }))
+      setRoyaltyToggle(false)
+    }
+  }, [nftData[index].royaltyLocked])
+
+  useEffect(() => {
     setNftData((prevArray) => {
       const newArray = prevArray.map((item, i) => {
         if (index === i) {

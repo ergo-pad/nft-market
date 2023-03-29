@@ -82,7 +82,8 @@ const NftSection: FC<INftSectionProps> = (
     setNftData(prev => prev.map((item, i) => {
       return {
         ...item,
-        royalties: royaltyData
+        royalties: royaltyData,
+        royaltyLocked: false
       }
     }))
     handleCloseAllRoyaltiesWarningDialog()
@@ -315,14 +316,12 @@ const NftSection: FC<INftSectionProps> = (
           {"WARNING: Updating ALL Royalties"}
         </DialogTitle>
         <DialogContent sx={{ pb: 0 }}>
-          <DialogContentText id="alert-dialog-description">
-            <Box sx={{ mb: '12px' }}>
-              This will remove any custom royalties you set, and make all NFTs have the same royalty settings.
-            </Box>
-            <Box>
-              You cannot undo this action!
-            </Box>
-          </DialogContentText>
+          <Box sx={{ mb: '12px' }}>
+            This will remove any custom royalties you set, and make all NFTs have the same royalty settings.
+          </Box>
+          <Box>
+            You cannot undo this action!
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={updateAllRoyalties}>
