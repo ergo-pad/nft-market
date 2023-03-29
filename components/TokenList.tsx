@@ -28,11 +28,9 @@ export interface ITokenListProps {
   nftListArray: INftItem[];
   setDisplayNumber: React.Dispatch<React.SetStateAction<number>>;
   notFullWidth?: boolean;
-  traits?: ICollectionTraits[];
-  rarities?: ICollectionRarities[];
 }
 
-const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFullWidth, traits, rarities }) => {
+const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFullWidth }) => {
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [filterDialogvalue, setFilterDialogValue] = React.useState("What");
 
