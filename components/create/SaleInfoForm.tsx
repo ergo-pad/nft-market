@@ -32,6 +32,7 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
   const [packToggle, setPackToggle] = useState(false)
   const [dateStart, setDateStart] = useState(new Date(new Date().getTime() + (8.64e+7)))
   const [dateEnd, setDateEnd] = useState(new Date(new Date().getTime() + (2.6298e+9)))
+  const [nameDesc, setNameDesc] = useState({ saleName: '', saleDescription: '' })
 
   const theme = useTheme()
 
@@ -41,6 +42,17 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
       hasPacks: packToggle
     }))
   }, [packToggle])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setSaleInfoData(prev => (
+      {
+        ...prev,
+        saleName: nameDesc.saleName,
+        saleDescription: nameDesc.saleDescription
+      }
+    )), 2000);
+    return () => clearTimeout(timeout);
+  }, [nameDesc.saleName, nameDesc.saleDescription])
 
   useEffect(() => {
     setSaleInfoData((prev) => ({
@@ -104,6 +116,10 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
     })
   }
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNameDesc(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
   return (
     <Box>
       <Box>
@@ -151,6 +167,17 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
       </Box>
       <Collapse in={createSale}>
         <Grid container spacing={2} sx={{ mb: '24px' }}>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              variant="filled"
+              id="sale-name"
+              label="Sale Name"
+              name="saleName"
+              value={nameDesc.saleName}
+              onChange={handleChange}
+            />
+          </Grid>
           <Grid item container spacing={1}>
             <Grid item xs={12} sm={6}>
               <DateTimePicker
@@ -173,7 +200,7 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-            <DateTimePicker
+              <DateTimePicker
                 renderInput={
                   (props: any) =>
                     <TextField
@@ -192,6 +219,19 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
                 onChange={(newValue: any) => setDateEnd(newValue)}
               />
             </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              variant="filled"
+              id="sale-description"
+              label="Sale Description"
+              name="saleDescription"
+              multiline
+              minRows={3}
+              value={nameDesc.saleDescription}
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12}>
             <Collapse in={!packToggle}>
