@@ -19,7 +19,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { recentNfts } from '@components/placeholders/recentNfts' // change for collections
 
-const collections = [
+const featuredCollections = [
   {
     imgUrl: '/images/cube1.png',
     logoUrl: '/images/ergopad-circle-logo.png',
@@ -160,7 +160,7 @@ const Collections: NextPage = () => {
       </Typography>
       <Box
         sx={{
-          mb: 2,
+          mb: 5,
           '& .swiper-button-next, .swiper-button-prev': {
             color: theme.palette.divider,
             '&:hover': {
@@ -188,7 +188,7 @@ const Collections: NextPage = () => {
           modules={[Pagination, Navigation, Autoplay]}
           className="mySwiper"
         >
-          {collections.map((props, i) => {
+          {featuredCollections.map((props, i) => {
             return (
               <SwiperSlide key={i}>
                 <Collection
