@@ -98,6 +98,8 @@ export interface ISaleInfoData {
   dateStart: Date;
   dateEnd: Date;
   hasPacks: boolean;
+  saleName: string;
+  saleDescription: string;
 }
 
 export interface ITokenDetailsData {
@@ -149,6 +151,8 @@ export const saleInfoDataInit: ISaleInfoData = {
   dateStart: new Date(new Date().getTime() + (8.64e+7)), 
   dateEnd: new Date(new Date().getTime() + (2.6298e+9)),
   hasPacks: false, // If false, packs[0].price is used for all NFT prices as mentioned above. 
+  saleName: '',
+  saleDescription: '',
 }
 
 const Mint: NextPage = () => {

@@ -18,13 +18,27 @@ import {
   InputLabel,
   MenuItem,
   FormControl,
-  TextField
+  TextField,
+  Avatar
 } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { v4 as uuidv4 } from 'uuid';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+
+// NOTES: 
+// 
+// - We are assuming the start time is immediately, and the end 
+//   time is until the user ends the sale or the item gets sold. 
+// 
+// - The seller wallet is derived from the connected wallet. The 
+//   source addresses are also derived from the connected wallet. 
+// 
+// - The token is defined by the token the user is adding to the 
+//   sale. There will only be one tokenID per sale. 
+// 
+
 
 interface ITokenDetailsExternal {
   tokenId: string;
@@ -52,6 +66,8 @@ interface ILocalSale {
   price: number;
   currency: 'SigUSD' | 'Erg';
   tokensById: string[];
+  saleName: string;
+  saleDescription: string;
 }
 
 const localSaleInit: ILocalSale = {
@@ -62,6 +78,8 @@ const localSaleInit: ILocalSale = {
   price: 0,
   currency: 'SigUSD',
   tokensById: [''],
+  saleName: '',
+  saleDescription: '',
 }
 
 // uuidv4()
@@ -69,8 +87,8 @@ const localSaleInit: ILocalSale = {
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
-    maxWidth: '440px',
-    minWidth: '350px',
+    maxWidth: '600px',
+    minWidth: '390px',
     border: 'none',
     margin: 'auto'
   },
@@ -148,6 +166,21 @@ const SellTokens: FC<ISellTokensProps> = ({ open, setOpen, tokens }) => {
   };
 
   const handleChangeNum = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    setSaleData((prevArray) => {
+      const newArray = prevArray.map((item, i) => {
+        if (i === index) {
+          return {
+            ...item,
+            [e.target.name]: e.target.value
+          }
+        }
+        return item
+      })
+      return newArray
+    })
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
     setSaleData((prevArray) => {
       const newArray = prevArray.map((item, i) => {
         if (i === index) {
@@ -264,14 +297,11 @@ const SellTokens: FC<ISellTokensProps> = ({ open, setOpen, tokens }) => {
                     key={i}
                   >
                     <Grid2 xs="auto">
-                      <Image
-                        src={item.imgUrl}
-                        layout="fixed"
-                        width={60}
-                        height={60}
+                      <Avatar
+                        variant="rounded"
                         alt="nft-image"
-                        sizes="48px"
-                        objectFit="cover"
+                        src={item.imgUrl}
+                        sx={{ width: 64, height: 64 }}
                       />
                     </Grid2>
                     <Grid2 xs sx={{ textAlign: 'right' }}>
@@ -294,8 +324,32 @@ const SellTokens: FC<ISellTokensProps> = ({ open, setOpen, tokens }) => {
                       pb: 1,
                       mb: 1
                     }}
-                    spacing={2}
+                    spacing={1}
                   >
+                    <Grid2 xs={12}>
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      id="sale-name"
+                      label="Sale Name"
+                      name="saleName"
+                      value={saleData[i]?.saleName ? saleData[i].saleName : ''}
+                      onChange={(e) => handleChange(e, i)}
+                    />
+                  </Grid2>
+                  <Grid2 xs={12}>
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      id="sale-description"
+                      label="Sale Description"
+                      name="saleDescription"
+                      multiline
+                      minRows={3}
+                      value={saleData[i]?.saleDescription ? saleData[i].saleDescription : ''}
+                      onChange={(e) => handleChange(e, i)}
+                    />
+                  </Grid2>
                     <Grid2 xs={7}>
                       <TextField
                         fullWidth
