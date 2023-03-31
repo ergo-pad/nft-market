@@ -19,6 +19,7 @@ import SearchBar from '@components/SearchBar'
 import SortBy from '@components/SortBy'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import Link from '@components/Link'
+import { formatNumber } from '@utils/general';
 
 export interface ConfirmationDialogRawProps {
   id: string;
@@ -33,18 +34,6 @@ export interface ICollectionListProps {
   setDisplayNumber: React.Dispatch<React.SetStateAction<number>>;
   notFullWidth?: boolean;
 }
-
-const formatNumber = (num: number) => {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-  } else if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-  } else if (num >= 0.001) {
-    return num.toFixed(3).replace(/\.?0+$/, '');
-  } else {
-    return '0.001';
-  }
-};
 
 const priceFormatter = (value: number, currency: string) => {
   const formattedNumber = formatNumber(value)

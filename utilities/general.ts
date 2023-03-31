@@ -30,3 +30,17 @@ export const aspectRatioResize = (sourceWidth: number, sourceHeight: number, max
     },
   }
 }
+
+export const formatNumber = (num: number, sigFig?: number) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  } else if (num >= 0.001) {
+    return num.toFixed(sigFig && sigFig < 3 ? sigFig : 3).replace(/\.?0+$/, '');
+  } else {
+    if (sigFig && sigFig === 2) return '0.01'
+    if (sigFig && sigFig === 1) return '0.1'
+    return '0.001';
+  }
+};

@@ -95,7 +95,7 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
       <Grid
         container
         spacing={2}
-        columns={{ xs: 1, sm: 2, md: 3, lg: notFullWidth ? 3 : 4 }}
+        columns={{ xs: 1, sm: 2, md: 3, lg: notFullWidth ? 3 : 4, xl: notFullWidth ? 4 : 5 }}
         sx={{ mb: "24px" }}
       >
         {nftListArray.map((item, i) => {

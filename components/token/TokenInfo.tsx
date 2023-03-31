@@ -44,6 +44,122 @@ const ApiPriceConversion: { [key: string]: number } = {
 // BEGIN SAMPLE DATA ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 
+const apiGetSaleById = {
+  "id": "3357bcf6-baa5-4337-a9a0-468364d8a1fd",
+  "name": "Sale Name",
+  "description": "This is the longer sale description, added by the user. ",
+  "startTime": "2023-01-10T11:41:57Z",
+  "endTime": "2023-04-30T23:27:54Z",
+  "sellerWallet": "9h7L7sUHZk43VQC3PHtSp5ujAWcZtYmWATBH746wi75C5XHi68b",
+  "saleWallet": "3n7SxSJE7u1zXqj3JmTPYgnEv7ZGc8ULnfeWCDDgij11rrik43ZWTXAwJyGJondbZ6ssk1yQMbCTpkAd3oqXb2EJ6U1h1wk11asoHuFiF8qZs46eXqvfHUbvPkXa2YVM8bKw53UBsNwpmbV2MfEFi1uoC3hAJ2p4v1y75zxYG",
+  "packs": [
+    {
+      "id": "53b93d59-5e46-4ef8-8f24-81e5704ad51e",
+      "name": "Single NFT",
+      "image": "https://ipfs.io/ipfs/QmXuAc2oQfvbTLmMr4FG3FWriRbuWetCfnu3RdSbq18JKe/ergnomes_s2_airdrop.png",
+      "price": [
+        {
+          "id": "15b4c4f2-4415-4a3f-9777-b9f6bbed02eb",
+          "tokenId": "0000000000000000000000000000000000000000000000000000000000000000",
+          "amount": 1000000,
+          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
+        }
+      ],
+      "content": [
+        {
+          "id": "44126fcf-140c-4270-89e9-dea71bed1944",
+          "rarity": [
+            {
+              "odds": 100,
+              "rarity": "_pt_rarity_Single NFT"
+            }
+          ],
+          "amount": 1,
+          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
+        }
+      ]
+    },
+    {
+      "id": "a4b49f9c-9a68-406a-a6b2-f221e31592bd",
+      "name": "3 Pack",
+      "image": "https://ipfs.io/ipfs/QmXuAc2oQfvbTLmMr4FG3FWriRbuWetCfnu3RdSbq18JKe/ergnomes_s2_airdrop.png",
+      "price": [
+        {
+          "id": "fc2561d4-d35b-47a3-b082-1e71f946832e",
+          "tokenId": "0000000000000000000000000000000000000000000000000000000000000000",
+          "amount": 1000000,
+          "packId": "a4b49f9c-9a68-406a-a6b2-f221e31592bd"
+        }
+      ],
+      "content": [
+        {
+          "id": "111df494-c887-4f3b-937e-99b13f65981a",
+          "rarity": [
+            {
+              "odds": 100,
+              "rarity": "_pt_rarity_3 Pack"
+            }
+          ],
+          "amount": 3,
+          "packId": "a4b49f9c-9a68-406a-a6b2-f221e31592bd"
+        }
+      ]
+    }
+  ],
+  "tokens": [],
+  "initialNanoErgFee": 10000000000,
+  "saleFeePct": 5
+}
+
+const saleInfo = {
+  saleName: '',
+  saleDescription: '',
+  collection: {
+    name: '',
+    description: '',
+    featuredImage: '',
+    totalQty: 3000,
+  },
+  tokens: [
+    {
+      title: 'Blockheads Single',
+      description: 'This is the description of the token. You will get one Blockhead selected at random. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      price: 10,
+      currency: 'Erg',
+      mintDate: new Date(1663353871000),
+      tokenId: '9a8b5be32311f123c4e40f22233da12125c2123dcfd8d6a98e5a3659d38511c8',
+      views: 124,
+      collectionTitle: 'Wrath of Gods',
+      collectionUrl: '/collections/wrath-of-gods',
+      artistName: 'Paideia',
+      artistAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
+      artistLogoUrl: '/images/paideia-circle-logo.png',
+      traits: [
+        {
+          traitName: 'Rarity',
+          value: 'Common',
+          qtyWithTrait: 2600
+        },
+        {
+          traitName: 'Color',
+          value: 'Blue',
+          qtyWithTrait: 130
+        },
+        {
+          traitName: 'Speed',
+          value: '54',
+          qtyWithTrait: 16
+        },
+        {
+          traitName: 'Hair',
+          value: 'Mohawk',
+          qtyWithTrait: 521
+        },
+      ]
+    }
+  ]
+}
+
 const NftType = {
   title: 'Monk & Fox #0017',
   description: 'This is the description of the token. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -83,8 +199,6 @@ const NftType = {
 const collectionInfo = {
   totalQty: 3000
 }
-
-
 
 const auctionHistory: IAuctionDetailProps[] = [
   {
@@ -240,6 +354,7 @@ const TokenInfo: FC<{
     ...NftType,
     tokenId: props.tokenId
   }
+  console.log(apiGetSaleById)
   const theme = useTheme()
   const [tabValue, setTabValue] = React.useState('info');
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
@@ -434,7 +549,6 @@ const TokenInfo: FC<{
                     />
                   </TabPanel>
                 </Grow >
-
 
                 {/* ACTIVITY TAB */}
                 <Grow in={tabValue == 'activity'} mountOnEnter unmountOnExit>
