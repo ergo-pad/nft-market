@@ -275,7 +275,7 @@ const MintSaleInfo: FC<{
                             return tot + arr.odds;
                           }, 0);
                           return (
-                            <>
+                            <React.Fragment key={i}>
                               {content.rarity.length === 1 ? (
                                 <ListItem>
                                   <Typography>
@@ -299,7 +299,7 @@ const MintSaleInfo: FC<{
                                 </>
                               )
                               }
-                            </>
+                            </React.Fragment>
                           )
                         })}
                       </Collapse>
@@ -309,45 +309,45 @@ const MintSaleInfo: FC<{
               </Paper>
             </>
           )}
-          {apiGetSaleById !== undefined && 
-          apiGetSaleById.packs.length === 1 && 
-          apiGetSaleById.packs[0].image !== '' && (
-            apiGetSaleById.packs[0].content.map((content, i) => {
-              const totalOdds = content.rarity.reduce(function (tot, arr) {
-                return tot + arr.odds;
-              }, 0);
-              return (
-                <Paper sx={{ mb: 2, p: 2, }}>
-                <Typography variant="h5">
-                  Pack Contents
-                </Typography>
-                  {content.rarity.length === 1 ? (
-                    <ListItem>
-                      <Typography>
-                        {content.amount} Randomly Selected {plural('Token', content.amount)}
-                      </Typography>
-                    </ListItem>
-                  ) : (
-                    <>
+          {apiGetSaleById !== undefined &&
+            apiGetSaleById.packs.length === 1 &&
+            apiGetSaleById.packs[0].image !== '' && (
+              apiGetSaleById.packs[0].content.map((content, i) => {
+                const totalOdds = content.rarity.reduce(function (tot, arr) {
+                  return tot + arr.odds;
+                }, 0);
+                return (
+                  <Paper sx={{ mb: 2, p: 2, }} key={i}>
+                    <Typography variant="h5">
+                      Pack Contents
+                    </Typography>
+                    {content.rarity.length === 1 ? (
                       <ListItem>
                         <Typography>
-                          {content.amount} {plural('Token', content.amount)} with Custom Probability
+                          {content.amount} Randomly Selected {plural('Token', content.amount)}
                         </Typography>
                       </ListItem>
-                      {content.rarity.map((item, i) => {
-                        return (
-                          <ListItem key={i} sx={{ pl: 4 }}>
-                            {formatNumber((item.odds / totalOdds * 100), 2)}% Chance of {item.rarity}
-                          </ListItem>
-                        )
-                      })}
-                    </>
-                  )
-                  }
-                </Paper>
-              )
-            })
-          )}
+                    ) : (
+                      <>
+                        <ListItem>
+                          <Typography>
+                            {content.amount} {plural('Token', content.amount)} with Custom Probability
+                          </Typography>
+                        </ListItem>
+                        {content.rarity.map((item, i) => {
+                          return (
+                            <ListItem key={i} sx={{ pl: 4 }}>
+                              {formatNumber((item.odds / totalOdds * 100), 2)}% Chance of {item.rarity}
+                            </ListItem>
+                          )
+                        })}
+                      </>
+                    )
+                    }
+                  </Paper>
+                )
+              })
+            )}
 
           <Box sx={{ mb: 3 }}>
             <DirectSalesCard {...salesProps} />
@@ -376,45 +376,6 @@ const plural = (str: string, num: number) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-const SalesThingMint = {
-  title: 'Blockheads 3 Pack',
-  tokenName: 'Blockheads 3 Pack',
-  description: 'When opened, you will receive 3 Blockhead NFTs. ',
-  mintDate: new Date(1663353871000),
-  tokenId: '9a8b5be32311f123c4e40f22233da12125c2123dcfd8d6a98e5a3659d38511c8',
-  views: 124,
-  category: 'Common',
-  collectionTitle: 'Origins',
-  collectionUrl: '/collections/wrath-of-gods',
-  collectionDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  artistName: 'Paideia',
-  artistAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-  artistLogoUrl: '/images/paideia-circle-logo.png',
-  salesCard: {
-    sellerName: 'Paideia',
-    sellerPfpUrl: '/images/paideia-circle-logo.png',
-    sellerAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    artistAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    postDate: new Date(1663786534000),
-    sale: {
-      currency: 'Erg',
-      price: 10,
-      link: '/',
-      isPack: true
-    }
-  }
-}
 
 
 
@@ -634,113 +595,6 @@ const collection = {
   website: 'http://ergopad.io',
   totalQty: 3000
 };
-const collectionTraits: ICollectionTraits[] = [
-  {
-    traitName: 'Level',
-    id: uuidv4(),
-    type: 'Level',
-    max: 200
-  },
-  {
-    traitName: 'Speed',
-    id: uuidv4(),
-    type: 'Stat',
-  },
-  {
-    traitName: 'Color',
-    id: uuidv4(),
-    type: 'Property',
-    options: [
-      {
-        property: 'Red',
-        amount: 631
-      },
-      {
-        property: 'Green',
-        amount: 225
-      },
-      {
-        property: 'Blue',
-        amount: 67
-      },
-      {
-        property: 'Purple',
-        amount: 12
-      }
-    ]
-  },
-];
-const collectionRarities: ICollectionRarities[] = [
-  {
-    rarity: 'Common',
-    amount: 1605
-  },
-  {
-    rarity: 'Uncommon',
-    amount: 842
-  },
-  {
-    rarity: 'Rare',
-    amount: 320
-  },
-  {
-    rarity: 'Legendary',
-    amount: 16
-  }
-];
-
-const saleInfo = {
-  saleName: '',
-  saleDescription: '',
-  collection: {
-    name: '',
-    description: '',
-    featuredImage: '',
-    totalQty: 3000,
-  },
-  tokens: [
-    {
-      title: 'Blockheads Single',
-      description: 'This is the description of the token. You will get one Blockhead selected at random. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      price: 10,
-      currency: 'Erg',
-      mintDate: new Date(1663353871000),
-      tokenId: '9a8b5be32311f123c4e40f22233da12125c2123dcfd8d6a98e5a3659d38511c8',
-      views: 124,
-      collectionTitle: 'Wrath of Gods',
-      collectionUrl: '/collections/wrath-of-gods',
-      artistName: 'Paideia',
-      artistAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-      artistLogoUrl: '/images/paideia-circle-logo.png',
-      traits: [
-        {
-          traitName: 'Rarity',
-          value: 'Common',
-          qtyWithTrait: 2600
-        },
-        {
-          traitName: 'Color',
-          value: 'Blue',
-          qtyWithTrait: 130
-        },
-        {
-          traitName: 'Speed',
-          value: '54',
-          qtyWithTrait: 16
-        },
-        {
-          traitName: 'Hair',
-          value: 'Mohawk',
-          qtyWithTrait: 521
-        },
-      ]
-    }
-  ]
-}
-
-const collectionInfo = {
-  totalQty: 3000
-}
 
 const NftType = {
   title: 'Monk & Fox #0017',
