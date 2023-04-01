@@ -79,6 +79,11 @@ const mainTheme = [{
     },
   },
   components: {
+    MuiContainer: {
+      defaultProps: {
+        maxWidth: 'xl'
+      }
+    },
     MuiList: {
       styleOverrides: {
         root: {
@@ -323,7 +328,7 @@ let darkTheme = createTheme({
     mode: "dark",
     background: {
       default: "#0E141F",
-      paper: '#1c212b' 
+      paper: '#1c212b'
       // color for text area #242932
     },
     text: {

@@ -11,7 +11,7 @@ import {
 import Image from 'next/image'
 import ButtonLink from '@components/ButtonLink'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import CollectionList from '@components/CollectionList'
+import CollectionList from '@components/collections/CollectionList'
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from 'swiper';
 import "swiper/css";
@@ -58,8 +58,6 @@ const Collection: FC<ICollectionProps> = (props) => {
     return (min + Math.random() * (max - min)).toFixed();
   };
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
-
-  console.log('hello')
 
   return (
     <Grid container spacing={3} alignItems="center" sx={{ mb: '32px' }}>

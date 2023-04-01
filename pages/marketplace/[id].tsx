@@ -5,6 +5,7 @@ import {
   Container,
 } from '@mui/material'
 import TokenInfo from '@components/token/TokenInfo';
+import MintSaleInfo from '@components/token/MintSaleInfo';
 import { ISalesCardProps } from '@components/token/MarketSalesCard';
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -95,11 +96,14 @@ const Nft: NextPage = () => {
   return (
     <>
       <Container sx={{ my: '36px' }}>
-        <TokenInfo
+        {/* <TokenInfo
           tokenId={tokenId}
           marketplaceSaleInfo={saleType === 'sale' ? SalesThingSale : (saleType === 'auction' ? SalesThingAuction : undefined)}
-          directSaleInfo={saleType === 'mint' ? {...SalesThingMint.salesCard, tokenName: SalesThingMint.title} : undefined}
-        /> 
+          directSaleInfo={saleType === 'mint' ? { ...SalesThingMint.salesCard, tokenName: SalesThingMint.title } : undefined}
+        /> */}
+        <MintSaleInfo
+          tokenId={tokenId}
+        />
       </Container >
     </>
   )
