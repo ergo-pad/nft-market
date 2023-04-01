@@ -167,7 +167,6 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
     else if (!multiple) {
       setFileData([fileInitObject])
     }
-    console.log(fileData)
   }
 
   const deleteFile = (fileNumber: number) => {
