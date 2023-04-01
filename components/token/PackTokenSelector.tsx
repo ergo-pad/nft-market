@@ -38,12 +38,12 @@ const PackTokenSelector: FC<IPackTokenSelector> = ({
 }) => {
   const theme = useTheme()
   const desktop = useMediaQuery(theme.breakpoints.up('md'))
-  
+
   const handleSelect = () => {
     if (setSelected != undefined && index != undefined) {
       setSelected(prev => {
-        const newArray = prev.map((item, i) => {
-          if (prev[index] === true && index === i) return false
+        const newArray = prev.map((item, i) => { // surely this could be done better but it works. 
+          if (prev[index] === true && index === i) return true
           if (prev[index] === true && index != i) return item
           if (prev[index] === false && index === i) return true
           if (prev[index] === false && index != i) return false
@@ -55,46 +55,46 @@ const PackTokenSelector: FC<IPackTokenSelector> = ({
   }
 
   return (
-      <Paper
-       onClick={() => handleSelect()}
-        variant="outlined"
-        sx={{
-          p: '12px',
-          mb: '12px',
-          backgroundColor: selected !== undefined && index !== undefined && selected[index] ?
-            theme.palette.divider :
-            theme.palette.background.paper,
-          // transform: selected !== undefined && index !== undefined && selected[index] ?
-          //   "scale3d(0.95, 0.95, 1)" :
-          //   "scale3d(1, 1, 1)",
-          transition: "transform 0.15s ease-in-out",
-          cursor: 'pointer'
-        }}
-
+    <Paper
+      onClick={() => handleSelect()}
+      variant="outlined"
+      sx={{
+        p: '12px',
+        mb: '12px',
+        backgroundColor: selected !== undefined && index !== undefined && selected[index] ?
+          theme.palette.divider :
+          theme.palette.background.paper,
+        // transform: selected !== undefined && index !== undefined && selected[index] ?
+        //   "scale3d(0.95, 0.95, 1)" :
+        //   "scale3d(1, 1, 1)",
+        transition: "transform 0.15s ease-in-out",
+        cursor: 'pointer'
+      }}
+    >
+      <Grid
+        container
+        spacing={2}
+        direction="row"
+        alignItems="center"
       >
-        <Grid
-          container
-          spacing={2}
-          direction="row"
-          alignItems="center"
-        >
-          <Grid item xs="auto">
-            <Avatar
-              variant="rounded"
-              alt={packInfo.name}
-              src={packInfo.image}
-              sx={{ width: 48, height: 48 }}
-            />
-          </Grid>
-          <Grid item xs>
-            <Grid container alignItems="center">
-              <Grid item xs>
-                <Typography variant="h4">
-                  {packInfo.name}
-                </Typography>
-              </Grid>
-              <Grid item xs="auto">
-              {/* NOTE CURRENCY IS EMPTY IF NOT ERG. NEEDS FIX LATER */}
+        <Grid item xs="auto">
+          <Avatar
+            variant="rounded"
+            alt={packInfo.name}
+            src={packInfo.image}
+            sx={{ width: 48, height: 48 }}
+          />
+        </Grid>
+        <Grid item xs>
+          <Grid container alignItems="center">
+            <Grid item xs>
+              <Typography variant="h5" sx={{ mb: 0 }}>
+                {packInfo.name}
+              </Typography>
+            </Grid>
+            <Grid item xs="auto">
+              <Typography variant="h5" sx={{ mb: 0 }}>
+                {/* NOTE CURRENCY IS EMPTY IF NOT ERG. NEEDS FIX LATER */}
                 {packInfo.price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ?
                   (
                     <>
@@ -107,12 +107,12 @@ const PackTokenSelector: FC<IPackTokenSelector> = ({
                       Price error.
                     </>
                   )}
-              </Grid>
+              </Typography>
             </Grid>
-
           </Grid>
         </Grid>
-      </Paper>
+      </Grid>
+    </Paper >
   );
 };
 
