@@ -81,6 +81,7 @@ export interface IPackData {
   id: string;
   packName: string;
   amountOfPacks: number;
+  image: string;
   nftPerPack: {
     id: string;
     count: number | '';
@@ -130,6 +131,7 @@ export const packTokenDataInit: IPackData = {
   id: uuidv4(),
   packName: '',
   amountOfPacks: 1,
+  image: '',
   nftPerPack: [
     {
       id: uuidv4(),
@@ -331,9 +333,10 @@ const Mint: NextPage = () => {
           <Grid
             item
             lg={3}
+            xl={2}
             sx={{ pr: "24px", display: { xs: "none", lg: "flex" } }}
           >
-            <Box sx={{ position: 'relative' }}>
+            <Box sx={{ position: 'relative', width: '100%' }}>
               <Paper
                 elevation={0}
                 sx={{
@@ -362,7 +365,7 @@ const Mint: NextPage = () => {
               </Paper>
             </Box>
           </Grid>
-          <Grid item lg={9} xs={12} sx={{ flex: '1 1 auto' }}>
+          <Grid item lg={9} xs={12} xl={10} sx={{ flex: '1 1 auto' }}>
             {allStepsCompleted() ? (
               <>
                 <Typography sx={{ mt: 2, mb: 1 }}>

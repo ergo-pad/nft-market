@@ -81,6 +81,7 @@ const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityDat
                 id: uuidv4(),
                 packName: '',
                 amountOfPacks: 1,
+                image: '',
                 nftPerPack: [
                   {
                     id: uuidv4(),
