@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from "react";
 import {
   Grid,
   Typography,
@@ -14,12 +14,12 @@ import {
   ListItemAvatar,
   ListItemText,
   IconButton,
-  Avatar
-} from '@mui/material'
-import Image from 'next/image'
-import { bytesToSize, aspectRatioResize } from '@utilities/general'
-import DeleteIcon from '@mui/icons-material/Delete';
-import { storeNFT } from '@utils/nft-storage';
+  Avatar,
+} from "@mui/material";
+import Image from "next/image";
+import { bytesToSize, aspectRatioResize } from "@utilities/general";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { storeNFT } from "@utils/nft-storage";
 
 interface IFileData {
   currentFile: File;
@@ -30,12 +30,12 @@ interface IFileData {
 
 const fileInitObject: IFileData = {
   currentFile: {} as File,
-  previewImage: '',
+  previewImage: "",
   progress: 0,
-  message: ""
-}
+  message: "",
+};
 
-const fileInit = [fileInitObject]
+const fileInit = [fileInitObject];
 
 export interface IFileUrl {
   url: string;
@@ -50,7 +50,7 @@ interface IFileUploadAreaProps {
   title?: string;
   expectedImgHeight?: number;
   expectedImgWidth?: number;
-  type?: 'avatar';
+  type?: "avatar";
   multiple?: boolean;
   sx?: SxProps;
   imgFill?: boolean;
@@ -58,7 +58,13 @@ interface IFileUploadAreaProps {
   setClearTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const FileUploadArea: FC<IFileUploadAreaProps> = ({
+/**
+ * Todos:
+ * 1. Rename this file with a better name
+ * 2. Use ipfs backend api instead of direct upload
+ * 3. Use S3 upload instead on local api
+ */
+const FileUploadAreaTest: FC<IFileUploadAreaProps> = ({
   fileUrls,
   setFileUrls,
   ipfsFlag,
@@ -71,49 +77,54 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   imgFill,
   clearTrigger,
   setClearTrigger,
-  autoUpload
+  autoUpload,
 }) => {
-  const theme = useTheme()
-  const [aspect, setAspect] = useState({})
-  const [fileData, setFileData] = useState(fileInit)
+  const theme = useTheme();
+  const [aspect, setAspect] = useState({});
+  const [fileData, setFileData] = useState(fileInit);
 
   useEffect(() => {
     if (expectedImgHeight && expectedImgWidth) {
-      setAspect(aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350))
+      setAspect(
+        aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350)
+      );
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (!multiple) {
       if (expectedImgHeight && expectedImgWidth) {
-        setAspect(aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350))
-      }
-      else {
+        setAspect(
+          aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350)
+        );
+      } else {
         let img = document.createElement("img");
-        img.src = fileData[0].previewImage
+        img.src = fileData[0].previewImage;
         img.onload = () => {
-          setAspect(aspectRatioResize(img.naturalWidth, img.naturalHeight, 800, 300))
-        }
+          setAspect(
+            aspectRatioResize(img.naturalWidth, img.naturalHeight, 800, 300)
+          );
+        };
       }
     }
-  }, [fileData[0].previewImage])
+  }, [fileData[0].previewImage]);
 
   useEffect(() => {
     if (clearTrigger === true) {
-      clearFiles()
-      setClearTrigger(false)
+      clearFiles();
+      setClearTrigger(false);
     }
-  }, [clearTrigger])
+  }, [clearTrigger]);
 
-  const [dropHover, setDropHover] = useState('')
+  const [dropHover, setDropHover] = useState("");
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setDropHover('#f00')
+    setDropHover("#f00");
     e.stopPropagation();
   };
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setDropHover('')
+    setDropHover("");
     e.stopPropagation();
   };
   // const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -123,193 +134,207 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   // };
 
   const clearFiles = () => {
-    setInputKey(randomNumber())
-    setFileData([fileInitObject])
-  }
+    setInputKey(randomNumber());
+    setFileData([fileInitObject]);
+  };
 
   const checkExists = (name: string) => {
-    const truth = fileData.some(value => value.currentFile.name === name)
-    return truth
-  }
+    const truth = fileData.some((value) => value.currentFile.name === name);
+    return truth;
+  };
 
-  const onFileChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
-    setDropHover('')
-    if ('files' in event.target && event.target.files?.[0] != undefined) {
+  const onFileChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ): void => {
+    setDropHover("");
+    if ("files" in event.target && event.target.files?.[0] != undefined) {
       Array.from(event.target.files).forEach((file: File, i: number) => {
-        if (!multiple || i === 0 && fileData?.[0]?.previewImage === "") {
+        if (!multiple || (i === 0 && fileData?.[0]?.previewImage === "")) {
           // make sure to erase the existing empty object first
-          setFileData([{
-            currentFile: file,
-            previewImage: URL.createObjectURL(file),
-            progress: 0,
-            message: ""
-          }])
-          if (type === undefined && expectedImgHeight === undefined && expectedImgWidth === undefined) {
-            let img = document.createElement("img");
-            img.src = URL.createObjectURL(file)
-            img.onload = () => {
-              setAspect(aspectRatioResize(img.naturalWidth, img.naturalHeight, 800, 300))
-            }
-          }
-        }
-        else {
-          if (!checkExists(file.name)) {
-            setFileData(files => [...files, {
+          setFileData([
+            {
               currentFile: file,
               previewImage: URL.createObjectURL(file),
               progress: 0,
-              message: ""
-            }])
+              message: "",
+            },
+          ]);
+          if (
+            type === undefined &&
+            expectedImgHeight === undefined &&
+            expectedImgWidth === undefined
+          ) {
+            let img = document.createElement("img");
+            img.src = URL.createObjectURL(file);
+            img.onload = () => {
+              setAspect(
+                aspectRatioResize(img.naturalWidth, img.naturalHeight, 800, 300)
+              );
+            };
+          }
+        } else {
+          if (!checkExists(file.name)) {
+            setFileData((files) => [
+              ...files,
+              {
+                currentFile: file,
+                previewImage: URL.createObjectURL(file),
+                progress: 0,
+                message: "",
+              },
+            ]);
           }
         }
-      })
+      });
+    } else if (!multiple) {
+      setFileData([fileInitObject]);
     }
-    else if (!multiple) {
-      setFileData([fileInitObject])
-    }
-  }
+  };
 
   const deleteFile = (fileNumber: number) => {
-    setFileData(fileData.filter((data, idx) => idx !== fileNumber))
-  }
+    setFileData(fileData.filter((data, idx) => idx !== fileNumber));
+  };
 
-  const randomNumber = () => { return Math.random().toString(36) }
+  const randomNumber = () => {
+    return Math.random().toString(36);
+  };
   const [isLoading, setIsLoading] = React.useState(false);
   const inputFileRef = React.useRef<HTMLInputElement | null>(null);
-  const [inputKey, setInputKey] = useState(randomNumber())
+  const [inputKey, setInputKey] = useState(randomNumber());
 
   const standardUpload = async () => {
     /* Add files to FormData */
     const formData = new FormData();
     Object.values(fileData).forEach((file, i) => {
-      formData.append('file', file.currentFile);
-    })
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData
+      formData.append("file", file.currentFile);
     });
-    const body = await response.json() as { status: 'ok' | 'fail', message: string };
-    if (body.status === 'ok') {
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const body = (await response.json()) as {
+      status: "ok" | "fail";
+      message: string;
+    };
+    if (body.status === "ok") {
       const urlData = fileData.map((file, i) => {
         return {
-          url: '/uploads/' + file.currentFile.name,
-          ipfs: ''
-        }
-      })
+          url: "/uploads/" + file.currentFile.name,
+          ipfs: "",
+        };
+      });
       if (ipfsFlag === true) {
-        ipfsUpload(urlData)
-      }
-      else if (setFileUrls) setFileUrls(urlData)
+        ipfsUpload(urlData);
+      } else if (setFileUrls) setFileUrls(urlData);
     } else {
       // if upload error, still try ipfs upload
       if (ipfsFlag === true) {
-        ipfsUpload([])
+        ipfsUpload([]);
       }
     }
-  }
+  };
 
-  const ipfsUpload = async (urlData: { url: string; ipfs: string; }[]) => {
+  const ipfsUpload = async (urlData: { url: string; ipfs: string }[]) => {
     const promises = fileData.map(async (file) => {
-      return storeNFT(file.currentFile)
-    })
-    const results = await Promise.all(promises)
+      return storeNFT(file.currentFile);
+    });
+    const results = await Promise.all(promises);
     const newArray = results.map((item, index) => {
       return {
         url: urlData[index].url,
-        ipfs: item !== undefined ? item : ''
-      }
-    })
-    if (setFileUrls) setFileUrls(newArray)
-  }
+        ipfs:
+          item !== undefined ? "https://cloudflare-ipfs.com/ipfs/" + item : "",
+      };
+    });
+    if (setFileUrls) setFileUrls(newArray);
+  };
 
   const handleUpload = async () => {
     /* If file is not selected, then show alert message */
     if (fileData[0].currentFile.name == undefined) {
-      console.log('Please, select the file(s) you want to upload');
+      console.log("Please, select the file(s) you want to upload");
       return;
     }
     setIsLoading(true);
-    standardUpload()
+    standardUpload();
     setIsLoading(false);
   };
 
   // auto upload if fileData changes and autoUpload is true
   useEffect(() => {
     if (autoUpload && fileData[0].currentFile.name !== undefined) {
-      handleUpload()
+      handleUpload();
     }
-  }, [JSON.stringify(fileData)])
+  }, [JSON.stringify(fileData)]);
 
   return (
-    <Box sx={
-      sx ? (
+    <Box
+      sx={
         sx
-      ) : (
-        {
-          height: '100%'
-        }
-      )
-    }>
+          ? sx
+          : {
+              height: "100%",
+            }
+      }
+    >
       <Box
         sx={{
-          background: theme.palette.mode == 'dark' ? '#242932' : theme.palette.background.paper,
-          borderStyle: 'solid',
-          borderWidth: '1px',
-          borderRadius: '6px',
+          background:
+            theme.palette.mode == "dark"
+              ? "#242932"
+              : theme.palette.background.paper,
+          borderStyle: "solid",
+          borderWidth: "1px",
+          borderRadius: "6px",
           borderColor: theme.palette.divider,
-          p: '12px',
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%'
+          p: "12px",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
         }}
       >
-        {title &&
+        {title && (
           <InputLabel
             htmlFor="fileInputUncontrolled"
-            sx={{ mb: '12px', position: 'relative', overflow: 'visible' }}
-            onClick={e => e.preventDefault()}
+            sx={{ mb: "12px", position: "relative", overflow: "visible" }}
+            onClick={(e) => e.preventDefault()}
           >
             <Grid container justifyContent="space-between">
               <Grid item>
-                <Typography>
-                  {title}
-                </Typography>
+                <Typography>{title}</Typography>
               </Grid>
               <Grid item>
                 <Button
                   size="small"
-                  onClick={() => handleUpload()} disabled={isLoading}
+                  onClick={() => handleUpload()}
+                  disabled={isLoading}
                 >
                   Upload
                 </Button>
-                <Button
-                  size="small"
-                  onClick={clearFiles}
-                >
+                <Button size="small" onClick={clearFiles}>
                   Clear Data
                 </Button>
               </Grid>
             </Grid>
-
-
-          </InputLabel>}
+          </InputLabel>
+        )}
         <FormControl
           sx={{
-            borderRadius: '6px',
-            width: '100%',
-            height: '100%',
-            display: 'block',
-            position: 'relative',
+            borderRadius: "6px",
+            width: "100%",
+            height: "100%",
+            display: "block",
+            position: "relative",
             border: `1px dashed ${theme.palette.divider}`,
-            '&:hover': {
-              cursor: 'pointer',
+            "&:hover": {
+              cursor: "pointer",
               background: theme.palette.action.hover,
-            }
+            },
           }}
           // onDragOver={e => handleDragOver(e)}
-          onDragEnter={e => handleDragEnter(e)}
-          onDragLeave={e => handleDragLeave(e)}
-        // onDrop={e => handleDrop(e)}
+          onDragEnter={(e) => handleDragEnter(e)}
+          onDragLeave={(e) => handleDragLeave(e)}
+          // onDrop={e => handleDrop(e)}
         >
           <Input
             ref={inputFileRef}
@@ -319,90 +344,119 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
             onChange={onFileChange}
             inputProps={{
               accept: "image/*",
-              multiple: multiple ? true : false
+              multiple: multiple ? true : false,
             }}
             sx={{
               zIndex: 10,
               opacity: 0,
-              width: '100%',
-              height: '100%',
-              position: 'absolute',
+              width: "100%",
+              height: "100%",
+              position: "absolute",
               top: 0,
               left: 0,
-              flexGrow: '1',
-              '& input': {
-                width: '100%',
-                height: '100%',
-                cursor: 'pointer !important',
+              flexGrow: "1",
+              "& input": {
+                width: "100%",
+                height: "100%",
+                cursor: "pointer !important",
               },
-              '&::before': {
-                display: 'none',
+              "&::before": {
+                display: "none",
               },
-              '&::after': {
-                display: 'none',
-              }
+              "&::after": {
+                display: "none",
+              },
             }}
             key={inputKey}
           />
           <Box
             sx={{
-              textAlign: 'center',
-              position: 'relative',
-              background: dropHover ? dropHover : 'none',
-              width: '100%',
-              height: '100%',
-              p: imgFill ? '6px' : '24px',
+              textAlign: "center",
+              position: "relative",
+              background: dropHover ? dropHover : "none",
+              width: "100%",
+              height: "100%",
+              p: imgFill ? "6px" : "24px",
               zIndex: 1,
             }}
           >
             {multiple && fileData[0]?.currentFile.name != undefined ? ( // if multiple files can be added
               <>
                 <Typography>Add more (Unique filenames only)</Typography>
-                {expectedImgWidth && expectedImgHeight &&
-                  <Typography sx={{ color: theme.palette.text.secondary, }}>
-                    Recommended dimensions: {' ' + expectedImgWidth + 'px Wide by ' + expectedImgHeight + 'px High'}
+                {expectedImgWidth && expectedImgHeight && (
+                  <Typography sx={{ color: theme.palette.text.secondary }}>
+                    Recommended dimensions:{" "}
+                    {" " +
+                      expectedImgWidth +
+                      "px Wide by " +
+                      expectedImgHeight +
+                      "px High"}
                   </Typography>
-                }
+                )}
               </>
-            ) : ( // for single file upload areas only: 
-              <Box sx={{
-                width: '100%',
-                height: '100%',
-                textAlign: 'center',
-                mx: 'auto',
-                //     position: 'absolute',
-                // left: '50%',
-                // top: '50%',
-                // transform: 'translate(-50%,-50%)',
-              }}
+            ) : (
+              // for single file upload areas only:
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  textAlign: "center",
+                  mx: "auto",
+                  //     position: 'absolute',
+                  // left: '50%',
+                  // top: '50%',
+                  // transform: 'translate(-50%,-50%)',
+                }}
               >
-                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%', minHeight: '100px' }}>
-                  {fileData?.[0]?.previewImage != '' && fileData?.[0]?.currentFile?.name != undefined ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    height: "100%",
+                    minHeight: "100px",
+                  }}
+                >
+                  {fileData?.[0]?.previewImage != "" &&
+                  fileData?.[0]?.currentFile?.name != undefined ? (
                     <>
-                      {type === 'avatar' ? (
-                        <Box sx={{ mx: 'auto' }}>
+                      {type === "avatar" ? (
+                        <Box sx={{ mx: "auto" }}>
                           <Box
                             sx={{
-                              width: expectedImgWidth ? expectedImgWidth.toString() + 'px' : '120px',
-                              height: expectedImgHeight ? expectedImgHeight.toString() + 'px' : '120px',
-                              maxWidth: '240px',
-                              maxHeight: '240px',
-                              position: 'relative',
-                              display: 'inline-block',
-                              verticalAlign: 'middle',
-                              borderRadius: '240px',
-                              overflow: 'hidden'
+                              width: expectedImgWidth
+                                ? expectedImgWidth.toString() + "px"
+                                : "120px",
+                              height: expectedImgHeight
+                                ? expectedImgHeight.toString() + "px"
+                                : "120px",
+                              maxWidth: "240px",
+                              maxHeight: "240px",
+                              position: "relative",
+                              display: "inline-block",
+                              verticalAlign: "middle",
+                              borderRadius: "240px",
+                              overflow: "hidden",
                             }}
                           >
-                            <Image src={fileData[0].previewImage} layout="fill" objectFit="contain" alt="image" />
+                            <Image
+                              src={fileData[0].previewImage}
+                              layout="fill"
+                              objectFit="contain"
+                              alt="image"
+                            />
                           </Box>
-                          {imgFill ? ('') : (
-                            <Box sx={{
-                              display: 'inline-block',
-                              verticalAlign: 'middle',
-                              textAlign: 'left',
-                              ml: '12px'
-                            }}>
+                          {imgFill ? (
+                            ""
+                          ) : (
+                            <Box
+                              sx={{
+                                display: "inline-block",
+                                verticalAlign: "middle",
+                                textAlign: "left",
+                                ml: "12px",
+                              }}
+                            >
                               <Typography>
                                 {fileData[0].currentFile.name}
                               </Typography>
@@ -416,22 +470,31 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                         <>
                           <Box
                             sx={{
-                              borderRadius: '6px',
-                              overflow: 'hidden',
-                              display: 'block',
-                              position: 'relative',
-                              maxWidth: '100%',
-                              mb: imgFill ? 0 : '12px',
-                              mx: 'auto',
-                              ...aspect
+                              borderRadius: "6px",
+                              overflow: "hidden",
+                              display: "block",
+                              position: "relative",
+                              maxWidth: "100%",
+                              mb: imgFill ? 0 : "12px",
+                              mx: "auto",
+                              ...aspect,
                             }}
                           >
-                            <Image src={fileData[0].previewImage} layout="fill" objectFit="cover" alt="image" />
+                            <Image
+                              src={fileData[0].previewImage}
+                              layout="fill"
+                              objectFit="cover"
+                              alt="image"
+                            />
                           </Box>
-                          {imgFill ? ('') : (
+                          {imgFill ? (
+                            ""
+                          ) : (
                             <Box>
                               <Typography>
-                                {fileData[0].currentFile.name + ' - ' + bytesToSize(fileData[0].currentFile.size)}
+                                {fileData[0].currentFile.name +
+                                  " - " +
+                                  bytesToSize(fileData[0].currentFile.size)}
                               </Typography>
                             </Box>
                           )}
@@ -440,51 +503,64 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                     </>
                   ) : (
                     <>
-                      <Typography sx={{ color: theme.palette.text.secondary, }}>
+                      <Typography sx={{ color: theme.palette.text.secondary }}>
                         Drag and drop an image or click to choose.
                       </Typography>
-                      {expectedImgWidth && expectedImgHeight &&
-                        <Typography sx={{ color: theme.palette.text.secondary, }}>
-                          Recommended dimensions: {' ' + expectedImgWidth + 'px Wide by ' + expectedImgHeight + 'px High'}
+                      {expectedImgWidth && expectedImgHeight && (
+                        <Typography
+                          sx={{ color: theme.palette.text.secondary }}
+                        >
+                          Recommended dimensions:{" "}
+                          {" " +
+                            expectedImgWidth +
+                            "px Wide by " +
+                            expectedImgHeight +
+                            "px High"}
                         </Typography>
-                      }
+                      )}
                     </>
                   )}
                 </Box>
               </Box>
             )}
-
           </Box>
         </FormControl>
-        {multiple && fileData[0]?.currentFile.name != undefined &&
+        {multiple && fileData[0]?.currentFile.name != undefined && (
           <List>
             {fileData.map((file: IFileData, i: number) => {
-              return <ListItem key={i}
-                secondaryAction={
-                  <IconButton edge="end" aria-label="delete" onClick={() => deleteFile(i)}>
-                    <DeleteIcon />
-                  </IconButton>
-                }
-              >
-                <ListItemAvatar>
-                  <Avatar src={fileData[i].previewImage} variant="rounded" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={file.currentFile.name}
-                  secondary={bytesToSize(fileData[i].currentFile.size)}
-                  sx={{
-                    '& .MuiTypography-body2': {
-                      mb: 0
-                    }
-                  }}
-                />
-              </ListItem>
+              return (
+                <ListItem
+                  key={i}
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={() => deleteFile(i)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                >
+                  <ListItemAvatar>
+                    <Avatar src={fileData[i].previewImage} variant="rounded" />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={file.currentFile.name}
+                    secondary={bytesToSize(fileData[i].currentFile.size)}
+                    sx={{
+                      "& .MuiTypography-body2": {
+                        mb: 0,
+                      },
+                    }}
+                  />
+                </ListItem>
+              );
             })}
           </List>
-        }
+        )}
       </Box>
     </Box>
   );
 };
 
-export default FileUploadArea;
+export default FileUploadAreaTest;
