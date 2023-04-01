@@ -165,7 +165,8 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
     },
   ];
 
-  const [currentRows, setCurrentRows] = useState(rows)
+  const [apiRows, setApiRows] = useState(rows)
+  const [currentRows, setCurrentRows] = useState(apiRows)
 
   const displayMore = () => {
     setDisplayNumber((prev: number) => prev + 12)
@@ -195,7 +196,7 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
     <>
       <Grid container sx={{ mb: 2 }} spacing={2}>
         <Grid item xs sm={7}>
-          <SearchBar />
+          <SearchBar data={apiRows} searchKey="collection.name" setFilteredValue={setCurrentRows} />
         </Grid>
         {desktop && (
           <Grid item sm>

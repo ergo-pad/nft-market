@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Grid,
   Button,
@@ -33,6 +33,7 @@ export interface ITokenListProps {
 const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFullWidth }) => {
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [filterDialogvalue, setFilterDialogValue] = React.useState("What");
+  const [updatedData, setUpdatedData] = useState(nftListArray)
 
   const displayMore = () => {
     setDisplayNumber((prev: number) => prev + 12)
@@ -57,7 +58,7 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
     <>
       <Grid container sx={{ mb: 2 }} spacing={2}>
         <Grid item xs sm={7}>
-          <SearchBar />
+          <SearchBar data={nftListArray} searchKey="name" setFilteredValue={setUpdatedData} />
         </Grid>
         {desktop && (
           <Grid item sm>
@@ -98,7 +99,7 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
         columns={{ xs: 1, sm: 2, md: 3, lg: notFullWidth ? 3 : 4, xl: notFullWidth ? 4 : 5 }}
         sx={{ mb: "24px" }}
       >
-        {nftListArray.map((item, i) => {
+        {updatedData.map((item: any, i: number) => {
           return (
             <Grid key={i} item xs={1}>
               <NftCard
@@ -161,7 +162,7 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
           width: "100%",
           maxWidth: "400px",
           // maxHeight: "80vh",
-          
+
         },
       }}
       maxWidth={desktop ? 'sm' : undefined}
