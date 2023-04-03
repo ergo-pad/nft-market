@@ -16,8 +16,8 @@ import { useTheme } from "@mui/material/styles";
 import FilterOptions from "@components/FilterOptions";
 import NftCard, { INftItem } from '@components/NftCard';
 import SearchBar from '@components/SearchBar'
-import SortBy from '@components/SortBy'
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import CollectionSort from '@components/collections/CollectionSort'
+import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel } from '@mui/x-data-grid';
 import Link from '@components/Link'
 import { formatNumber } from '@utils/general';
 
@@ -27,6 +27,8 @@ export interface ConfirmationDialogRawProps {
   value: string;
   open: boolean;
   onClose: (value?: string) => void;
+  sortModel: GridSortModel;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
 }
 
 export interface ICollectionListProps {
@@ -168,9 +170,11 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
   const [apiRows, setApiRows] = useState(rows)
   const [currentRows, setCurrentRows] = useState(apiRows)
 
-  const displayMore = () => {
-    setDisplayNumber((prev: number) => prev + 12)
-  }
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+
+  // const displayMore = () => {
+  //   setDisplayNumber((prev: number) => prev + 12)
+  // }
 
   const handleDialogClick = () => {
     setFilterDialogOpen(true);
@@ -184,14 +188,6 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
     }
   };
 
-  const testFilter = () => {
-    setCurrentRows(prev => prev.filter(filter => filter.rank > 3 && filter.rank < 20))
-  }
-
-  const testFilter2 = () => {
-    setCurrentRows(rows)
-  }
-
   return (
     <>
       <Grid container sx={{ mb: 2 }} spacing={2}>
@@ -200,7 +196,10 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
         </Grid>
         {desktop && (
           <Grid item sm>
-            <SortBy />
+            <CollectionSort
+              sortModel={sortModel}
+              setSortModel={setSortModel}
+            />
           </Grid>
         )}
         <Grid item xs="auto">
@@ -228,17 +227,15 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
             open={filterDialogOpen}
             onClose={handleDialogClose}
             value={filterDialogvalue}
+            sortModel={sortModel}
+            setSortModel={setSortModel}
           />
         </Grid>
       </Grid>
-      <Button onClick={() => testFilter()}>
-        Test Filter
-      </Button>
-      <Button onClick={() => testFilter2()}>
-        Test Filter 2
-      </Button>
       <Paper sx={{ width: '100%' }}>
         <DataGrid
+          sortModel={sortModel}
+          onSortModelChange={(newSortModel) => setSortModel(newSortModel)}
           rows={currentRows}
           columns={columns}
           disableColumnMenu
@@ -342,7 +339,13 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
       {...other}
     >
       <DialogContent dividers sx={{ p: '16px', border: 'none' }}>
-        {!desktop && <SortBy sx={{ mb: "24px" }} />}
+        {!desktop &&
+          <CollectionSort
+            sortModel={props.sortModel}
+            setSortModel={props.setSortModel}
+            sx={{ mb: "24px" }}
+          />
+        }
         <FilterOptions />
       </DialogContent>
       <DialogActions>
