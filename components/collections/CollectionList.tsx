@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import {
   Grid,
   Button,
@@ -10,24 +10,17 @@ import {
   Paper,
   Avatar,
   Typography,
+  Divider
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
-import FilterOptions from "@components/FilterOptions";
+import CollectionFilterOptions from "@components/collections/CollectionFilterOptions";
 import NftCard, { INftItem } from '@components/NftCard';
 import SearchBar from '@components/SearchBar'
-import SortBy from '@components/SortBy'
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import CollectionSort from '@components/collections/CollectionSort'
+import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel } from '@mui/x-data-grid';
 import Link from '@components/Link'
 import { formatNumber } from '@utils/general';
-
-export interface ConfirmationDialogRawProps {
-  id: string;
-  keepMounted: boolean;
-  value: string;
-  open: boolean;
-  onClose: (value?: string) => void;
-}
 
 export interface ICollectionListProps {
   nftListArray: INftItem[];
@@ -43,8 +36,6 @@ const priceFormatter = (value: number, currency: string) => {
 const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumber, notFullWidth }) => {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up("sm"))
-  const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
-  const [filterDialogvalue, setFilterDialogValue] = React.useState("What");
   const [currency, setCurrency] = useState('Erg')
 
   const rows = [
@@ -165,41 +156,43 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
     },
   ];
 
-  const [currentRows, setCurrentRows] = useState(rows)
+  const [apiRows, setApiRows] = useState(rows) // use setApiRows when API call collects the data
+  const [currentRows, setCurrentRows] = useState(apiRows) // use setCurrentRows to determine filtered data from sorting, searching, and filtering
+  const [filteredRows, setFilteredRows] = useState(apiRows) // use setCurrentRows to determine filtered data from sorting, searching, and filtering
+  const [searchedRows, setSearchedRows] = useState(apiRows) // use setCurrentRows to determine filtered data from sorting, searching, and filtering
 
-  const displayMore = () => {
-    setDisplayNumber((prev: number) => prev + 12)
-  }
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+
+  useEffect(() => {
+    setCurrentRows(filteredRows.filter(o1 => searchedRows.some(o2 => o1.rank === o2.rank)))
+  }, [filteredRows, searchedRows])
+
+  // const displayMore = () => {
+  //   setDisplayNumber((prev: number) => prev + 12)
+  // }
+
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
 
   const handleDialogClick = () => {
     setFilterDialogOpen(true);
   };
 
-  const handleDialogClose = (newValue?: string) => {
+  const handleDialogClose = () => {
     setFilterDialogOpen(false);
-
-    if (newValue) {
-      setFilterDialogValue(newValue);
-    }
   };
-
-  const testFilter = () => {
-    setCurrentRows(prev => prev.filter(filter => filter.rank > 3 && filter.rank < 20))
-  }
-
-  const testFilter2 = () => {
-    setCurrentRows(rows)
-  }
 
   return (
     <>
       <Grid container sx={{ mb: 2 }} spacing={2}>
         <Grid item xs sm={7}>
-          <SearchBar />
+          <SearchBar data={apiRows} searchKey="collection.name" setFilteredValue={setSearchedRows} />
         </Grid>
         {desktop && (
           <Grid item sm>
-            <SortBy />
+            <CollectionSort
+              sortModel={sortModel}
+              setSortModel={setSortModel}
+            />
           </Grid>
         )}
         <Grid item xs="auto">
@@ -221,23 +214,22 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
           >
             <FilterAltIcon />
           </Button>
-          <ConfirmationDialogRaw
-            id="ringtone-menu"
+          <FilterDialog
+            id="collection-filter-dialog"
             keepMounted
             open={filterDialogOpen}
             onClose={handleDialogClose}
-            value={filterDialogvalue}
+            data={apiRows}
+            setFilteredValues={setFilteredRows}
+            sortModel={sortModel}
+            setSortModel={setSortModel}
           />
         </Grid>
       </Grid>
-      <Button onClick={() => testFilter()}>
-        Test Filter
-      </Button>
-      <Button onClick={() => testFilter2()}>
-        Test Filter 2
-      </Button>
       <Paper sx={{ width: '100%' }}>
         <DataGrid
+          sortModel={sortModel}
+          onSortModelChange={(newSortModel) => setSortModel(newSortModel)}
           rows={currentRows}
           columns={columns}
           disableColumnMenu
@@ -266,7 +258,7 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
               '&:focus': {
                 outline: 'none',
               },
-              '&:first-child': {
+              '&:first-of-type': {
                 pl: 2,
               },
               '&:last-child': {
@@ -277,7 +269,7 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
               '&:focus': {
                 outline: 'none',
               },
-              '&:first-child': {
+              '&:first-of-type': {
                 pl: 2,
               },
               '&:last-child': {
@@ -291,37 +283,91 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
   )
 }
 
-function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
-  const { onClose, value: valueProp, open, ...other } = props;
-  const [value, setValue] = React.useState(valueProp);
-  const radioGroupRef = React.useRef<HTMLElement>(null);
+interface FilterDialogProps {
+  id: string;
+  keepMounted: boolean;
+  setFilteredValues: React.Dispatch<React.SetStateAction<any[]>>;
+  data: any[];
+  open: boolean;
+  onClose: (value?: any[]) => void;
+  sortModel: GridSortModel;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+}
 
-  React.useEffect(() => {
-    if (!open) {
-      setValue(valueProp);
-    }
-  }, [valueProp, open]);
-
-  const handleEntering = () => {
-    if (radioGroupRef.current != null) {
-      radioGroupRef.current.focus();
-    }
+export interface IFilters {
+  floorPrice: {
+    min: number | '';
+    max: number | '';
   };
+  volume: {
+    min: number | '';
+    max: number | '';
+  };
+  items: {
+    min: number | '';
+    max: number | '';
+  };
+  owners: {
+    min: number | '';
+    max: number | '';
+  };
+}
+
+const FilterDialog: FC<FilterDialogProps> = (props) => {
+  const {
+    onClose,
+    open,
+    setSortModel,
+    setFilteredValues,
+    sortModel,
+    data,
+    ...other
+  } = props;
+  const [localFilteredValues, setLocalFilteredValues] = useState(props.data);
+  const [localSortModel, setLocalSortModel] = useState<GridSortModel>([])
+  const [prevFilters, setPrevFilters] = useState<IFilters>(
+    {
+      floorPrice: { min: '', max: '' },
+      volume: { min: '', max: '' },
+      items: { min: '', max: '' },
+      owners: { min: '', max: '' }
+    }
+  );
+  const [filters, setFilters] = useState<IFilters>(
+    {
+      floorPrice: { min: '', max: '' },
+      volume: { min: '', max: '' },
+      items: { min: '', max: '' },
+      owners: { min: '', max: '' }
+    }
+  );
 
   const handleCancel = () => {
+    setLocalFilteredValues(data)
+    setFilters(prevFilters)
+    !desktop && setLocalSortModel(sortModel)
     onClose();
   };
 
   const handleOk = () => {
-    onClose(value);
+    setFilteredValues(localFilteredValues)
+    setPrevFilters(filters)
+    !desktop && setSortModel(localSortModel)
+    onClose();
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((event.target as HTMLInputElement).value);
-  };
+  const clearFilters = () => {
+    setFilters({
+      floorPrice: { min: '', max: '' },
+      volume: { min: '', max: '' },
+      items: { min: '', max: '' },
+      owners: { min: '', max: '' }
+    })
+    !desktop && setLocalSortModel([])
+  }
 
   const theme = useTheme();
-  const desktop = useMediaQuery(theme.breakpoints.up("sm"))
+  const desktop = useMediaQuery(theme.breakpoints.up("md"))
 
   return (
     <Dialog
@@ -334,17 +380,32 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
 
         },
       }}
-      maxWidth={desktop ? 'sm' : undefined}
+      maxWidth={desktop ? 'md' : undefined}
       fullScreen={!desktop}
-      TransitionProps={{ onEntering: handleEntering }}
       open={open}
       {...other}
     >
       <DialogContent dividers sx={{ p: '16px', border: 'none' }}>
-        {!desktop && <SortBy sx={{ mb: "24px" }} />}
-        <FilterOptions />
+        <CollectionFilterOptions
+          data={props.data}
+          filters={filters}
+          setFilters={setFilters}
+          setFilteredValues={setLocalFilteredValues}
+        />
+        {!desktop &&
+          <>
+            <Typography variant="h5" sx={{ mb: 0 }}>Sort</Typography>
+            <Divider sx={{ mb: 2 }} />
+            <CollectionSort
+              sortModel={localSortModel}
+              setSortModel={setLocalSortModel}
+              sx={{ mb: "24px" }}
+            />
+          </>
+        }
       </DialogContent>
       <DialogActions>
+        <Button onClick={clearFilters}>Clear All</Button>
         <Button autoFocus onClick={handleCancel}>
           Cancel
         </Button>
