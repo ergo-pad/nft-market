@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   FormControl,
   InputLabel,
@@ -15,7 +15,7 @@ interface ICollectionSortProps {
 }
 
 const CollectionSort: FC<ICollectionSortProps> = ({ sx, sortModel, setSortModel }) => {
-  const [sortOption, setSortOption] = React.useState("");
+  const [sortOption, setSortOption] = useState("");
 
   const handleChange = (event: SelectChangeEvent) => {
     setSortOption(event.target.value as string);
@@ -29,7 +29,7 @@ const CollectionSort: FC<ICollectionSortProps> = ({ sx, sortModel, setSortModel 
   };
 
   useEffect(() => {
-    if (sortModel.length > 0) 
+    if (sortModel.length > 0)
     setSortOption(sortModel[0].field + '-' + sortModel[0].sort)
     else setSortOption('')
   }, [sortModel])
@@ -47,8 +47,8 @@ const CollectionSort: FC<ICollectionSortProps> = ({ sx, sortModel, setSortModel 
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
-        <MenuItem value={"rank-asc"}>Rank: low to high</MenuItem>
-        <MenuItem value={"rank-desc"}>Rank: high to low</MenuItem>
+        <MenuItem value={"rank-asc"}>Rank: highest first</MenuItem>
+        <MenuItem value={"rank-desc"}>Rank: lowest first</MenuItem>
         <MenuItem value={"floorPrice-asc"}>Floor Price: low to high</MenuItem>
         <MenuItem value={"floorPrice-desc"}>Floor Price: high to low</MenuItem>
         <MenuItem value={"volume-asc"}>Volume: low to high</MenuItem>
