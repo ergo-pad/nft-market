@@ -55,7 +55,7 @@ const CollectionFilterOptions: FC<ICollectionFilterOptions> = ({ data, setFilter
 
   return (
     <>
-      <Typography variant="h5" sx={{ mb: 0 }}>Filters</Typography>
+      <Typography variant="h5" sx={{ mb: 0 }}>Filter</Typography>
       <Divider sx={{ mb: 2 }} />
 
       <Filter

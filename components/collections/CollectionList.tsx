@@ -10,6 +10,7 @@ import {
   Paper,
   Avatar,
   Typography,
+  Divider
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
@@ -362,10 +363,11 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
       items: { min: '', max: '' },
       owners: { min: '', max: '' }
     })
+    !desktop && setLocalSortModel([])
   }
 
   const theme = useTheme();
-  const desktop = useMediaQuery(theme.breakpoints.up("sm"))
+  const desktop = useMediaQuery(theme.breakpoints.up("md"))
 
   return (
     <Dialog
@@ -384,19 +386,23 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
       {...other}
     >
       <DialogContent dividers sx={{ p: '16px', border: 'none' }}>
-        {!desktop &&
-          <CollectionSort
-            sortModel={localSortModel}
-            setSortModel={setLocalSortModel}
-            sx={{ mb: "24px" }}
-          />
-        }
         <CollectionFilterOptions
           data={props.data}
           filters={filters}
           setFilters={setFilters}
           setFilteredValues={setLocalFilteredValues}
         />
+        {!desktop &&
+          <>
+            <Typography variant="h5" sx={{ mb: 0 }}>Sort</Typography>
+            <Divider sx={{ mb: 2 }} />
+            <CollectionSort
+              sortModel={localSortModel}
+              setSortModel={setLocalSortModel}
+              sx={{ mb: "24px" }}
+            />
+          </>
+        }
       </DialogContent>
       <DialogActions>
         <Button onClick={clearFilters}>Clear All</Button>
