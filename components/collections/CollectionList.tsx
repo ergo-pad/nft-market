@@ -355,6 +355,15 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
     onClose();
   };
 
+  const clearFilters = () => {
+    setFilters({
+      floorPrice: { min: '', max: '' },
+      volume: { min: '', max: '' },
+      items: { min: '', max: '' },
+      owners: { min: '', max: '' }
+    })
+  }
+
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up("sm"))
 
@@ -390,6 +399,7 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
         />
       </DialogContent>
       <DialogActions>
+        <Button onClick={clearFilters}>Clear All</Button>
         <Button autoFocus onClick={handleCancel}>
           Cancel
         </Button>

@@ -106,7 +106,7 @@ const Filter: FC<{
   currency
 }) => {
     return (
-      <>
+      <Box sx={{ mb: 2 }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
           {title}
         </Typography>
@@ -149,6 +149,6 @@ const Filter: FC<{
             {currency}
           </Grid>
         </Grid>
-      </>
+      </Box>
     )
   }
