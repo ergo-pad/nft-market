@@ -98,25 +98,23 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
         spacing={2}
         columns={{ xs: 1, sm: 2, md: 3, lg: notFullWidth ? 3 : 4, xl: notFullWidth ? 4 : 5 }}
         sx={{ mb: "24px" }}
-      >
-        {updatedData.map((item: any, i: number) => {
-          return (
-            <Grid key={i} item xs={1}>
-              <NftCard
-                nftData={item}
-              />
-            </Grid>
-          )
-        })}
+      >{
+        updatedData.length > 0 ? (
+          updatedData.map((item: any, i: number) => {
+            return (
+              <Grid key={i} item xs={1}>
+                <NftCard
+                  nftData={item}
+                />
+              </Grid>
+            )
+          })
+        ) : (
+          'No tokens to display'
+        )
+      }
       </Grid>
       <Box sx={{ width: '100%', textAlign: 'center' }}>
-        <Button
-          variant="contained"
-          sx={{}}
-          onClick={displayMore} // SWITCH TO SCROLL TRIGGER FOR INFINITE SCROLL
-        >
-          Load more...
-        </Button>
       </Box>
     </>
   )
