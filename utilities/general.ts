@@ -44,3 +44,4 @@ export const formatNumber = (num: number, sigFig?: number) => {
     return '0.001';
   }
 };
+

@@ -15,6 +15,8 @@ import Link from '@components/Link';
 import { useRouter } from 'next/router'
 import { styled } from '@mui/material/styles';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
+import useResizeObserver from "use-resize-observer";
+import { boxById, getArtist, issuingBoxById } from '@utils/get-artist';
 // const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
 //   ssr: false,
 // });
@@ -33,6 +35,7 @@ export interface INftItem {
   collectionLink?: string;
   artist: string;
   artistLink: string;
+  bx?: { address: string; txId: string | undefined; outputTransactionId: string; }
 }
 
 interface INftCard {
@@ -80,6 +83,25 @@ const NftCard: FC<INftCard> = ({
     }
   }
 
+  const { ref, width = 1 } = useResizeObserver<HTMLDivElement>();
+  const [newWidth, setNewWidth] = useState(width)
+
+  useEffect(() => {
+    setNewWidth(width)
+  }, [width])
+
+  const [artist, setArtist] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchArtist = async () => {
+      if (nftData.bx) {
+        const artist = await getArtist(nftData.bx);
+        setArtist(artist);
+      }
+    }
+    fetchArtist();
+  }, [nftData.tokenId, nftData.bx]);
+
   return (
     <>
       <Card
@@ -104,21 +126,16 @@ const NftCard: FC<INftCard> = ({
             false
           }
         >
-          <Box sx={{
-            position: 'relative',
-            display: 'block',
-            height: '235px',
+          <Box ref={ref} sx={{
+            height: `${newWidth}px`,
             borderBottomWidth: '1px',
             borderBottomStyle: 'solid',
-            borderBottomColor: theme.palette.divider
+            borderBottomColor: theme.palette.divider,
+            backgroundImage: `url(${nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`})`,
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center center",
           }}>
-            <Image
-              src={nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`}
-              layout="fill"
-              objectFit="cover"
-              draggable="false"
-              alt="nft-image"
-            />
           </Box>
           {nftData.price && setSelected === undefined && (
             <Box
@@ -251,9 +268,9 @@ const NftCard: FC<INftCard> = ({
                 >
                   by
                   {' '}
-                  {nftData.artistLink ? (
+                  {artist && (
                     <Link
-                      href={nftData.artistLink}
+                      href={'/users/' + artist}
                       sx={{
                         color: theme.palette.text.secondary,
                         textDecoration: 'none',
@@ -262,10 +279,8 @@ const NftCard: FC<INftCard> = ({
                         }
                       }}
                     >
-                      {nftData.artist}
+                      {artist}
                     </Link>
-                  ) : (
-                    nftData.artist
                   )}
                 </Typography>
               </Box>
