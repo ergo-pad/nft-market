@@ -128,6 +128,7 @@ const NftCard: FC<INftCard> = ({
         >
           <Box ref={ref} sx={{
             height: `${newWidth}px`,
+            minHeight: '260px',
             borderBottomWidth: '1px',
             borderBottomStyle: 'solid',
             borderBottomColor: theme.palette.divider,

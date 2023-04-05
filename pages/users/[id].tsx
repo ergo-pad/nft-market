@@ -12,8 +12,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  CircularProgress
+  CircularProgress,
+  Fade
 } from "@mui/material";
+import LoadingTokenList from '@components/LoadingTokenList'
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -32,12 +34,11 @@ import { getArtist } from "@utils/get-artist";
 ///////////////////////////////////////////////////////////////////
 // BEGIN PLACEHOLDER DATA /////////////////////////////////////////
 const user = {
-  address: "9asdfgEGZKHfKCUasdfvreqK6s6KiALNCFxojUa4Tbibw2Ajw1JFo",
-  name: "Eelon Musk",
-  pfpUrl: "/images/users/eelon-musk.png",
+  address: "",
+  name: "",
+  pfpUrl: "",
   bannerUrl: undefined,
-  tagline:
-    "A psychological phenomenon known as the mere exposure effect is where we develop a preference just because we are familiar with things.",
+  tagline: "",
   socials: [],
 };
 // END PLACEHOLDER DATA ///////////////////////////////////////////
@@ -102,6 +103,10 @@ const User: NextPage = () => {
   //   return artistInfo
   // }
 
+  const [loading, setLoading] = useState(false)
+  const [loadingProfile, setLoadingProfile] = useState(true)
+
+
   const fetchData = async (id: string) => {
     setLoading(true)
     const mappedNfts = await getWalletData([id]);
@@ -130,16 +135,16 @@ const User: NextPage = () => {
     setLoading(false)
   }
 
-  const [loading, setLoading] = useState(false)
-
   useMemo(() => {
     const getUserProfile = async () => {
+      setLoadingProfile(true)
       try {
         const res = await apiContext.api.get(`/user/${id}`);
         setUserProfile(res.data);
       } catch (e: any) {
         apiContext.api.error(e);
       }
+      setLoadingProfile(false)
     };
     if (id) {
       getUserProfile();
@@ -147,9 +152,64 @@ const User: NextPage = () => {
     }
   }, [id]);
 
-  // USE THIS FOR API CALL TO KNOW THE NUMBER OF NFT CARDS TO FETCH
+  // LOADING TEST
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setLoadingProfile(prevLoading => !prevLoading);
+  //   }, 2000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // USE THIS FOR API CALL TO FETCH MORE CARDS IF ONLY LOADING A FEW AT A TIME
+  // CURRENTLY NOT USED
   // CAN BE CHANGED IN <TokenList>
   const [numberNftsShowing, setNumberNftsShowing] = useState(24)
+  /////////////////////////////////////////////////////////////////////////////
+
+  const [containerHeight, setContainerHeight] = useState(0);
+  const containerRefLoading = useRef<HTMLDivElement>(null);
+  const containerRefLoaded = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (loading && containerRefLoading.current) {
+      console.log("loading: " + containerRefLoading.current.offsetHeight)
+      setContainerHeight(containerRefLoading.current.offsetHeight);
+    }
+    if (!loading && containerRefLoaded.current) {
+      console.log("loaded: " + containerRefLoaded.current.offsetHeight)
+      setContainerHeight(containerRefLoaded.current.offsetHeight);
+    }
+
+    const timer = setTimeout(() => {
+      if (containerRefLoaded.current) setContainerHeight(containerRefLoaded.current.offsetHeight);
+    }, 1000);
+
+    // Clean up the timer on unmount
+    return () => clearTimeout(timer);
+  }, [loading, containerRefLoaded?.current?.offsetHeight, tabValue]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRefLoaded.current) {
+        setContainerHeight(containerRefLoaded.current.offsetHeight);
+      }
+      const timer = setTimeout(() => {
+        if (containerRefLoaded.current) setContainerHeight(containerRefLoaded.current.offsetHeight);
+      }, 1000);
+  
+      // Clean up the timer on unmount
+      return () => clearTimeout(timer);
+    };
+  
+    window.addEventListener("resize", handleResize);
+  
+    // cleanup
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [containerRefLoading.current, containerRefLoaded.current]);
 
   return (
     <>
@@ -160,6 +220,7 @@ const User: NextPage = () => {
         bannerUrl={userProfile.bannerUrl}
         tagline={userProfile.tagline}
         socialLinks={userProfile.socials ?? []}
+        loading={loadingProfile}
       >
         <TabContext value={tabValue}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -195,17 +256,40 @@ const User: NextPage = () => {
             in={tabValue == "owned"}
           >
             <TabPanel value="owned" sx={customTabPanelSx}>
-              {tokensByAddress && loading === false ? (
-                <>
-                  <TokenList
-                    nftListArray={tokensByAddress}
-                    setDisplayNumber={setNumberNftsShowing}
-                    notFullWidth
-                  />
-                </>
-              ) : (
-                <CircularProgress />
-              )}
+              <Box sx={{
+                position: "relative",
+                height: containerHeight
+              }}>
+                <Box
+                  sx={{
+                    ...fadeInAndOut,
+                    opacity: loading ? 1 : 0
+                  }}
+                >
+                  <Box sx={{ height: 'auto' }} ref={containerRefLoading} className="loading">
+                    <LoadingTokenList
+                      notFullWidth
+                      numberToDisplay={8}
+                    />
+                  </Box>
+                </Box>
+                <Box
+                  sx={{
+                    ...fadeInAndOut,
+                    opacity: loading ? 0 : 1
+                  }}
+                >
+                  {tokensByAddress &&
+                    <Box ref={containerRefLoaded} sx={{ height: 'auto' }} className="loaded">
+                      <TokenList
+                        nftListArray={tokensByAddress}
+                        setDisplayNumber={setNumberNftsShowing}
+                        notFullWidth
+                      />
+                    </Box>
+                  }
+                </Box>
+              </Box>
             </TabPanel>
           </Slide>
           {/* ACTIVITY TAB */}
@@ -224,3 +308,12 @@ const User: NextPage = () => {
 };
 
 export default User;
+
+const fadeInAndOut = {
+  position: "absolute",
+  top: "0",
+  left: "0",
+  width: "100%",
+  height: "100%",
+  transition: "opacity 0.5s ease-in-out"
+}

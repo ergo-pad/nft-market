@@ -30,11 +30,10 @@ export async function issuingBoxById(id: string) {
 }
 
 export async function getArtist(bx: { address: string; txId: string | undefined; outputTransactionId: string; }) {
-  if (typeof bx.address === 'string') {
-    while (AddressKind.P2PK !== new Address(bx.address).getType()) {
-      let tx = await txById(bx.txId === undefined ? bx.outputTransactionId : bx.txId)
-      bx = tx.inputs[0]
-    }
-    return bx.address
+  while (AddressKind.P2PK !== new Address(bx.address).getType()) {
+    let tx = await txById(bx.txId === undefined ? bx.outputTransactionId : bx.txId)
+    bx = tx.inputs[0]
   }
+  return bx.address
 }
+

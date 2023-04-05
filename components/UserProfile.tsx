@@ -13,6 +13,7 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Skeleton
 } from "@mui/material";
 import Link from "@components/Link";
 import Image from "next/image";
@@ -30,6 +31,7 @@ interface IUserProfileProps {
     url: string;
   }[];
   children?: React.ReactNode;
+  loading?: boolean;
 }
 
 const UserProfile: FC<IUserProfileProps> = ({
@@ -41,6 +43,7 @@ const UserProfile: FC<IUserProfileProps> = ({
   tagline,
   socialLinks,
   children,
+  loading
 }) => {
   const theme = useTheme();
   const upSm = useMediaQuery(theme.breakpoints.up("sm"));
@@ -78,14 +81,21 @@ const UserProfile: FC<IUserProfileProps> = ({
           position: "relative",
         }}
       >
-        <Image
-          src={bannerUrl ? bannerUrl : "/images/placeholder/3.jpg"}
-          layout="fill"
-          objectFit="cover"
-          height={260}
-          width={3840}
-          alt="Banner Image"
-        />
+        {loading ?
+          <Skeleton
+            variant="rectangular"
+            height={260}
+            width={3840}
+          /> :
+          <Image
+            src={bannerUrl ? bannerUrl : "/images/placeholder/3.jpg"}
+            layout="fill"
+            objectFit="cover"
+            height={260}
+            width={3840}
+            alt="Banner Image"
+          />
+        }
       </Box>
       <Container sx={{ mb: "50px", mt: "24px" }}>
         <Grid container justifyContent="center">
@@ -115,14 +125,24 @@ const UserProfile: FC<IUserProfileProps> = ({
                   width: "100%",
                 }}
               > */}
-                <Box
-                  sx={{
-                    pb: "24px",
-                    width: "100%",
-                    zIndex: "100",
-                    overflow: "hidden",
-                  }}
-                >
+              <Box
+                sx={{
+                  pb: "24px",
+                  width: "100%",
+                  zIndex: "100",
+                  overflow: "hidden",
+                }}
+              >
+                {loading ?
+                  <Skeleton
+                    variant="circular"
+                    height={lessLg ? 180 : 120}
+                    width={lessLg ? 180 : 120}
+                    sx={{
+                      mx: "auto",
+                      mb: "24px",
+                    }}
+                  /> :
                   <Avatar
                     alt={username ? username : address}
                     src={pfpUrl ? pfpUrl : ""}
@@ -134,19 +154,30 @@ const UserProfile: FC<IUserProfileProps> = ({
                       bgcolor: theme.palette.primary.main,
                     }}
                   />
-                  {username && (
-                    <Typography
-                      sx={{
-                        fontSize: "1.2rem",
-                        fontWeight: "700",
-                        mb: "3px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {username.slice(0, 12) +
-                        (username.length > 12 ? "..." : "")}
-                    </Typography>
-                  )}
+                }
+                {!loading && username ? (
+                  <Typography
+                    sx={{
+                      fontSize: "1.2rem",
+                      fontWeight: "700",
+                      mb: "3px",
+                      textAlign: "center",
+                    }}
+                  >
+                    {username.slice(0, 12) +
+                      (username.length > 12 ? "..." : "")}
+                  </Typography>
+                ) : (
+                  <Skeleton
+                    variant="text"
+                    sx={{ fontSize: '1.4rem' }}
+                  />
+                )}
+                {loading ?
+                  <Skeleton
+                    variant="text"
+                    sx={{ fontSize: '1.2rem' }}
+                  /> :
                   <Box
                     sx={{
                       display: "inline-block",
@@ -159,6 +190,7 @@ const UserProfile: FC<IUserProfileProps> = ({
                       mb: "16px",
                     }}
                   >
+
                     <Link
                       sx={{
                         color: theme.palette.primary.main,
@@ -175,8 +207,10 @@ const UserProfile: FC<IUserProfileProps> = ({
                     >
                       {address}
                     </Link>
+
                   </Box>
-                  {/* <Grid container sx={{ textAlign: 'center', width: '100%' }}>
+                }
+                {/* <Grid container sx={{ textAlign: 'center', width: '100%' }}>
                     <Grid item xs>
                       <Typography
                         sx={{
@@ -214,81 +248,81 @@ const UserProfile: FC<IUserProfileProps> = ({
                       </Typography>
                     </Grid>
                   </Grid> */}
-                  {tagline && (
+                {tagline && (
+                  <>
+                    <Divider sx={{ mb: "24px" }} />
+                    <Typography sx={{ mb: "24px" }}>{tagline}</Typography>
+                  </>
+                )}
+                {(website || (socialLinks && socialLinks.length > 0)) && (
+                  <Divider sx={{ mb: "24px" }} />
+                )}
+                {website && (
+                  <Box sx={{ mb: "18px" }}>
+                    <Typography variant="h6" sx={{ mb: "6px" }}>
+                      Website
+                    </Typography>
+                    <Link href={websiteLink.link}>{websiteLink.name}</Link>
+                  </Box>
+                )}
+                {socialLinks &&
+                  socialLinks.length > 0 &&
+                  socialLinks[0].url !== "" && (
                     <>
-                      <Divider sx={{ mb: "24px" }} />
-                      <Typography sx={{ mb: "24px" }}>{tagline}</Typography>
+                      <Typography variant="h6" sx={{ mb: "0" }}>
+                        Social Links
+                      </Typography>
+                      <MenuList dense>
+                        {socialLinks.map((item, i) => {
+                          let link = item.url;
+                          if (!/(http[s]?:\/\/)/.test(link)) {
+                            link = "https://" + link;
+                          }
+                          let url = item.url.replace(/(http[s]?:\/\/)/, "");
+                          url = url.replace(/(www\.)/, "");
+                          if (
+                            item.socialNetwork !== "other" &&
+                            item.socialNetwork !== ""
+                          ) {
+                            url = url.replace(/([^\/\s]+\/)/, "");
+                          }
+                          return (
+                            <MenuItem
+                              key={i}
+                              onClick={() => window.open(link, "_blank")}
+                              sx={{
+                                pl: "6px",
+                                mb: 0,
+                                ml: "-6px",
+                                borderRadius: "6px",
+                              }}
+                            >
+                              {item.socialNetwork !== "other" &&
+                                item.socialNetwork !== "" && (
+                                  <ListItemIcon>
+                                    <SocialIcons
+                                      icon={item.socialNetwork.toLowerCase()}
+                                    />
+                                  </ListItemIcon>
+                                )}
+                              <ListItemText>
+                                <Typography
+                                  sx={{
+                                    wordBreak: "break-all",
+                                    overflowWrap: "break-word",
+                                    whiteSpace: "normal",
+                                  }}
+                                >
+                                  {url}
+                                </Typography>
+                              </ListItemText>
+                            </MenuItem>
+                          );
+                        })}
+                      </MenuList>
                     </>
                   )}
-                  {(website || (socialLinks && socialLinks.length > 0)) && (
-                    <Divider sx={{ mb: "24px" }} />
-                  )}
-                  {website && (
-                    <Box sx={{ mb: "18px" }}>
-                      <Typography variant="h6" sx={{ mb: "6px" }}>
-                        Website
-                      </Typography>
-                      <Link href={websiteLink.link}>{websiteLink.name}</Link>
-                    </Box>
-                  )}
-                  {socialLinks &&
-                    socialLinks.length > 0 &&
-                    socialLinks[0].url !== "" && (
-                      <>
-                        <Typography variant="h6" sx={{ mb: "0" }}>
-                          Social Links
-                        </Typography>
-                        <MenuList dense>
-                          {socialLinks.map((item, i) => {
-                            let link = item.url;
-                            if (!/(http[s]?:\/\/)/.test(link)) {
-                              link = "https://" + link;
-                            }
-                            let url = item.url.replace(/(http[s]?:\/\/)/, "");
-                            url = url.replace(/(www\.)/, "");
-                            if (
-                              item.socialNetwork !== "other" &&
-                              item.socialNetwork !== ""
-                            ) {
-                              url = url.replace(/([^\/\s]+\/)/, "");
-                            }
-                            return (
-                              <MenuItem
-                                key={i}
-                                onClick={() => window.open(link, "_blank")}
-                                sx={{
-                                  pl: "6px",
-                                  mb: 0,
-                                  ml: "-6px",
-                                  borderRadius: "6px",
-                                }}
-                              >
-                                {item.socialNetwork !== "other" &&
-                                  item.socialNetwork !== "" && (
-                                    <ListItemIcon>
-                                      <SocialIcons
-                                        icon={item.socialNetwork.toLowerCase()}
-                                      />
-                                    </ListItemIcon>
-                                  )}
-                                <ListItemText>
-                                  <Typography
-                                    sx={{
-                                      wordBreak: "break-all",
-                                      overflowWrap: "break-word",
-                                      whiteSpace: "normal",
-                                    }}
-                                  >
-                                    {url}
-                                  </Typography>
-                                </ListItemText>
-                              </MenuItem>
-                            );
-                          })}
-                        </MenuList>
-                      </>
-                    )}
-                </Box>
+              </Box>
               {/* </Box> */}
             </Box>
           </Grid>

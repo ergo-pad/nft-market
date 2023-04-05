@@ -22,7 +22,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <title>Template</title>
       </Head>
       <Header />
-      <motion.main
+      {/* <motion.main
         variants={variants}
         initial="hidden"
         animate="enter"
@@ -30,7 +30,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         transition={{ type: "linear" }}
         className=""
         key={router.route}
-      >
+      > */}
         <Box
           sx={{
             display: 'flex',
@@ -44,7 +44,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </Box>
           <Footer />
         </Box>
-      </motion.main>
+      {/* </motion.main> */}
     </>
   );
 };
