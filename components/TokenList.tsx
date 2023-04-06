@@ -1,4 +1,4 @@
-import React, { FC, useState, useMemo } from 'react';
+import React, { FC, useState, useMemo, useEffect } from 'react';
 import {
   Grid,
   Button,
@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogActions,
   Dialog,
+  Typography,
   Box
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
@@ -15,6 +16,7 @@ import NftCard, { INftItem } from '@components/NftCard';
 import SearchBar from '@components/SearchBar'
 import SortBy from '@components/SortBy'
 import { ICollectionTraits, ICollectionRarities } from "@components/collections/Properties";
+import LoadingCard from '@components/LoadingCard'
 
 export interface ConfirmationDialogRawProps {
   id: string;
@@ -28,12 +30,20 @@ export interface ITokenListProps {
   nftListArray: INftItem[];
   setDisplayNumber: React.Dispatch<React.SetStateAction<number>>;
   notFullWidth?: boolean;
+  loading?: boolean;
+  loadingAmount?: number;
 }
 
-const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFullWidth }) => {
+const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFullWidth, loading, loadingAmount }) => {
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [filterDialogvalue, setFilterDialogValue] = React.useState("What");
-  const [updatedData, setUpdatedData] = useState(nftListArray)
+  const [updatedData, setUpdatedData] = useState<INftItem[]>([])
+  const [localLoading, setLocalLoading] = useState(true)
+
+  useEffect(() => {
+    setUpdatedData(nftListArray)
+    setLocalLoading(false)
+  }, [nftListArray])
 
   const displayMore = () => {
     setDisplayNumber((prev: number) => prev + 12)
@@ -99,15 +109,28 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
         columns={{ xs: 1, sm: 2, md: 3, lg: notFullWidth ? 3 : 4, xl: notFullWidth ? 4 : 5 }}
         sx={{ mb: "24px" }}
       >
-        {updatedData.map((item: any, i: number) => {
-          return (
-            <Grid key={i} item xs={1}>
-              <NftCard
-                nftData={item}
-              />
+        {loading || localLoading ? (
+          Array(loadingAmount ? loadingAmount : 12).fill(
+            <Grid item xs={1}>
+              <LoadingCard />
             </Grid>
           )
-        })}
+        ) : (
+          updatedData.length > 0 ? updatedData.map((item: any, i: number) => {
+            return (
+              <Grid key={i} item xs={1}>
+                <NftCard
+                  nftData={item}
+                />
+              </Grid>
+            )
+          }) : 
+          <Box sx={{ textAlign: 'center', py: '10vh', width: '100%' }}>
+            <Typography variant="h4" color="text.secondary">
+              No tokens to display
+            </Typography>
+          </Box>
+        )}
       </Grid>
       <Box sx={{ width: '100%', textAlign: 'center' }}>
       </Box>

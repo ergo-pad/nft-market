@@ -17,7 +17,7 @@ function getRequest(url: string, api = explorerApi) {
   return get(api + url).then(res => res.json())
 }
 
-export function txById(id: string) {
+export async function txById(id: string) {
   return getRequest(`/transactions/${id}`)
 }
 
@@ -25,15 +25,14 @@ export async function boxById(id: string) {
   return getRequest(`/transactions/boxes/${id}`)
 }
 
-export async function issuingBoxById(id: string) {
-  return getRequest(`/assets/${id}/issuingBox`)
-}
-
-export async function getArtist(bx: { address: string; txId: string | undefined; outputTransactionId: string; }) {
-  while (AddressKind.P2PK !== new Address(bx.address).getType()) {
-    let tx = await txById(bx.txId === undefined ? bx.outputTransactionId : bx.txId)
-    bx = tx.inputs[0]
+export async function getArtist(id: string) {
+  let bx = await boxById(id)
+  if (typeof bx.address === 'string') {
+    while (AddressKind.P2PK !== new Address(bx.address).getType()) {
+      let tx = await txById(bx.txId === undefined ? bx.outputTransactionId : bx.txId)
+      bx = tx.inputs[0]
+    }
+    return bx.address
   }
-  return bx.address
+  else return null
 }
-

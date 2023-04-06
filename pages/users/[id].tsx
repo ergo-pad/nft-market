@@ -90,9 +90,7 @@ const User: NextPage = () => {
   const apiContext = useContext<IApiContext>(ApiContext);
   const { id } = router.query;
   const [tokensByAddress, setTokensByAddress] = useState<any[] | undefined>(undefined)
-
   const [userProfile, setUserProfile] = useState(user);
-
   const [tabValue, setTabValue] = React.useState("on-sale");
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -103,7 +101,7 @@ const User: NextPage = () => {
   //   return artistInfo
   // }
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [loadingProfile, setLoadingProfile] = useState(true)
 
 
@@ -168,48 +166,48 @@ const User: NextPage = () => {
   const [numberNftsShowing, setNumberNftsShowing] = useState(24)
   /////////////////////////////////////////////////////////////////////////////
 
-  const [containerHeight, setContainerHeight] = useState(0);
-  const containerRefLoading = useRef<HTMLDivElement>(null);
-  const containerRefLoaded = useRef<HTMLDivElement>(null);
+  // const [containerHeight, setContainerHeight] = useState(0);
+  // const containerRefLoading = useRef<HTMLDivElement>(null);
+  // const containerRefLoaded = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (loading && containerRefLoading.current) {
-      console.log("loading: " + containerRefLoading.current.offsetHeight)
-      setContainerHeight(containerRefLoading.current.offsetHeight);
-    }
-    if (!loading && containerRefLoaded.current) {
-      console.log("loaded: " + containerRefLoaded.current.offsetHeight)
-      setContainerHeight(containerRefLoaded.current.offsetHeight);
-    }
+  // useEffect(() => {
+  //   if (loading && containerRefLoading.current) {
+  //     console.log("loading: " + containerRefLoading.current.offsetHeight)
+  //     setContainerHeight(containerRefLoading.current.offsetHeight);
+  //   }
+  //   if (!loading && containerRefLoaded.current) {
+  //     console.log("loaded: " + containerRefLoaded.current.offsetHeight)
+  //     setContainerHeight(containerRefLoaded.current.offsetHeight);
+  //   }
 
-    const timer = setTimeout(() => {
-      if (containerRefLoaded.current) setContainerHeight(containerRefLoaded.current.offsetHeight);
-    }, 1000);
+  //   const timer = setTimeout(() => {
+  //     if (containerRefLoaded.current) setContainerHeight(containerRefLoaded.current.offsetHeight);
+  //   }, 1000);
 
-    // Clean up the timer on unmount
-    return () => clearTimeout(timer);
-  }, [loading, containerRefLoaded?.current?.offsetHeight, tabValue]);
+  //   // Clean up the timer on unmount
+  //   return () => clearTimeout(timer);
+  // }, [loading, containerRefLoaded?.current?.offsetHeight, tabValue]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (containerRefLoaded.current) {
-        setContainerHeight(containerRefLoaded.current.offsetHeight);
-      }
-      const timer = setTimeout(() => {
-        if (containerRefLoaded.current) setContainerHeight(containerRefLoaded.current.offsetHeight);
-      }, 1000);
-  
-      // Clean up the timer on unmount
-      return () => clearTimeout(timer);
-    };
-  
-    window.addEventListener("resize", handleResize);
-  
-    // cleanup
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [containerRefLoading.current, containerRefLoaded.current]);
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     if (containerRefLoaded.current) {
+  //       setContainerHeight(containerRefLoaded.current.offsetHeight);
+  //     }
+  //     const timer = setTimeout(() => {
+  //       if (containerRefLoaded.current) setContainerHeight(containerRefLoaded.current.offsetHeight);
+  //     }, 1000);
+
+  //     // Clean up the timer on unmount
+  //     return () => clearTimeout(timer);
+  //   };
+
+  //   window.addEventListener("resize", handleResize);
+
+  //   // cleanup
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, [containerRefLoading.current, containerRefLoaded.current]);
 
   return (
     <>
@@ -238,9 +236,10 @@ const User: NextPage = () => {
           </Box>
 
           {/* ON SALE TAB */}
-          <Slide
-            direction="up"
+          <Fade
             in={tabValue == "on-sale"}
+            unmountOnExit
+            mountOnEnter
           >
             <TabPanel value="on-sale" sx={customTabPanelSx}>
               <TokenList
@@ -249,14 +248,15 @@ const User: NextPage = () => {
                 notFullWidth
               />
             </TabPanel>
-          </Slide>
+          </Fade>
           {/* OWNED TAB */}
-          <Slide
-            direction="up"
+          <Fade
             in={tabValue == "owned"}
+            unmountOnExit
+            mountOnEnter
           >
             <TabPanel value="owned" sx={customTabPanelSx}>
-              <Box sx={{
+              {/* <Box sx={{
                 position: "relative",
                 height: containerHeight
               }}>
@@ -289,18 +289,26 @@ const User: NextPage = () => {
                     </Box>
                   }
                 </Box>
-              </Box>
+              </Box> */}
+              <TokenList
+                loading={loading}
+                loadingAmount={10}
+                nftListArray={tokensByAddress ? tokensByAddress : []}
+                setDisplayNumber={setNumberNftsShowing}
+                notFullWidth
+              />
             </TabPanel>
-          </Slide>
+          </Fade>
           {/* ACTIVITY TAB */}
-          <Slide
-            direction="up"
+          <Fade
+          unmountOnExit
+          mountOnEnter
             in={tabValue == "activity"}
           >
             <TabPanel value="activity" sx={customTabPanelSx}>
               <Typography sx={{ mb: "24px" }}>Past sales activity</Typography>
             </TabPanel>
-          </Slide>
+          </Fade>
         </TabContext>
       </UserProfile>
     </>

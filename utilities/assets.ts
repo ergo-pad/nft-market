@@ -262,14 +262,7 @@ export async function getWalletData(addresses: string[]): Promise<IAssetList | u
           tokenObject.r7 == '0e020101' ||
           tokenObject.r7 == '0e0430313031'
         ) {
-          newImgNftList[newImgNftList.length] = {
-            ...tokenObject,
-            bx: {
-              address: data[0].address,
-              txId: data[0].txId,
-              outputTransactionId: data[0].outputTransactionId
-            }
-          };
+          newImgNftList[newImgNftList.length] = tokenObject
         } else {
           newAssetList[newAssetList.length] = tokenObject;
         }

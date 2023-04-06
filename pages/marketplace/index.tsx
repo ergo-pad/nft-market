@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import type { NextPage } from 'next';
 import {
   Grid,
@@ -28,6 +28,17 @@ import TokenList from '@components/TokenList';
 // ]
 
 const Sales: NextPage = () => {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 1500);
+
+    // Clean up the timer on unmount
+    return () => clearTimeout(timer);
+  }, [])
+
   // USE THIS FOR API CALL TO KNOW THE NUMBER OF NFT CARDS TO FETCH
   // CAN BE CHANGED IN <TokenList>
   const [numberNftsShowing, setNumberNftsShowing] = useState(24)
@@ -80,6 +91,8 @@ const Sales: NextPage = () => {
         </Grid>
       </Grid>
       <TokenList
+        loading={loading}
+        loadingAmount={10}
         nftListArray={recentNfts}
         setDisplayNumber={setNumberNftsShowing}
       />

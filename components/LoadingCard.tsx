@@ -14,7 +14,7 @@ import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
 const NftCard: FC = () => {
   const theme = useTheme()
   const { ref, width = 1 } = useResizeObserver<HTMLDivElement>();
-  const [newWidth, setNewWidth] = useState(width)
+  const [newWidth, setNewWidth] = useState(300)
 
   useEffect(() => {
     setNewWidth(width)
@@ -31,6 +31,7 @@ const NftCard: FC = () => {
       >
         <CardActionArea sx={{ minHeight: '260px' }}>
           <Skeleton variant="rectangular" width={newWidth} height={newWidth} sx={{
+            minWidth: '100%',
             borderBottomWidth: '1px',
             borderBottomStyle: 'solid',
             borderBottomColor: theme.palette.divider,
