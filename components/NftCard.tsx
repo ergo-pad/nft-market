@@ -7,6 +7,7 @@ import {
   Box,
   Typography,
   useTheme,
+  Skeleton
 } from '@mui/material'
 import dynamic from 'next/dynamic'
 import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
@@ -15,6 +16,8 @@ import Link from '@components/Link';
 import { useRouter } from 'next/router'
 import { styled } from '@mui/material/styles';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
+import useResizeObserver from "use-resize-observer";
+import { getArtist } from '@utils/get-artist';
 // const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
 //   ssr: false,
 // });
@@ -33,6 +36,7 @@ export interface INftItem {
   collectionLink?: string;
   artist: string;
   artistLink: string;
+  bx?: { address: string; txId: string | undefined; outputTransactionId: string; }
 }
 
 interface INftCard {
@@ -80,16 +84,37 @@ const NftCard: FC<INftCard> = ({
     }
   }
 
+  const { ref, width = 1 } = useResizeObserver<HTMLDivElement>();
+  const [newWidth, setNewWidth] = useState(300)
+
+  useEffect(() => {
+    if (width > 260) setNewWidth(width)
+  }, [width])
+
+  const [artist, setArtist] = useState<string | null>(null);
+  const [showArtist, setShowArtist] = useState(true)
+
+  useEffect(() => {
+    const fetchArtist = async () => {
+      if (nftData.tokenId) {
+        const artist = await getArtist(nftData.tokenId);
+        setArtist(artist);
+        if (artist === null) setShowArtist(false)
+      }
+    }
+    fetchArtist();
+  }, [nftData.tokenId]);
+
   return (
     <>
       <Card
         sx={{
-          // minWidth: '276px',
+          minWidth: '100%',
           backgroundColor: selected !== undefined && index !== undefined && selected[index] ?
             theme.palette.divider :
             theme.palette.background.paper,
           mb: '6px',
-          height: '100%',
+          // height: '100%',
           transform: selected !== undefined && index !== undefined && selected[index] ?
             "scale3d(0.95, 0.95, 1)" :
             "scale3d(1, 1, 1)",
@@ -104,21 +129,18 @@ const NftCard: FC<INftCard> = ({
             false
           }
         >
-          <Box sx={{
-            position: 'relative',
-            display: 'block',
-            height: '235px',
+          <Box ref={ref} sx={{
+            height: `${newWidth}px`,
+            minHeight: '260px',
             borderBottomWidth: '1px',
             borderBottomStyle: 'solid',
-            borderBottomColor: theme.palette.divider
+            borderBottomColor: theme.palette.divider,
+            backgroundImage: `url(${nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`})`,
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center center",
+            transition: 'height 70ms linear'
           }}>
-            <Image
-              src={nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`}
-              layout="fill"
-              objectFit="cover"
-              draggable="false"
-              alt="nft-image"
-            />
           </Box>
           {nftData.price && setSelected === undefined && (
             <Box
@@ -241,33 +263,33 @@ const NftCard: FC<INftCard> = ({
                   nftData.collection
                 )}
                 {' '}
-                <Typography
+                {showArtist && (
+                  <Typography
                   sx={{
                     fontStyle: 'italic',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis'
+                    textOverflow: artist && 'ellipsis',
                   }}
                 >
-                  by
-                  {' '}
-                  {nftData.artistLink ? (
-                    <Link
-                      href={nftData.artistLink}
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        textDecoration: 'none',
-                        '&:hover': {
-                          textDecoration: 'underline'
-                        }
-                      }}
+                  {artist ? (
+                    <>By <Link
+                      href={'/users/' + artist}
                     >
-                      {nftData.artist}
+                      {artist}
                     </Link>
+                    </>
                   ) : (
-                    nftData.artist
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        fontSize: '1.1rem',
+                        display: 'inline-block',
+                        width: '220px'
+                      }} />
                   )}
                 </Typography>
+                )}
               </Box>
             </Grid2>
           </Grid2>

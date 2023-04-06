@@ -14,6 +14,17 @@ import {
 } from "@mui/material";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 
+/* Filters
+
+- Price min/max
+- Marketplace
+- Options: Show Explicit
+- Collection -> Search bar with drop-down (complex)
+- Sale type: mint, auction, sale, not for sale
+- Token type: pack, utility, art, gaming
+
+*/
+
 const AccordionSx = {
   p: "0 0 6px 0",
   minHeight: 0,

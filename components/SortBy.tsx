@@ -7,6 +7,13 @@ import {
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { SxProps } from "@mui/material";
 
+/* 
+
+- Price: low to high, high to low
+- Time: ends first, ends last, newest first, newest last
+
+*/
+
 interface ISortByProps {
     sx?: SxProps;
   }

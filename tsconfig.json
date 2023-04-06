@@ -29,6 +29,6 @@
       "@utilities/*": ["utilities/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "additional.d.ts", "components/forms/InputSlider.tsx.bak"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "additional.d.ts", "components/forms/InputSlider.tsx.bak", "utilities/get-artist.js"],
   "exclude": ["node_modules"]
 }
