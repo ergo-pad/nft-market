@@ -158,9 +158,9 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
 
   const [apiRows, setApiRows] = useState(rows) // use setApiRows when API call collects the data
   const [currentRows, setCurrentRows] = useState(apiRows) // use setCurrentRows to determine filtered data from sorting, searching, and filtering
-  const [filteredRows, setFilteredRows] = useState(apiRows) // use setCurrentRows to determine filtered data from sorting, searching, and filtering
-  const [searchedRows, setSearchedRows] = useState(apiRows) // use setCurrentRows to determine filtered data from sorting, searching, and filtering
-
+  const [filteredRows, setFilteredRows] = useState(apiRows)
+  const [searchedRows, setSearchedRows] = useState(apiRows)
+  
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   useEffect(() => {
@@ -294,7 +294,7 @@ interface FilterDialogProps {
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
 }
 
-export interface IFilters {
+export interface ICollectionFilters {
   floorPrice: {
     min: number | '';
     max: number | '';
@@ -325,7 +325,7 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
   } = props;
   const [localFilteredValues, setLocalFilteredValues] = useState(props.data);
   const [localSortModel, setLocalSortModel] = useState<GridSortModel>([])
-  const [prevFilters, setPrevFilters] = useState<IFilters>(
+  const [prevFilters, setPrevFilters] = useState<ICollectionFilters>(
     {
       floorPrice: { min: '', max: '' },
       volume: { min: '', max: '' },
@@ -333,7 +333,7 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
       owners: { min: '', max: '' }
     }
   );
-  const [filters, setFilters] = useState<IFilters>(
+  const [filters, setFilters] = useState<ICollectionFilters>(
     {
       floorPrice: { min: '', max: '' },
       volume: { min: '', max: '' },

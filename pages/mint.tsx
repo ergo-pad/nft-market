@@ -171,16 +171,16 @@ const Mint: NextPage = () => {
   const [tokenDetailsData, setTokenDetailsData] = useState<ITokenDetailsData>(tokenDetailsDataInit)
   const [saleInfoData, setSaleInfoData] = useState<ISaleInfoData>(saleInfoDataInit)
   useEffect(() => {
-    const localStorageData = [
-      localStorage.getItem('creation-artist-form'),
-      localStorage.getItem('creation-collection-form'),
-      localStorage.getItem('creation-token-details-form'),
-      localStorage.getItem('creation-sale-info-form'),
+    const sessionStorageData = [
+      sessionStorage.getItem('creation-artist-form'),
+      sessionStorage.getItem('creation-collection-form'),
+      sessionStorage.getItem('creation-token-details-form'),
+      sessionStorage.getItem('creation-sale-info-form'),
     ]
-    if (localStorageData[0] !== null) setArtistData(JSON.parse(localStorageData[0]))
-    if (localStorageData[1] !== null) setCollectionData(JSON.parse(localStorageData[1]))
-    if (localStorageData[2] !== null) setTokenDetailsData(JSON.parse(localStorageData[2]))
-    if (localStorageData[3] !== null) setSaleInfoData(JSON.parse(localStorageData[3]))
+    if (sessionStorageData[0] !== null) setArtistData(JSON.parse(sessionStorageData[0]))
+    if (sessionStorageData[1] !== null) setCollectionData(JSON.parse(sessionStorageData[1]))
+    if (sessionStorageData[2] !== null) setTokenDetailsData(JSON.parse(sessionStorageData[2]))
+    if (sessionStorageData[3] !== null) setSaleInfoData(JSON.parse(sessionStorageData[3]))
   }, [])
   useEffect(() => {
     setArtistData((prev) => (
@@ -233,16 +233,16 @@ const Mint: NextPage = () => {
   };
   const handleSaveStep = () => {
     if (activeStep === 0) {
-      localStorage.setItem('creation-artist-form', JSON.stringify(artistData))
+      sessionStorage.setItem('creation-artist-form', JSON.stringify(artistData))
     }
     if (activeStep === 1) {
-      localStorage.setItem('creation-collection-form', JSON.stringify(collectionData))
+      sessionStorage.setItem('creation-collection-form', JSON.stringify(collectionData))
     }
     if (activeStep === 2) {
-      localStorage.setItem('creation-token-details-form', JSON.stringify(tokenDetailsData))
+      sessionStorage.setItem('creation-token-details-form', JSON.stringify(tokenDetailsData))
     }
     if (activeStep === 3) {
-      localStorage.setItem('creation-sale-info-form', JSON.stringify(saleInfoData))
+      sessionStorage.setItem('creation-sale-info-form', JSON.stringify(saleInfoData))
     }
   }
   const handleClearSavedStep = () => {
@@ -251,19 +251,19 @@ const Mint: NextPage = () => {
     setStepperCompleted(newCompleted);
     if (activeStep === 0) {
       setClearArtistForm(true)
-      localStorage.removeItem('creation-artist-form')
+      sessionStorage.removeItem('creation-artist-form')
     }
     if (activeStep === 1) {
       setClearCollectionForm(true)
-      localStorage.removeItem('creation-collection-form')
+      sessionStorage.removeItem('creation-collection-form')
     }
     if (activeStep === 2) {
       setClearTokenDetailsForm(true)
-      localStorage.removeItem('creation-token-details-form')
+      sessionStorage.removeItem('creation-token-details-form')
     }
     if (activeStep === 3) {
       setClearSaleInfoForm(true)
-      localStorage.removeItem('creation-sale-info-form')
+      sessionStorage.removeItem('creation-sale-info-form')
     }
   }
   const handleStepperComplete = () => {

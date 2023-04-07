@@ -10,17 +10,112 @@ import {
   FormControlLabel,
   Checkbox,
   Slider,
-  Paper
+  Paper,
+  Grid,
+  TextField,
+  Select,
+  FilledInput,
+  MenuItem,
+  ListItemText,
+  FormControl,
+  useTheme
 } from "@mui/material";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 
+export interface IFilters {
+  price: {
+    min: number | '';
+    max: number | '';
+  };
+  saleStatus: {
+    name: string;
+    selected: boolean;
+  }[];
+  tokenType: {
+    pack: boolean;
+    utility: boolean;
+    art: boolean;
+    music: boolean;
+    gaming: boolean;
+  }
+  options: {
+    showExplicit: boolean;
+  };
+  collection: {
+    name: string;
+    url: string;
+    selected: boolean;
+  }[] | [];
+  marketplace: {
+    name: string;
+    id: string;
+    url: string;
+    logoUrl?: string;
+    selected: boolean;
+  }[] | [];
+}
+
+export const filterInit: IFilters = {
+  price: {
+    min: '',
+    max: ''
+  },
+  saleStatus: [
+    {
+      name: 'Mint',
+      selected: true,
+    },
+    {
+      name: 'Sale',
+      selected: true,
+    },
+    {
+      name: 'Auction',
+      selected: true,
+    },
+    {
+      name: 'Not for sale',
+      selected: true,
+    }
+  ],
+  tokenType: {
+    pack: true,
+    utility: true,
+    art: true,
+    music: true,
+    gaming: true,
+  },
+  options: {
+    showExplicit: false,
+  },
+  collection: [
+    {
+      name: '',
+      url: '',
+      selected: true,
+    }
+  ],
+  marketplace: [
+    {
+      name: 'Sky Harbor',
+      id: 'skyharbor',
+      url: 'https://skyharbor.io',
+      logoUrl: '',
+      selected: true,
+    },
+  ]
+}
+
 /* Filters
 
+done: 
+- Sale type: mint, auction, sale, not for sale
 - Price min/max
+
+in progress:
 - Marketplace
 - Options: Show Explicit
 - Collection -> Search bar with drop-down (complex)
-- Sale type: mint, auction, sale, not for sale
 - Token type: pack, utility, art, gaming
 
 */
@@ -41,167 +136,232 @@ const AccordionSx = {
   },
 };
 
-interface IAccordionProps {
-  title: string;
-  children: React.ReactElement;
-  noDivider?: boolean;
+interface IFilterOptions {
+  data: any[];
+  filteredValues: any[];
+  setFilteredValues: React.Dispatch<React.SetStateAction<any[]>>;
+  filters: IFilters;
+  setFilters: React.Dispatch<React.SetStateAction<IFilters>>;
 }
 
-const FilterAccordionItem: FC<IAccordionProps> = ({
-  title,
-  children,
-  noDivider,
-}) => {
-  return (
-    <>
-      <Accordion
-        sx={{
-          background: "transparent",
-          boxShadow: "none",
-          border: 'none',
-          "&:before": {
-            background: "transparent",
-          },
-        }}
-        disableGutters
-      >
-        <AccordionSummary
-          expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "14px" }} />}
-          aria-controls={`panel-${title.replace(/\s/g, "")}`}
-          id={`panel-${title.replace(/\s/g, "")}-header`}
-          sx={AccordionSx}
-        >
-          <Typography>{title}</Typography>
-        </AccordionSummary>
-        <AccordionDetails sx={{ p: 0 }}>
-          <FormGroup
-            sx={{
-              "& .MuiFormControlLabel-root .MuiTypography-root": {
-                fontSize: "16px",
-              },
-            }}
-          >
-            {children}
-          </FormGroup>
-        </AccordionDetails>
-      </Accordion>
-      {!noDivider && (
-        <Divider sx={{ background: "rgba(255,255,255,0.005)", my: "12px" }} />
-      )}
-    </>
-  );
-};
-
-const saleStatus = [
-  "Mint",
-  "Sale",
-  "Auction",
-  "Not For Sale",
-]
-
-const FilterOptions = () => {
-  const priceRange = [0, 500];
-  const [ergPriceRange, setErgPriceRange] = useState<number[]>(priceRange);
-  const [saleStatusChecks, setSaleStatusChecks] = useState<boolean[]>([])
+const FilterOptions: FC<IFilterOptions> = ({ data, setFilteredValues, filteredValues, filters, setFilters }) => {
+  const theme = useTheme();
+  const [saleStatusList, setSaleStatusList] = useState('Select sales types')
   const [saleStatusSelectAll, setSaleStatusSelectAll] = useState<boolean>(true);
 
-  const handleChange = (event: Event, newValue: number | number[]) => {
-    setErgPriceRange(newValue as number[]);
+  const handleChangeMinMaxFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const [parent, child] = name.split('-'); // split the name into parent and child properties
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [parent]: {
+        ...prevFilters[parent as keyof IFilters],
+        [child]: value // update the child property with the new value
+      }
+    }));
   };
 
-  useMemo(() => {
-    const array = Array.from(saleStatus, () => true);
-    setSaleStatusChecks(array)
-  }, [saleStatus])
+  useEffect(() => {
+    const filteredData = data.filter(item => {
+      const saleType = item.saleType
+      const selectedSaleStatusNames = filters.saleStatus
+        .filter(status => status.selected)
+        .map(status => status.name.toLowerCase());
+      const notForSaleSelected = filters.saleStatus.find(status => status.name === 'Not for sale')?.selected;
+      return saleType === undefined ? notForSaleSelected : selectedSaleStatusNames.includes(saleType);
+    });
+    const filterMax = filteredData.filter(item => {
+      return !filters.price.max || item.price < filters.price.max;
+    })
+    const filterMin = filterMax.filter(item => {
+      return !filters.price.min || item.price > filters.price.min;
+    })
+    setFilteredValues(filterMin);
+  }, [filters])
 
-  const saleStatusCheckHandleChange = (key: number) => {
-    setSaleStatusChecks(saleStatusChecks => saleStatusChecks.map((item, i) => i === key ? !item : item))
+  const saleStatusCheckHandleChange = (i: number) => {
+    setFilters(prevFilters => {
+      const newSaleStatus = [
+        ...prevFilters.saleStatus.slice(0, i),
+        {
+          ...prevFilters.saleStatus[i],
+          selected: !prevFilters.saleStatus[i].selected,
+        },
+        ...prevFilters.saleStatus.slice(i + 1),
+      ];
+
+      // Check if the last item is being unchecked
+      const lastItemChecked = newSaleStatus.filter(item => item.selected).length > 0;
+
+      // If it's the last item and it's being unchecked, don't update the filters
+      if (!lastItemChecked && !newSaleStatus[i].selected) {
+        return prevFilters;
+      }
+
+      return {
+        ...prevFilters,
+        saleStatus: newSaleStatus,
+      };
+    });
   }
 
   const saleStatusCheckSelectAll = (all: boolean) => {
-    setSaleStatusChecks(saleStatusChecks => saleStatusChecks.map(() => all ? true : false))
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      saleStatus: prevFilters.saleStatus.map((item) =>
+        item.name === 'Not for sale' && !all ?
+          {
+            ...item,
+            selected: true
+          } :
+          all ?
+            {
+              ...item,
+              selected: true
+            } :
+            {
+              ...item,
+              selected: false
+            }),
+    }));
     setSaleStatusSelectAll(!saleStatusSelectAll)
   }
 
   useEffect(() => {
-    const check = saleStatusChecks.every(Boolean)
+    const check = filters.saleStatus.every((item) => item.selected === true)
     if (check) {
       setSaleStatusSelectAll(true)
     }
     if (!check) {
       setSaleStatusSelectAll(false)
     }
+    const selectedSaleStatusNames = filters.saleStatus
+      .filter(item => item.selected)
+      .map(item => item.name);
+    setSaleStatusList(selectedSaleStatusNames.join(', '))
   }, [saleStatusCheckHandleChange])
 
   return (
     <>
-      <Typography variant="h6" sx={{ mb: '24px' }}>Filter</Typography>
+      <Typography variant="h5" sx={{ mb: 0 }}>Filter</Typography>
+      <Divider sx={{ mb: 2 }} />
 
       {/* FILTER BY SALE STATUS */}
-      <FilterAccordionItem title="Sale Status">
-        <Box sx={{ mx: "6px" }}>
-          {saleStatus.map((option, i) => {
+      <Typography variant="h6" sx={{ mb: 1 }}>
+        Sale Types
+      </Typography>
+
+      <Box sx={{ mb: 2 }}>
+        <Select
+          fullWidth
+          value="blank"
+          variant="filled"
+          sx={{ 
+            '& .MuiInputBase-input': { pt: '8px' }, 
+            color: theme.palette.text.secondary,
+          }}
+          // MenuProps={{
+          //   sx: {
+          //     '& .MuiList-root': {
+          //       background: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.09)' : theme.palette.background.paper,
+          //     }
+          //   }
+          // }}
+        >
+          <MenuItem disabled value="blank" sx={{ display: 'none' }}>
+            {saleStatusList}
+          </MenuItem>
+          {filters.saleStatus.map((item, i) => {
             return (
-              <FormControlLabel
+              <MenuItem
                 key={i}
-                checked={saleStatusChecks[i]}
-                onChange={() => saleStatusCheckHandleChange(i)}
-                control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-                label={option}
-                sx={{ display: 'block' }}
-              />
+                onClick={() => saleStatusCheckHandleChange(i)}
+              >
+                <Checkbox checked={filters.saleStatus[i].selected} />
+                <ListItemText primary={item.name} />
+              </MenuItem>
             )
           })}
-          <FormControlLabel
-            checked={saleStatusSelectAll}
-            onChange={() => saleStatusCheckSelectAll(!saleStatusSelectAll)}
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="Select All"
-          />
-        </Box>
-      </FilterAccordionItem>
+          <MenuItem onClick={() => saleStatusCheckSelectAll(!saleStatusSelectAll)}>
+            <Checkbox checked={saleStatusSelectAll} />
+            <ListItemText primary="Select All" />
+          </MenuItem>
+        </Select>
+      </Box>
 
-      {/* FILTER BY DAO SIZE */}
-      <FilterAccordionItem title="Price Range">
-        <Box sx={{ mx: "12px" }}>
-          <Slider
-            getAriaLabel={() => "Price Range"}
-            value={ergPriceRange}
-            onChange={handleChange}
-            valueLabelDisplay="auto"
-            min={priceRange[0]}
-            max={priceRange[1]}
-          />
-        </Box>
-      </FilterAccordionItem>
+      {/* FILTER BY PRICE RANGE */}
+      <MinMaxFilter
+        filters={filters}
+        handleChangeFilters={handleChangeMinMaxFilter}
+        title="Price Range"
+        variableName="price"
+        currency="Erg"
+      />
 
-      {/* FILTER BY DATE CREATED */}
-      <FilterAccordionItem title="Initiation Date" noDivider>
-        <Box sx={{ mx: "6px" }}>
-          <FormControlLabel
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="24 Hours"
-          />
-          <FormControlLabel
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="Last week"
-          />
-          <FormControlLabel
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="Past month"
-          />
-          <FormControlLabel
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="Past year"
-          />
-          <FormControlLabel
-            control={<Checkbox sx={{ p: "6px 9px" }} size="small" />}
-            label="All time"
-          />
-        </Box>
-      </FilterAccordionItem>
+
     </>
   );
 };
 
 export default FilterOptions;
+
+const MinMaxFilter: FC<{
+  filters: IFilters;
+  handleChangeFilters: Function;
+  title: string;
+  variableName: string;
+  currency?: string;
+}> = ({
+  filters,
+  handleChangeFilters,
+  title,
+  variableName,
+  currency
+}) => {
+    return (
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          {title}
+        </Typography>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          spacing={1}
+        >
+          <Grid item xs={4}>
+            <TextField
+              fullWidth
+              variant="filled"
+              id={variableName + '-filter-min'}
+              placeholder="Min"
+              name={variableName + '-min'}
+              type="number"
+              value={filters.price.min}
+              sx={{ '& .MuiInputBase-input': { pt: '8px' } }}
+              onChange={(e: any) => handleChangeFilters(e)}
+            />
+          </Grid>
+          <Grid item xs={1} sx={{ textAlign: 'center' }}>
+            —
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              fullWidth
+              variant="filled"
+              id={variableName + '-filter-max'}
+              placeholder="Max"
+              type="number"
+              name={variableName + '-max'}
+              value={filters.price.max}
+              sx={{ '& .MuiInputBase-input': { pt: '8px' } }}
+              onChange={(e: any) => handleChangeFilters(e)}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            {currency}
+          </Grid>
+        </Grid>
+      </Box>
+    )
+  }

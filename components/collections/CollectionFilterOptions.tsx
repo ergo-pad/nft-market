@@ -6,13 +6,13 @@ import {
   Grid,
   TextField
 } from "@mui/material";
-import { IFilters } from "@components/collections/CollectionList";
+import { ICollectionFilters } from "@components/collections/CollectionList";
 
 interface ICollectionFilterOptions {
   data: any[];
   setFilteredValues: React.Dispatch<React.SetStateAction<any[]>>;
-  filters: IFilters;
-  setFilters: React.Dispatch<React.SetStateAction<IFilters>>;
+  filters: ICollectionFilters;
+  setFilters: React.Dispatch<React.SetStateAction<ICollectionFilters>>;
 }
 
 const CollectionFilterOptions: FC<ICollectionFilterOptions> = ({ data, setFilteredValues, filters, setFilters }) => {
@@ -23,7 +23,7 @@ const CollectionFilterOptions: FC<ICollectionFilterOptions> = ({ data, setFilter
     setFilters(prevFilters => ({
       ...prevFilters,
       [parent]: {
-        ...prevFilters[parent as keyof IFilters],
+        ...prevFilters[parent as keyof ICollectionFilters],
         [child]: value // update the child property with the new value
       }
     }));
@@ -93,7 +93,7 @@ export default CollectionFilterOptions;
 
 
 const Filter: FC<{
-  filters: IFilters;
+  filters: ICollectionFilters;
   handleChangeFilters: Function;
   title: string;
   variableName: string;
@@ -124,7 +124,7 @@ const Filter: FC<{
               placeholder="Min"
               name={variableName + '-min'}
               type="number"
-              value={filters[variableName as keyof IFilters].min}
+              value={filters[variableName as keyof ICollectionFilters].min}
               sx={{ '& .MuiInputBase-input': { pt: '8px' } }}
               onChange={(e: any) => handleChangeFilters(e)}
             />
@@ -140,7 +140,7 @@ const Filter: FC<{
               placeholder="Max"
               type="number"
               name={variableName + '-max'}
-              value={filters[variableName as keyof IFilters].max}
+              value={filters[variableName as keyof ICollectionFilters].max}
               sx={{ '& .MuiInputBase-input': { pt: '8px' } }}
               onChange={(e: any) => handleChangeFilters(e)}
             />
