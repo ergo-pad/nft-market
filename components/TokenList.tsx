@@ -7,7 +7,8 @@ import {
   DialogActions,
   Dialog,
   Typography,
-  Box
+  Box,
+  Divider
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
@@ -15,16 +16,8 @@ import FilterOptions from "@components/FilterOptions";
 import NftCard, { INftItem } from '@components/NftCard';
 import SearchBar from '@components/SearchBar'
 import SortBy from '@components/SortBy'
-import { ICollectionTraits, ICollectionRarities } from "@components/collections/Properties";
 import LoadingCard from '@components/LoadingCard'
-
-export interface ConfirmationDialogRawProps {
-  id: string;
-  keepMounted: boolean;
-  value: string;
-  open: boolean;
-  onClose: (value?: string) => void;
-}
+import { filterInit, IFilters } from '@components/FilterOptions';
 
 export interface ITokenListProps {
   nftListArray: INftItem[];
@@ -35,13 +28,26 @@ export interface ITokenListProps {
 }
 
 const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFullWidth, loading, loadingAmount }) => {
-  const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
-  const [filterDialogvalue, setFilterDialogValue] = React.useState("What");
-  const [updatedData, setUpdatedData] = useState<INftItem[]>([])
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [rawData, setRawData] = useState(nftListArray)
+  const [filteredData, setFilteredData] = useState(rawData)
+  const [sortedData, setSortedData] = useState(rawData)
+  const [searchedData, setSearchedData] = useState(rawData)
+  const [mixedData, setMixedData] = useState(rawData)
+  const [displayedData, setDisplayedData] = useState<INftItem[]>([]) // data after search, sort, and filter
+
   const [localLoading, setLocalLoading] = useState(true)
 
   useEffect(() => {
-    setUpdatedData(nftListArray)
+    setMixedData(filteredData.filter(o1 => searchedData.some(o2 => o1.tokenId === o2.tokenId)))
+  }, [filteredData, searchedData]);
+
+  useEffect(() => {
+    setDisplayedData(sortedData)
+  }, [sortedData]);
+
+  useEffect(() => {
+    setRawData(nftListArray)
     setLocalLoading(false)
   }, [nftListArray])
 
@@ -53,12 +59,8 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
     setFilterDialogOpen(true);
   };
 
-  const handleDialogClose = (newValue?: string) => {
+  const handleDialogClose = () => {
     setFilterDialogOpen(false);
-
-    if (newValue) {
-      setFilterDialogValue(newValue);
-    }
   };
 
   const theme = useTheme();
@@ -68,11 +70,14 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
     <>
       <Grid container sx={{ mb: 2 }} spacing={2}>
         <Grid item xs sm={7}>
-          <SearchBar data={nftListArray} searchKey="name" setFilteredValue={setUpdatedData} />
+          <SearchBar data={rawData} searchKey="name" setFilteredValue={setSearchedData} />
         </Grid>
         {desktop && (
           <Grid item sm>
-            <SortBy />
+            <SortBy
+              inputData={mixedData}
+              setSortedData={setSortedData}
+            />
           </Grid>
         )}
         <Grid item xs="auto">
@@ -94,12 +99,18 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
           >
             <FilterAltIcon />
           </Button>
-          <ConfirmationDialogRaw
-            id="ringtone-menu"
+          <FilterDialog
+            id="filter-dialog"
             keepMounted
             open={filterDialogOpen}
             onClose={handleDialogClose}
-            value={filterDialogvalue}
+            rawData={rawData}
+            sortedData={sortedData}
+            setSortedData={setSortedData}
+            filteredData={filteredData}
+            setFilteredData={setFilteredData}
+            displayedData={displayedData}
+            mixedData={mixedData}
           />
         </Grid>
       </Grid>
@@ -116,7 +127,7 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
             </Grid>
           )
         ) : (
-          updatedData.length > 0 ? updatedData.map((item: any, i: number) => {
+          displayedData.length > 0 ? displayedData.map((item: any, i: number) => {
             return (
               <Grid key={i} item xs={1}>
                 <NftCard
@@ -124,12 +135,12 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
                 />
               </Grid>
             )
-          }) : 
-          <Box sx={{ textAlign: 'center', py: '10vh', width: '100%' }}>
-            <Typography variant="h4" color="text.secondary">
-              No tokens to display
-            </Typography>
-          </Box>
+          }) :
+            <Box sx={{ textAlign: 'center', py: '10vh', width: '100%' }}>
+              <Typography variant="h4" color="text.secondary">
+                No tokens to display
+              </Typography>
+            </Box>
         )}
       </Grid>
       <Box sx={{ width: '100%', textAlign: 'center' }}>
@@ -138,37 +149,70 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
   )
 }
 
-function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
-  const { onClose, value: valueProp, open, ...other } = props;
-  const [value, setValue] = React.useState(valueProp);
-  const radioGroupRef = React.useRef<HTMLElement>(null);
+interface FilterDialogProps {
+  id: string;
+  keepMounted: boolean;
+  open: boolean;
+  onClose: (value?: string) => void;
+  rawData: INftItem[];
+  sortedData: any[];
+  setSortedData: React.Dispatch<React.SetStateAction<any[]>>;
+  filteredData: any[];
+  setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
+  displayedData: any[];
+  mixedData: any[];
+}
 
-  React.useEffect(() => {
-    if (!open) {
-      setValue(valueProp);
-    }
-  }, [valueProp, open]);
-
-  const handleEntering = () => {
-    if (radioGroupRef.current != null) {
-      radioGroupRef.current.focus();
-    }
-  };
+const FilterDialog: FC<FilterDialogProps> = (props) => {
+  const {
+    onClose,
+    open,
+    rawData,
+    sortedData,
+    setSortedData,
+    filteredData,
+    setFilteredData,
+    displayedData,
+    mixedData,
+    ...other
+  } = props;
+  const [localFilteredData, setLocalFilteredData] = useState(rawData);
+  const [localSortedData, setLocalSortedData] = useState<any[]>([])
+  const [savedSortOption, setSavedSortOption] = useState('')
+  const [sortOption, setSortOption] = useState('');
+  const [prevFilters, setPrevFilters] = useState<IFilters>(filterInit);
+  const [filters, setFilters] = useState<IFilters>(filterInit);
 
   const handleCancel = () => {
+    setLocalFilteredData(filteredData)
+    setFilters(prevFilters)
+    if (!desktop) {
+      setLocalSortedData(sortedData)
+      setSortOption(savedSortOption)
+    }
     onClose();
   };
 
   const handleOk = () => {
-    onClose(value);
+    setFilteredData(localFilteredData)
+    setPrevFilters(filters)
+    if (!desktop) {
+      setSavedSortOption(sortOption)
+      setSortedData(localSortedData)
+    }
+    onClose();
+    console.log(filters.price)
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((event.target as HTMLInputElement).value);
-  };
+  const clearFilters = () => {
+    setFilters(filterInit)
+    if (!desktop) {
+      setSortOption('')
+    }
+  }
 
   const theme = useTheme();
-  const desktop = useMediaQuery(theme.breakpoints.up("sm"))
+  const desktop = useMediaQuery(theme.breakpoints.up("md"))
 
   return (
     <Dialog
@@ -181,17 +225,35 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
 
         },
       }}
-      maxWidth={desktop ? 'sm' : undefined}
+      maxWidth={desktop ? 'md' : undefined}
       fullScreen={!desktop}
-      TransitionProps={{ onEntering: handleEntering }}
       open={open}
       {...other}
     >
       <DialogContent dividers sx={{ p: '16px', border: 'none' }}>
-        {!desktop && <SortBy sx={{ mb: "24px" }} />}
-        <FilterOptions />
+        <FilterOptions
+          data={rawData}
+          filters={filters}
+          setFilters={setFilters}
+          filteredValues={localFilteredData}
+          setFilteredValues={setLocalFilteredData}
+        />
+        {!desktop &&
+          <>
+            <Typography variant="h5" sx={{ mb: 0 }}>Sort</Typography>
+            <Divider sx={{ mb: 2 }} />
+            <SortBy
+              inputData={mixedData}
+              setSortedData={setLocalSortedData}
+              controlledSortOption={sortOption}
+              setControlledSortOption={setSortOption}
+              sx={{ mb: "24px" }}
+            />
+          </>
+        }
       </DialogContent>
       <DialogActions>
+        <Button onClick={clearFilters}>Clear All</Button>
         <Button autoFocus onClick={handleCancel}>
           Cancel
         </Button>

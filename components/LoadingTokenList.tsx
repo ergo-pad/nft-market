@@ -58,7 +58,7 @@ const TokenList: FC<ITokenListProps> = ({ numberToDisplay, notFullWidth }) => {
         </Grid>
         {desktop && (
           <Grid item sm>
-            <SortBy />
+            {/* <SortBy /> */}
           </Grid>
         )}
         <Grid item xs="auto">
@@ -157,8 +157,8 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
       {...other}
     >
       <DialogContent dividers sx={{ p: '16px', border: 'none' }}>
-        {!desktop && <SortBy sx={{ mb: "24px" }} />}
-        <FilterOptions />
+        {/* {!desktop && <SortBy sx={{ mb: "24px" }} />}
+        <FilterOptions /> */}
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={handleCancel}>

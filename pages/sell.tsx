@@ -152,7 +152,7 @@ const Sell: NextPage = () => {
             {
               name: item.name,
               collection: item.collection ? item.collection : undefined,
-              artist: item.artist,
+              artist: '', // need to implement getArtist()
               imgUrl: item.imgUrl ? item.imgUrl : `/images/placeholder/${rand}.jpg`,
             }
           )

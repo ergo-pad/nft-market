@@ -34,9 +34,7 @@ export interface INftItem {
   saleType?: 'mint' | 'auction' | 'sale';
   collection?: string;
   collectionLink?: string;
-  artist: string;
-  artistLink: string;
-  bx?: { address: string; txId: string | undefined; outputTransactionId: string; }
+  explicit?: boolean;
 }
 
 interface INftCard {
@@ -97,9 +95,19 @@ const NftCard: FC<INftCard> = ({
   useEffect(() => {
     const fetchArtist = async () => {
       if (nftData.tokenId) {
-        const artist = await getArtist(nftData.tokenId);
-        setArtist(artist);
-        if (artist === null) setShowArtist(false)
+        let artist = null
+        if (localStorage.getItem(`token-artist-${nftData.tokenId}`)) {
+          artist = localStorage.getItem(`token-artist-${nftData.tokenId}`)
+        }
+        else {
+          artist = await getArtist(nftData.tokenId);
+          localStorage.setItem(`token-artist-${nftData.tokenId}`, artist)
+        }
+        if (artist === null || artist === 'null') {
+          setShowArtist(false)
+          setArtist(null);
+        }
+        else setArtist(artist);
       }
     }
     fetchArtist();
