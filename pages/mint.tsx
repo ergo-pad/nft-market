@@ -304,7 +304,7 @@ const Mint: NextPage = () => {
       collectionData,
       tokenDetailsData,
       artistCreated.id,
-      saleCreated.id
+      saleCreated.sale.id
     );
     const nftUpdated = await createNftData(
       collectionCreated.id,
@@ -317,7 +317,7 @@ const Mint: NextPage = () => {
     apiContext.api.ok(`Submitted Transaction: ${ok}`);
     // todo: show this data nicely in ok thank you page
     console.log({
-      saleId: saleCreated.id,
+      saleId: saleCreated.sale.id,
       collectionId: collectionCreated.id,
       transactionId: ok,
       status: "MINTING",

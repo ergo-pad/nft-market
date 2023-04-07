@@ -4,11 +4,11 @@ const nextConfig = {
   env: {
     API_URL: process.env.API_URL,
     ERGOPAD_API: process.env.ERGOPAD_API,
-    IPFS_URL: process.env.IPFS_URL,
-    NFT_STORAGE_KEY: process.env.NFT_STORAGE_KEY
+  },
+  images: {
+    domains: ['ergopad-public.s3.us-west-2.amazonaws.com', 'cloudflare-ipfs.com'],
   },
   swcMinify: true,
-}
+};
 
-module.exports = nextConfig
-
+module.exports = nextConfig;
