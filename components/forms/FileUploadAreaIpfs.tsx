@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import { bytesToSize, aspectRatioResize } from "@utilities/general";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { storeNFT } from "@utils/nft-storage";
 import axios from "axios";
 
 interface IFileData {
@@ -45,6 +46,7 @@ export interface IFileUrl {
 interface IFileUploadAreaProps {
   fileUrls: IFileUrl[];
   setFileUrls: React.Dispatch<React.SetStateAction<IFileUrl[]>>;
+  ipfsFlag?: boolean;
   autoUpload?: boolean;
   title?: string;
   expectedImgHeight?: number;
@@ -57,9 +59,16 @@ interface IFileUploadAreaProps {
   setClearTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const FileUploadArea: FC<IFileUploadAreaProps> = ({
+/**
+ * Todos:
+ * 1. Rename this file with a better name
+ * 2. Use ipfs backend api instead of direct upload
+ * 3. Use S3 upload instead on local api
+ */
+const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   fileUrls,
   setFileUrls,
+  ipfsFlag,
   title,
   expectedImgHeight,
   expectedImgWidth,
@@ -194,9 +203,18 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   const inputFileRef = React.useRef<HTMLInputElement | null>(null);
   const [inputKey, setInputKey] = useState(randomNumber());
 
-  const standardUpload = async () => {
+  const ipfsUpload = async () => {
     try {
       const promises = fileData.map(async (file) => {
+        const formData = new FormData();
+        formData.append("fileobject", file.currentFile, file.currentFile.name);
+        const res = await axios.post(
+          `${process.env.API_URL}/nft/upload_file`,
+          formData
+        );
+        return res.data.url;
+      });
+      const promisesS3 = fileData.map(async (file) => {
         const formData = new FormData();
         formData.append("fileobject", file.currentFile, file.currentFile.name);
         const res = await axios.post(
@@ -206,10 +224,11 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
         return res.data.url;
       });
       const results = await Promise.all(promises);
+      const resultsS3 = await Promise.all(promisesS3);
       const newArray = results.map((item, index) => {
         return {
-          url: item,
-          ipfs: "",
+          url: resultsS3[index],
+          ipfs: item,
         };
       });
       if (setFileUrls) setFileUrls(newArray);
@@ -225,7 +244,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       return;
     }
     setIsLoading(true);
-    standardUpload();
+    ipfsUpload();
     setIsLoading(false);
   };
 
@@ -532,4 +551,4 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   );
 };
 
-export default FileUploadArea;
+export default FileUploadAreaIpfs;
