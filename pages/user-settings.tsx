@@ -43,7 +43,7 @@ const UserSettings: NextPage = () => {
       const updateUserData = {
         ...userData,
         pfpUrl: userData.avatarUrl,
-        social: userData.social ?? [],
+        socials: userData.social ?? [],
         verificationToken: verificationToken,
         id: crypto.randomUUID(),
       };

@@ -20,6 +20,7 @@ import Image from "next/image";
 import { bytesToSize, aspectRatioResize } from "@utilities/general";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { storeNFT } from "@utils/nft-storage";
+import axios from "axios";
 
 interface IFileData {
   currentFile: File;
@@ -64,7 +65,7 @@ interface IFileUploadAreaProps {
  * 2. Use ipfs backend api instead of direct upload
  * 3. Use S3 upload instead on local api
  */
-const FileUploadAreaTest: FC<IFileUploadAreaProps> = ({
+const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   fileUrls,
   setFileUrls,
   ipfsFlag,
@@ -202,51 +203,38 @@ const FileUploadAreaTest: FC<IFileUploadAreaProps> = ({
   const inputFileRef = React.useRef<HTMLInputElement | null>(null);
   const [inputKey, setInputKey] = useState(randomNumber());
 
-  const standardUpload = async () => {
-    /* Add files to FormData */
-    const formData = new FormData();
-    Object.values(fileData).forEach((file, i) => {
-      formData.append("file", file.currentFile);
-    });
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const body = (await response.json()) as {
-      status: "ok" | "fail";
-      message: string;
-    };
-    if (body.status === "ok") {
-      const urlData = fileData.map((file, i) => {
+  const ipfsUpload = async () => {
+    try {
+      const promises = fileData.map(async (file) => {
+        const formData = new FormData();
+        formData.append("fileobject", file.currentFile, file.currentFile.name);
+        const res = await axios.post(
+          `${process.env.API_URL}/nft/upload_file`,
+          formData
+        );
+        return res.data.url;
+      });
+      const promisesS3 = fileData.map(async (file) => {
+        const formData = new FormData();
+        formData.append("fileobject", file.currentFile, file.currentFile.name);
+        const res = await axios.post(
+          `${process.env.API_URL}/upload_file`,
+          formData
+        );
+        return res.data.url;
+      });
+      const results = await Promise.all(promises);
+      const resultsS3 = await Promise.all(promisesS3);
+      const newArray = results.map((item, index) => {
         return {
-          url: "/uploads/" + file.currentFile.name,
-          ipfs: "",
+          url: resultsS3[index],
+          ipfs: item,
         };
       });
-      if (ipfsFlag === true) {
-        ipfsUpload(urlData);
-      } else if (setFileUrls) setFileUrls(urlData);
-    } else {
-      // if upload error, still try ipfs upload
-      if (ipfsFlag === true) {
-        ipfsUpload([]);
-      }
+      if (setFileUrls) setFileUrls(newArray);
+    } catch (e) {
+      console.log(e);
     }
-  };
-
-  const ipfsUpload = async (urlData: { url: string; ipfs: string }[]) => {
-    const promises = fileData.map(async (file) => {
-      return storeNFT(file.currentFile);
-    });
-    const results = await Promise.all(promises);
-    const newArray = results.map((item, index) => {
-      return {
-        url: urlData[index].url,
-        ipfs:
-          item !== undefined ? "https://cloudflare-ipfs.com/ipfs/" + item : "",
-      };
-    });
-    if (setFileUrls) setFileUrls(newArray);
   };
 
   const handleUpload = async () => {
@@ -256,7 +244,7 @@ const FileUploadAreaTest: FC<IFileUploadAreaProps> = ({
       return;
     }
     setIsLoading(true);
-    standardUpload();
+    ipfsUpload();
     setIsLoading(false);
   };
 
@@ -563,4 +551,4 @@ const FileUploadAreaTest: FC<IFileUploadAreaProps> = ({
   );
 };
 
-export default FileUploadAreaTest;
+export default FileUploadAreaIpfs;
