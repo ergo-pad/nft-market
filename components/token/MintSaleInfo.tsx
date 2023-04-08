@@ -2,38 +2,25 @@ import React, { FC, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
   Grid,
-  Container,
   Typography,
   Box,
   Card,
   CardContent,
-  Avatar,
   useTheme,
   useMediaQuery,
-  Icon,
-  Tooltip,
-  Fade,
-  Grow,
-  Divider,
   Paper,
   List,
   ListItem,
-  Collapse
+  Collapse,
+  Skeleton
 } from '@mui/material'
 import Link from '@components/Link'
-import ButtonLink from '@components/ButtonLink'
-import Image from 'next/image';
-import DirectSalesCard, { IDirectSalesCardProps } from '@components/token/DirectSalesCard';
-import TokenProperties from '@components/token/TokenProperties';
-import Properties from '@components/collections/Properties';
-import TokenActivity, { ITokenActivity } from '@components/token/TokenActivity';
-import CollectionsIcon from '@mui/icons-material/Collections';
-import MoodIcon from '@mui/icons-material/Mood';
-import { v4 as uuidv4 } from 'uuid';
-import { ICollectionTraits, ICollectionRarities } from "@components/collections/Properties";
+import DirectSalesCard from '@components/token/DirectSalesCard';
 import dayjs from 'dayjs';
 import PackTokenSelector from '@components/token/PackTokenSelector';
 import { formatNumber } from '@utils/general';
+import { getTokenData, IToken } from '@utils/assets';
+import HideImageIcon from '@mui/icons-material/HideImage';
 
 // Packs or no packs? 
 //    a) If packs, are there more than one pack type? 
@@ -45,8 +32,6 @@ import { formatNumber } from '@utils/general';
 //    c) No packs, its an NFT: display NFT image as featured image. Give token properties as well
 
 // UI needed: 
-//    a) Sale card for more than one pack
-//    b) Featured image area to select from the available packs
 //    c) NFT info
 
 const MintSaleInfo: FC<{
@@ -126,21 +111,30 @@ const MintSaleInfo: FC<{
 
   }, [selected.toString()])
 
+  const [loading, setLoading] = useState(true)
+  const [tokenDetails, setTokenDetails] = useState<IToken>({
+    name: '',
+    token: '',
+    id: ''
+  })
+
+  const fetchData = async (id: string) => {
+    setLoading(true)
+    const fetchedInfo = await getTokenData(id);
+    setTokenDetails(fetchedInfo)
+    setLoading(false)
+  }
+
+  // CHANGE THIS
+  // check token info once the API knows if this is a sale or not
+  // because the sale may be providing pack token images
+  useEffect(() => {
+    if (props.tokenId.length === 64) fetchData(props.tokenId)
+    else setLoading(false)
+  }, [props.tokenId])
+
   return (
     <>
-      {/* <Grid container>
-        <Grid item md={9}>
-          <Typography variant="h1">
-            {apiGetSaleById.name}
-          </Typography>
-          <Typography variant="body2">
-            {apiGetSaleById.description}
-          </Typography>
-        </Grid>
-        <Grid item md={3}>
-        </Grid>
-      </Grid> */}
-
       <Grid
         container
         direction="row"
@@ -158,15 +152,33 @@ const MintSaleInfo: FC<{
             sx={{
               position: 'relative',
               mb: '24px',
-              width: '100%'
-              // display: apiGetSaleById !== undefined && apiGetSaleById.packs.length > 1 ? 'none' : 'block'
+              width: '100%',
+              transform: 'height 0.2s linear',
             }}
           >
-            {/* {apiGetSaleById.packs.map((pack, i) => {
-              return (
-                <Collapse key={i} in={selected[i]}>
+            {loading ?
+              <Box
+                sx={{
+                  width: '100%',
+                  pb: '100%',
+                }}
+              >
+                <Skeleton
+                  variant="rectangular"
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    height: '100%',
+                    width: '100%',
+                    borderRadius: '8px',
+                  }}
+                />
+              </Box>
+              :
+              <>
+                {tokenDetails.r9 ?
                   <img
-                    src={pack.image}
+                    src={tokenDetails.r9}
                     height='100%'
                     width='100%'
                     style={{
@@ -174,19 +186,29 @@ const MintSaleInfo: FC<{
                     }}
                     alt="cube"
                   />
-                </Collapse>
-              )
-            })} */}
-            <img
-              src={featuredImage}
-              height='100%'
-              width='100%'
-              style={{
-                borderRadius: '8px',
-              }}
-              alt="cube"
-            />
-
+                  :
+                  <Box
+                    sx={{
+                      width: '100%',
+                      pb: '100%',
+                      background: theme.palette.background.paper,
+                      borderRadius: '8px'
+                    }}
+                  >
+                    <HideImageIcon
+                      sx={{
+                        position: 'absolute',
+                        color: theme.palette.divider,
+                        fontSize: '12rem',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                    />
+                  </Box>
+                }
+              </>
+            }
           </Box>
 
         </Grid>
@@ -354,7 +376,7 @@ const MintSaleInfo: FC<{
           </Box>
 
         </Grid>
-      </Grid>
+      </Grid >
     </>
   )
 };
