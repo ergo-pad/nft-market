@@ -68,7 +68,7 @@ const User: NextPage = () => {
           collectionLink: '',
           artist: '',
           artistLink: '',
-          bx: item.bx
+          bx: item.bx,
         }
       )
     }) 
@@ -129,9 +129,9 @@ const User: NextPage = () => {
               scrollButtons="auto"
               allowScrollButtonsMobile
             >
-              <Tab label="On Sale" value="on-sale" />
-              <Tab label="Owned" value="owned" />
-              <Tab label="Activity" value="activity" />
+              <Tab label="On Sale" value="on-sale" key="on-sale" />
+              <Tab label="Owned" value="owned" key="owned" />
+              <Tab label="Activity" value="activity" key="activity" />
             </TabList>
           </Box>
 
@@ -161,11 +161,11 @@ const User: NextPage = () => {
                   columns={{ xs: 1, sm: 2, md: 3, lg: 3 , xl: 4  }}
                   sx={{ mb: "24px" }}
                 >
-                  {Array(10).fill(
-                    <Grid item xs={1}>
+                  {Array(10).map((_, i) => (
+                    <Grid item xs={1} key={i}>
                       <LoadingCard />
                     </Grid>
-                  )}
+                  ))}
                 </Grid>
               ) :
                 <TokenList

@@ -34,6 +34,51 @@ import HideImageIcon from '@mui/icons-material/HideImage';
 // UI needed: 
 //    c) NFT info
 
+const textSx = {
+  mb: 0,
+  fontSize: '16px',
+  lineHeight: 1.25
+}
+
+const boldTextSx = {
+  mb: 0,
+  fontSize: '16px',
+  lineHeight: 1.25,
+  fontWeight: 700
+}
+
+interface JsonObject {
+  [key: string]: any;
+}
+
+const flattenJSON = (jsonData: JsonObject): JsonObject => {
+  const _flattenJSON = (obj: JsonObject = {}, res: JsonObject = {}): JsonObject => {
+    Object.keys(obj).forEach((key) => {
+      if (typeof obj[key] !== 'object') {
+        res[key] = obj[key];
+      } else {
+        _flattenJSON(obj[key], res);
+      }
+    });
+    return res;
+  };
+  return _flattenJSON(jsonData);
+};
+
+const parseDescription = (description: string) => {
+  try {
+    return flattenJSON(JSON.parse(description));
+  } catch (e) {
+    try {
+      // parse error some descriptions have unicode escape characters as the first character
+      return flattenJSON(JSON.parse(description.slice(1)));
+    } catch (e) {
+      // description is a string
+      return { Description: description ? description : '' };
+    }
+  }
+};
+
 const MintSaleInfo: FC<{
   tokenId: string;
 }> = (props) => {
@@ -112,7 +157,7 @@ const MintSaleInfo: FC<{
   }, [selected.toString()])
 
   const [loading, setLoading] = useState(true)
-  const [tokenDetails, setTokenDetails] = useState<IToken>({
+  const [tokenDetails, setTokenDetails] = useState<any>({
     name: '',
     token: '',
     id: ''
@@ -121,8 +166,13 @@ const MintSaleInfo: FC<{
   const fetchData = async (id: string) => {
     setLoading(true)
     const fetchedInfo = await getTokenData(id);
-    setTokenDetails(fetchedInfo)
+    const formattedInfo = {
+      ...fetchedInfo,
+      r5: fetchedInfo.r5 ? parseDescription(fetchedInfo.r5) : {}
+    }
+    setTokenDetails(formattedInfo)
     setLoading(false)
+    console.log(formattedInfo)
   }
 
   // CHANGE THIS
@@ -228,44 +278,90 @@ const MintSaleInfo: FC<{
             <CardContent sx={{ pb: '8px!important' }}>
               <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
                 <Grid item>
-                  <Typography variant="h6">
+                  <Typography sx={boldTextSx}>
                     Collection:
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Link href={apiCallFromAddress.collectionUrl}>
-                    {apiCallFromAddress.collectionTitle}
-                  </Link>
+                  <Typography color="text.secondary" sx={textSx}>
+                    <Link href={apiCallFromAddress.collectionUrl}>
+                      {apiCallFromAddress.collectionTitle}
+                    </Link>
+                  </Typography>
                 </Grid>
               </Grid>
               <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
                 <Grid item>
-                  <Typography variant="h6">
+                  <Typography sx={boldTextSx}>
                     Artist:
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Link href={'/users/' + apiCallFromAddress.artistAddress}>
-                    {apiCallFromAddress.artistName}
-                  </Link>
+                  <Typography color="text.secondary" sx={textSx}>
+                    <Link href={'/users/' + apiCallFromAddress.artistAddress}>
+                      {apiCallFromAddress.artistName}
+                    </Link>
+                  </Typography>
                 </Grid>
               </Grid>
               {apiGetSaleById.endTime && (
-                <Grid container justifyContent="space-between">
+                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
                   <Grid item>
-                    <Typography variant="h6">
+                    <Typography sx={boldTextSx}>
                       Sale End:
                     </Typography>
                   </Grid>
                   <Grid item>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    <Typography color="text.secondary" sx={textSx}>
                       {dayjs(apiGetSaleById.endTime).toString()}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
+              {tokenDetails.name && (
+                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Grid item>
+                    <Typography sx={boldTextSx}>
+                      Token Name:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography color="text.secondary" sx={textSx}>
+                      {tokenDetails.name}
                     </Typography>
                   </Grid>
                 </Grid>
               )}
             </CardContent>
           </Card>
+
+          {tokenDetails.r5 && (
+            <Card sx={{ mb: 2 }}>
+              <CardContent sx={{ pb: '8px!important' }}>
+                <Typography variant="h5">
+                  Token Metadata
+                </Typography>
+                {Object.keys(tokenDetails.r5)
+                  .filter((key) => !key.match(/^[0-9]+$/))
+                  .map((key, i) => (
+                    <Grid container justifyContent="space-between" key={i} sx={{ mb: 1 }}>
+                      <Grid item>
+                        <Typography sx={boldTextSx}>
+                          {key.charAt(0).toUpperCase() + key.slice(1)}:
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Typography color="text.secondary" sx={textSx}>
+                          {tokenDetails.r5[key]}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  ))
+                }
+              </CardContent>
+            </Card>
+          )}
+
           {apiGetSaleById !== undefined && apiGetSaleById.packs.length > 1 && (
             <>
               <Paper sx={{ mb: 2, p: 2 }}>

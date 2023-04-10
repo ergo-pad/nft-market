@@ -121,11 +121,11 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
         sx={{ mb: "24px" }}
       >
         {loading || localLoading ? (
-          Array(loadingAmount ? loadingAmount : 12).fill(
-            <Grid item xs={1}>
+          Array(loadingAmount ? loadingAmount : 12).map((_, i) => (
+            <Grid item xs={1} key={i}>
               <LoadingCard />
             </Grid>
-          )
+          ))
         ) : (
           displayedData.length > 0 ? displayedData.map((item: any, i: number) => {
             return (

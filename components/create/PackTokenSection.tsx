@@ -69,7 +69,7 @@ const PackTokenSection: FC<IPackTokenSectionProps> = ({ data, setData, rarityDat
       <Collapse in={packToggle}>
         <TransitionGroup>
           {data.map((item, i) => (
-            <Collapse key={item.id}>
+            <Collapse key={i}>
               <PackTokenItem data={data} setData={setData} rarityData={rarityData} index={i} />
             </Collapse>
           ))}
