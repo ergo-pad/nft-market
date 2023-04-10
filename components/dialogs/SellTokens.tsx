@@ -284,7 +284,7 @@ const SellTokens: FC<ISellTokensProps> = ({ open, setOpen, tokens }) => {
           <>
             {tokens.map((item, i) => {
               return (
-                <>
+                <React.Fragment key={i}>
                   <Grid2
                     container
                     direction="row"
@@ -294,7 +294,6 @@ const SellTokens: FC<ISellTokensProps> = ({ open, setOpen, tokens }) => {
                     sx={{
                       mb: '6px',
                     }}
-                    key={i}
                   >
                     <Grid2 xs="auto">
                       <Avatar
@@ -378,7 +377,7 @@ const SellTokens: FC<ISellTokensProps> = ({ open, setOpen, tokens }) => {
                       </FormControl>
                     </Grid2>
                   </Grid2>
-                </>
+                </React.Fragment>
               )
             })}
           </>

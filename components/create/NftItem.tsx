@@ -296,7 +296,7 @@ const NftItem: FC<INftItemProps> = (
             {thisNft.traits && thisNft.traits[0].key !== '' ? (
               thisNft.traits.map((item, i) => {
                 return (
-                  <Grid item key={item.id} xs={6}>
+                  <Grid item key={i} xs={6}>
                     <TextField
                       fullWidth
                       variant="filled"

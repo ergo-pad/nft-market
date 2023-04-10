@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { getArtist } from './get-artist';
 
 export interface IAssetList {
   assets: IToken[],
@@ -36,9 +35,10 @@ export interface IToken {
   ext?: string;
   token: string;
   id: string;
-  amount: number;
-  amountUSD: number;
+  amount?: number;
+  amountUSD?: number;
   bx?: { address: string; txId: string | undefined; outputTransactionId: string; }
+  type?: string;
 }
 
 const reduceBalances = (balances: IBalances) => {
@@ -169,7 +169,10 @@ export function resolveIpfs(url: string) {
   else return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
 }
 
-export async function getWalletData(addresses: string[]): Promise<IAssetList | undefined> {
+export async function getWalletData(addresses: string[]): Promise<IAssetList> {
+  let newAssetList: any[] = [];
+  let newImgNftList: any[] = [];
+  let newAudNftList: any[] = [];
   const balances = await axios
     .post(`${process.env.ERGOPAD_API}/asset/balances/`, {
       addresses: addresses,
@@ -189,10 +192,6 @@ export async function getWalletData(addresses: string[]): Promise<IAssetList | u
   if (balance) {
     // create list of assets
     const initialAssetList = assetListArray(balance);
-
-    const newImgNftList: any[] = [];
-    const newAudNftList: any[] = [];
-    const newAssetList = [];
 
     /**
      * Collect promises from ergoplatform and resolve them asynchronously
@@ -268,13 +267,76 @@ export async function getWalletData(addresses: string[]): Promise<IAssetList | u
         }
       }
     });
-
-    return {
-      assets: newAssetList,
-      audioNfts: newAudNftList,
-      imgNfts: newImgNftList
-    }
+  }
+  return {
+    assets: newAssetList,
+    audioNfts: newAudNftList,
+    imgNfts: newImgNftList
   }
 }
 
+export async function getTokenData(tokenId: string) {
+  let tokenObject: IToken = {
+    name: '',
+    token: '',
+    id: ''
+  }
+  const promise = getIssuingBoxPromise(tokenId)
+  const resolvedPromise = await Promise.all([promise])
+  resolvedPromise.forEach((res) => {
+    if (res?.data) {
+      const data = resolvedPromise[0].data
+      setIssuingBox(data[0].assets[0].tokenId, resolvedPromise[0]);
+      tokenObject = {
+        name: data[0].assets[0].name,
+        ch: data[0].creationHeight,
+        r7: data[0].additionalRegisters.R7,
+        r9: data[0].additionalRegisters?.R9
+          ? resolveIpfs(toUtf8String(data[0].additionalRegisters?.R9).substring(2))
+          : undefined,
+        r5: toUtf8String(data[0].additionalRegisters.R5).substring(2),
+        ext: toUtf8String(data[0].additionalRegisters.R9)
+          .substring(2)
+          .slice(-4),
+        token: data[0].token,
+        id: data[0].id,
+        type: ''
+      };
 
+      // if audio NFT
+      if (
+        tokenObject.ext == '.mp3' ||
+        tokenObject.ext == '.ogg' ||
+        tokenObject.ext == '.wma' ||
+        tokenObject.ext == '.wav' ||
+        tokenObject.ext == '.aac' ||
+        tokenObject.ext == 'aiff' ||
+        tokenObject.r7 == '0e020102'
+      ) {
+        tokenObject = {
+          ...tokenObject,
+          type: 'Audio NFT'
+        }
+      }
+      // if image NFT
+      else if (
+        tokenObject.ext == '.png' ||
+        tokenObject.ext == '.gif' ||
+        tokenObject.ext == '.jpg' ||
+        tokenObject.ext == 'jpeg' ||
+        tokenObject.ext == '.bmp' ||
+        tokenObject.ext == '.svg' ||
+        tokenObject.ext == '.raf' ||
+        tokenObject.ext == '.nef' ||
+        tokenObject.r7 == '0e020101' ||
+        tokenObject.r7 == '0e0430313031'
+      ) {
+        tokenObject = {
+          ...tokenObject,
+          type: 'Image NFT'
+        }
+      }
+    }
+  })
+  return tokenObject
+}

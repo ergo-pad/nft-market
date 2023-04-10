@@ -54,46 +54,44 @@ const DappWallet: FC<{
               overflowY: "auto",
             }}
           >
-            {props.dAppWallet.addresses.map((address: string, i: number) => {
+            {props.dAppWallet.name !== undefined && props.dAppWallet.addresses.map((address: string, i: number) => {
               return (
-                props.dAppWallet.name !== undefined && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: 'space-between',
-                      alignItems: "center",
-                      // width: "100%",
-                      fontSize: ".7rem",
-                      pl: ".5rem",
-                      mt: ".5rem",
-                      pb: ".5rem",
-                      borderBottom: i === props.dAppWallet.addresses.length - 1 ? 0 : "1px solid",
-                      borderBottomColor: theme.palette.background.default,
-                    }}
-                    key={i}
-                  >
-                    <Box sx={{
-                      maxWidth: '60vw',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}>
-                      {address}
-                    </Box>
-                    <Box>
-                      <Button
-                        sx={{ ml: "auto", mr: ".5rem" }}
-                        variant="contained"
-                        color={props.wallet === address ? "success" : "primary"}
-                        size="small"
-                        onClick={() => props.changeWallet(address)}
-                      >
-                        {props.wallet === address ? "Active" : "Choose"}
-                      </Button>
-                    </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: 'space-between',
+                    alignItems: "center",
+                    // width: "100%",
+                    fontSize: ".7rem",
+                    pl: ".5rem",
+                    mt: ".5rem",
+                    pb: ".5rem",
+                    borderBottom: i === props.dAppWallet.addresses.length - 1 ? 0 : "1px solid",
+                    borderBottomColor: theme.palette.background.default,
+                  }}
+                  key={i}
+                >
+                  <Box sx={{
+                    maxWidth: '60vw',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {address}
                   </Box>
-                )
-              );
+                  <Box>
+                    <Button
+                      sx={{ ml: "auto", mr: ".5rem" }}
+                      variant="contained"
+                      color={props.wallet === address ? "success" : "primary"}
+                      size="small"
+                      onClick={() => props.changeWallet(address)}
+                    >
+                      {props.wallet === address ? "Active" : "Choose"}
+                    </Button>
+                  </Box>
+                </Box>
+              )
             })}
           </Box>
         </>
