@@ -47,7 +47,7 @@ const CollectionSort: FC<ICollectionSortProps> = ({ sx, sortModel, setSortModel 
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
-        <MenuItem value={"rank-asc"}>Rank: highest first</MenuItem>
+        <MenuItem value={"rank-asc"}>Rank: best first</MenuItem>
         <MenuItem value={"rank-desc"}>Rank: lowest first</MenuItem>
         <MenuItem value={"floorPrice-asc"}>Floor Price: low to high</MenuItem>
         <MenuItem value={"floorPrice-desc"}>Floor Price: high to low</MenuItem>

@@ -9,15 +9,17 @@ import {
   useTheme,
   Skeleton
 } from '@mui/material'
-import dynamic from 'next/dynamic'
 import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
-import Image from 'next/image';
 import Link from '@components/Link';
 import { useRouter } from 'next/router'
 import { styled } from '@mui/material/styles';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import useResizeObserver from "use-resize-observer";
 import { getArtist } from '@utils/get-artist';
+import AudiotrackIcon from "@mui/icons-material/Audiotrack";
+import HideImageIcon from '@mui/icons-material/HideImage';
+
+// import dynamic from 'next/dynamic'
 // const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
 //   ssr: false,
 // });
@@ -35,6 +37,7 @@ export interface INftItem {
   collection?: string;
   collectionLink?: string;
   explicit?: boolean;
+  type?: string;
 }
 
 interface INftCard {
@@ -143,12 +146,36 @@ const NftCard: FC<INftCard> = ({
             borderBottomWidth: '1px',
             borderBottomStyle: 'solid',
             borderBottomColor: theme.palette.divider,
-            backgroundImage: `url(${nftData.imgUrl ? nftData.imgUrl : `/images/placeholder/${rand}.jpg`})`,
+            backgroundImage: nftData.imgUrl ? `url(${nftData.imgUrl})` : '',
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center center",
             transition: 'height 70ms linear'
           }}>
+            {nftData.type === 'Audio NFT' && (
+              <AudiotrackIcon
+                sx={{
+                  position: 'absolute',
+                  color: theme.palette.divider,
+                  fontSize: '8rem',
+                  top: '42%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)'
+                }}
+              />
+            )}
+            {nftData.imgUrl === undefined && nftData.type != 'Audio NFT' && (
+              <HideImageIcon
+              sx={{
+                position: 'absolute',
+                color: theme.palette.divider,
+                fontSize: '5rem',
+                top: '42%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)'
+              }}
+            />
+            )}
           </Box>
           {nftData.price && setSelected === undefined && (
             <Box

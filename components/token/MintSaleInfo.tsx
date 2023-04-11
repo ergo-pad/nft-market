@@ -21,6 +21,7 @@ import PackTokenSelector from '@components/token/PackTokenSelector';
 import { formatNumber } from '@utils/general';
 import { getTokenData, IToken } from '@utils/assets';
 import HideImageIcon from '@mui/icons-material/HideImage';
+import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 
 // Packs or no packs? 
 //    a) If packs, are there more than one pack type? 
@@ -226,7 +227,7 @@ const MintSaleInfo: FC<{
               </Box>
               :
               <>
-                {tokenDetails.r9 ?
+                {tokenDetails.r9 && tokenDetails.type === 'Image NFT' ?
                   <img
                     src={tokenDetails.r9}
                     height='100%'
@@ -245,16 +246,29 @@ const MintSaleInfo: FC<{
                       borderRadius: '8px'
                     }}
                   >
-                    <HideImageIcon
-                      sx={{
-                        position: 'absolute',
-                        color: theme.palette.divider,
-                        fontSize: '12rem',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)'
-                      }}
-                    />
+                    {tokenDetails.type === 'Audio NFT' ? (
+                      <AudiotrackIcon
+                        sx={{
+                          position: 'absolute',
+                          color: theme.palette.divider,
+                          fontSize: '12rem',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)'
+                        }}
+                      />
+                    ) : (
+                      <HideImageIcon
+                        sx={{
+                          position: 'absolute',
+                          color: theme.palette.divider,
+                          fontSize: '12rem',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)'
+                        }}
+                      />
+                    )}
                   </Box>
                 }
               </>
@@ -328,6 +342,20 @@ const MintSaleInfo: FC<{
                   <Grid item>
                     <Typography color="text.secondary" sx={textSx}>
                       {tokenDetails.name}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
+              {tokenDetails.type && (
+                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Grid item>
+                    <Typography sx={boldTextSx}>
+                      Token Type:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography color="text.secondary" sx={textSx}>
+                      {tokenDetails.type}
                     </Typography>
                   </Grid>
                 </Grid>
