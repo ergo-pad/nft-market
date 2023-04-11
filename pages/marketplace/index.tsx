@@ -28,16 +28,16 @@ import TokenList from '@components/TokenList';
 // ]
 
 const Sales: NextPage = () => {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 1500);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setLoading(false)
+  //   }, 1500);
 
-    // Clean up the timer on unmount
-    return () => clearTimeout(timer);
-  }, [])
+  //   // Clean up the timer on unmount
+  //   return () => clearTimeout(timer);
+  // }, [])
 
   // USE THIS FOR API CALL TO KNOW THE NUMBER OF NFT CARDS TO FETCH
   // CAN BE CHANGED IN <TokenList>

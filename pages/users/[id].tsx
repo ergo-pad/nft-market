@@ -18,6 +18,7 @@ import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import TokenList from "@components/TokenList";
 import { getWalletData } from "@utils/assets";
 import LoadingCard from '@components/LoadingCard'
+import { WalletContext } from "@contexts/WalletContext";
 
 const user = {
   address: "",
@@ -37,20 +38,37 @@ const User: NextPage = () => {
   const theme = useTheme();
   const router = useRouter();
   const apiContext = useContext<IApiContext>(ApiContext);
-  const { id } = router.query;
+  const { id, tab } = router.query;
   const [imgNfts, setImgNfts] = useState<any[]>([])
   const [audioNfts, setAudioNfts] = useState<any[]>([])
   const [userProfile, setUserProfile] = useState(user);
-  const [tabValue, setTabValue] = React.useState("on-sale");
+  const [tabValue, setTabValue] = React.useState('');
+  const [loading, setLoading] = useState(true)
+  const [loadingProfile, setLoadingProfile] = useState(true)
+  const {
+    walletAddress,
+    dAppWallet,
+  } = useContext(WalletContext);
+  const [aggData, setAggData] = useState<any[]>([])
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    const path = router.asPath.split("?")[0];
+    router.push(path + `?tab=${newValue}`);
     setTabValue(newValue);
   };
 
-  const [loading, setLoading] = useState(true)
-  const [loadingProfile, setLoadingProfile] = useState(true)
+  useEffect(() => {
+    if (tab) {
+      setTabValue(tab.toString());
+    }
+    else if (router.isReady) setTabValue('on-sale')
+  }, [router.isReady, router.query.tab]);
+
+  useEffect(() => {
+    setAggData([...imgNfts, ...audioNfts])
+  }, [audioNfts, imgNfts])
 
   const fetchData = async (id: string) => {
-    setLoading(true)
     const mappedNfts = await getWalletData([id]);
     const imgNfts = mappedNfts.imgNfts.map((item, i) => {
       return (
@@ -98,6 +116,41 @@ const User: NextPage = () => {
     setLoading(false)
   }
 
+  // const vestedTokensNFTResponse = await axios
+  //   .post(
+  //     `${process.env.API_URL}/vesting/v2/`,
+  //     { addresses: [...addresses] },
+  //     { ...defaultOptions }
+  //   )
+  //   .catch((e) => {
+  //     console.log('ERROR FETCHING', e);
+  //     return {
+  //       data: [],
+  //     };
+  //   });
+  // setVestedTokensNFT(vestedTokensNFTResponse.data);
+
+  const getVestedTokens = async (id: string) => {
+    let addressArray = []
+    if (id) {
+      addressArray = [id.toString()]
+      if (dAppWallet.addresses.length > 0) {
+        if (dAppWallet.addresses.includes(id.toString())) addressArray = [dAppWallet.addresses]
+      }
+      try {
+        const res = await apiContext.api.post(
+          `/vesting/v2/`,
+          { addresses: addressArray },
+          process.env.ERGOPAD_API
+        );
+        console.log(res.data)
+      } catch (e: any) {
+        console.log(e)
+        apiContext.api.error(e);
+      }
+    }
+  };
+
   useEffect(() => {
     const getUserProfile = async () => {
       setLoadingProfile(true)
@@ -105,6 +158,7 @@ const User: NextPage = () => {
         const res = await apiContext.api.get(`/user/${id}`);
         setUserProfile(res.data);
       } catch (e: any) {
+        console.log(e)
         apiContext.api.error(e);
       }
       setLoadingProfile(false)
@@ -112,6 +166,7 @@ const User: NextPage = () => {
     if (id) {
       getUserProfile();
       fetchData(id.toString())
+      getVestedTokens(id.toString())
     }
   }, [id]);
 
@@ -160,8 +215,8 @@ const User: NextPage = () => {
           {/* ON SALE TAB */}
           <Fade
             in={tabValue == "on-sale"}
-            unmountOnExit
             mountOnEnter
+            unmountOnExit
           >
             <TabPanel value="on-sale" sx={customTabPanelSx}>
               <TokenList
@@ -174,36 +229,25 @@ const User: NextPage = () => {
           {/* OWNED TAB */}
           <Fade
             in={tabValue == "owned"}
+            mountOnEnter
+            unmountOnExit
           >
             <TabPanel value="owned" sx={customTabPanelSx}>
-              {loading ? (
-                <Grid
-                  container
-                  spacing={2}
-                  columns={{ xs: 1, sm: 2, md: 3, lg: 3 , xl: 4  }}
-                  sx={{ mb: "24px" }}
-                >
-                  {Array(10).map((_, i) => (
-                    <Grid item xs={1} key={i}>
-                      <LoadingCard />
-                    </Grid>
-                  ))}
-                </Grid>
-              ) :
-                <TokenList
-                  // loading={loading}
-                  // loadingAmount={10}
-                  nftListArray={[...imgNfts, ...audioNfts]}
-                  setDisplayNumber={setNumberNftsShowing}
-                  notFullWidth
-                />}
+              <TokenList
+                loading={loading}
+                setLoading={setLoading}
+                loadingAmount={10}
+                nftListArray={aggData}
+                setDisplayNumber={setNumberNftsShowing}
+                notFullWidth
+              />
             </TabPanel>
           </Fade>
           {/* ACTIVITY TAB */}
           <Fade
-            unmountOnExit
-            mountOnEnter
             in={tabValue == "activity"}
+            mountOnEnter
+            unmountOnExit
           >
             <TabPanel value="activity" sx={customTabPanelSx}>
               <Typography sx={{ mb: "24px" }}>Past sales activity</Typography>

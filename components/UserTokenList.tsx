@@ -1,4 +1,4 @@
-import React, { FC, useState, useMemo, useEffect } from 'react';
+import React, { FC, useState, useMemo, useEffect, useContext } from 'react';
 import {
   Grid,
   Button,
@@ -18,25 +18,35 @@ import SearchBar from '@components/SearchBar'
 import SortBy from '@components/SortBy'
 import LoadingCard from '@components/LoadingCard'
 import { filterInit, IFilters } from '@components/FilterOptions';
+import { recentNfts } from "@components/placeholders/recentNfts";
+import UserProfile from "@components/UserProfile";
+import { useRouter } from "next/router";
+import { ApiContext, IApiContext } from "@contexts/ApiContext";
+import { getWalletData } from "@utils/assets";
+import { WalletContext } from "@contexts/WalletContext";
 
 export interface ITokenListProps {
-  nftListArray: INftItem[];
+  userId: string;
   setDisplayNumber: React.Dispatch<React.SetStateAction<number>>;
   notFullWidth?: boolean;
-  loading?: boolean;
-  setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-  loadingAmount?: number;
 }
 
-const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFullWidth, loading, setLoading, loadingAmount }) => {
+const TokenList: FC<ITokenListProps> = ({ userId, setDisplayNumber, notFullWidth }) => {
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
-  const [rawData, setRawData] = useState(nftListArray)
-  const [filteredData, setFilteredData] = useState(nftListArray)
-  const [sortedData, setSortedData] = useState(nftListArray)
-  const [searchedData, setSearchedData] = useState(nftListArray)
+  const [rawData, setRawData] = useState<any[]>([])
+  const [filteredData, setFilteredData] = useState(rawData)
+  const [sortedData, setSortedData] = useState(rawData)
+  const [searchedData, setSearchedData] = useState(rawData)
   const [mixedData, setMixedData] = useState(rawData)
-  const [displayedData, setDisplayedData] = useState<INftItem[]>(nftListArray) // data after search, sort, and filter
-  const [localLoading, setLocalLoading] = useState(true)
+  const [displayedData, setDisplayedData] = useState<INftItem[]>([]) // data after search, sort, and filter
+  const [imgNfts, setImgNfts] = useState<any[]>([])
+  const [audioNfts, setAudioNfts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const {
+    walletAddress,
+    dAppWallet,
+  } = useContext(WalletContext);
+  const apiContext = useContext<IApiContext>(ApiContext);
 
   useEffect(() => {
     setMixedData(filteredData.filter(o1 => searchedData.some(o2 => o1.tokenId === o2.tokenId)))
@@ -47,13 +57,12 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
   }, [sortedData]);
 
   useEffect(() => {
-    setRawData(nftListArray)
-    setDisplayedData(nftListArray)
-    setFilteredData(nftListArray)
-    setSortedData(nftListArray)
-    setSearchedData(nftListArray)
-    if (!loading) setLocalLoading(false)
-  }, [nftListArray])
+    setRawData([...imgNfts, ...audioNfts])
+    setFilteredData([...imgNfts, ...audioNfts])
+    setSearchedData([...imgNfts, ...audioNfts])
+    setSortedData([...imgNfts, ...audioNfts])
+    setLoading(false)
+  }, [imgNfts, audioNfts])
 
   const displayMore = () => {
     setDisplayNumber((prev: number) => prev + 12)
@@ -69,6 +78,79 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
 
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up("sm"))
+
+  const fetchData = async (id: string) => {
+    setLoading(true)
+    const mappedNfts = await getWalletData([id]);
+    const imgNfts = mappedNfts.imgNfts.map((item, i) => {
+      return (
+        {
+          imgUrl: item.r9,
+          link: '/marketplace/' + item.id,
+          name: item.name,
+          tokenId: item.id,
+          qty: 1,
+          // price: 1,
+          // currency: '',
+          // rarity: '',
+          // saleType: 'mint' | 'auction' | 'sale',
+          collection: '',
+          collectionLink: '',
+          artist: '',
+          artistLink: '',
+          bx: item.bx
+        }
+      )
+    })
+    const audioNfts = mappedNfts.audioNfts.map((item, i) => {
+      return (
+        {
+          imgUrl: item.r9,
+          link: '/marketplace/' + item.id,
+          name: item.name,
+          tokenId: item.id,
+          qty: 1,
+          // price: 1,
+          // currency: '',
+          // rarity: '',
+          // saleType: 'mint' | 'auction' | 'sale',
+          collection: '',
+          collectionLink: '',
+          artist: '',
+          artistLink: '',
+          bx: item.bx,
+          type: item.type
+        }
+      )
+    })
+    setImgNfts(imgNfts)
+    setAudioNfts(audioNfts)
+  }
+
+  const getVestedTokens = async (id: string) => {
+    let addressArray = []
+    if (id) {
+      addressArray = [id]
+      if (dAppWallet.addresses.length > 0) {
+        if (dAppWallet.addresses.includes(id)) addressArray = dAppWallet.addresses
+      }
+      try {
+        const res = await apiContext.api.post(
+          `/vesting/v2/`,
+          { addresses: addressArray },
+          process.env.ERGOPAD_API
+        );
+        console.log(res.data)
+      } catch (e: any) {
+        apiContext.api.error(e);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchData(userId)
+    getVestedTokens(userId)
+  }, [userId])
 
   return (
     <>
@@ -124,8 +206,8 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
         columns={{ xs: 1, sm: 2, md: 3, lg: notFullWidth ? 3 : 4, xl: notFullWidth ? 4 : 5 }}
         sx={{ mb: "24px" }}
       >
-        {loading || localLoading ? (
-          Array(loadingAmount ? loadingAmount : 12).fill(
+        {loading ? (
+          Array(10).fill(
             <Grid item xs={1}>
               <LoadingCard />
             </Grid>

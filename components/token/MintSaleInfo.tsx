@@ -32,9 +32,6 @@ import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 //        - No "Open right away" displayed
 //    c) No packs, its an NFT: display NFT image as featured image. Give token properties as well
 
-// UI needed: 
-//    c) NFT info
-
 const textSx = {
   mb: 0,
   fontSize: '16px',
@@ -97,7 +94,7 @@ const MintSaleInfo: FC<{
     price: 0,
     currency: 'Erg',
   })
-  const [featuredImage, setFeaturedImage] = useState('/images/cube2.png')
+  const [featuredImage, setFeaturedImage] = useState('')
 
   const [apiGetSaleById, setApiGetSaleById] = useState(apiGetSaleByIdNoPack)
 
@@ -227,7 +224,19 @@ const MintSaleInfo: FC<{
               </Box>
               :
               <>
-                {tokenDetails.r9 && tokenDetails.type === 'Image NFT' ?
+                {featuredImage ? (
+                  <>
+                    <img
+                    src={featuredImage}
+                    height='100%'
+                    width='100%'
+                    style={{
+                      borderRadius: '8px',
+                    }}
+                    alt="cube"
+                  />
+                  </>
+                ) : tokenDetails.r9 && tokenDetails.type === 'Image NFT' ?
                   <img
                     src={tokenDetails.r9}
                     height='100%'
