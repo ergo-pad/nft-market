@@ -81,10 +81,10 @@ const Home: NextPage = () => {
                 }}
               >
                 <Typography variant="h1">
-                  Decentra&shy;lized Utility Driven NFTs
+                  Utility-Driven Token Marketplace
                 </Typography>
                 <Typography variant="body2" sx={{ mb: '32px' }}>
-                  Browse current live sales of curated Ergo token collections through our sales portal
+                  We focus on more than just art. Browse utility tokens, game tokens, audio NFTs, and more.
                 </Typography>
                 <Button href="/marketplace" variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mb: '24px' }}>
                   Explore Marketplace
@@ -313,8 +313,6 @@ const Home: NextPage = () => {
                       </Button>
                     </Grid>
                   </Grid>
-
-
                 </CardContent>
               </Card>
             </Box>
@@ -322,19 +320,30 @@ const Home: NextPage = () => {
         </Grid>
       </Container >
 
-
-      {/* PARTNER LOGOS */}
-      <CardSlider uniqueId="partners" addMargin={24} noButton>
-        <Image
-          src="/images/logos.png"
-          width={1404}
-          height={51}
-          layout="fixed"
-          draggable="false"
-          alt="logo"
-        />
-      </CardSlider>
-      <Box sx={{ mb: '100px' }}></Box>
+      <Container sx={{ mb: '100px' }}>
+        {/* PARTNER LOGOS */}
+        <Typography variant="h2" sx={{mb: 6}}>Our Partners </Typography>
+        <Box sx={{ width: '280px', display: { xs: 'block', md: 'inline-block' }, verticalAlign: 'middle', m: { xs: '0 auto 24px', md: '0 0 24px 60px' } }}>
+          <Link href="https://ergopad.io">
+            <Image layout="responsive" src="/images/partner-logos/ergopad.png" alt="Ergopad" height={287} width={1357} />
+          </Link>
+        </Box>
+        <Box sx={{ width: '248px', display: { xs: 'block', md: 'inline-block' }, verticalAlign: 'middle', m: { xs: '0 auto 24px', md: '0 0 24px 60px' } }}>
+          <Link href="https://ergoplatform.org/en/community/#Foundation">
+            <Image layout="responsive" src="/images/partner-logos/ergo-foundation.png" alt="Ergo Foundation" height={248} width={934} />
+          </Link>
+        </Box>
+        <Box sx={{ width: '220px', display: { xs: 'block', md: 'inline-block' }, verticalAlign: 'middle', m: { xs: '0 auto 24px', md: '0 0 24px 60px' } }}>
+          <Link href="https://paideia.im">
+            <Image layout="responsive" src="/images/partner-logos/paideia.png" alt="Paideia" height={184} width={662} />
+          </Link>
+        </Box>
+        <Box sx={{ width: '340px', display: { xs: 'block', md: 'inline-block' }, verticalAlign: 'middle', m: { xs: '0 auto 24px', md: '0 0 24px 60px' } }}>
+          <Link href="https://saturnlabs.org/">
+            <Image layout="responsive" src="/images/partner-logos/saturnlabs.png" alt="Saturn Labs" height={84} width={717} />
+          </Link>
+        </Box>
+      </Container>
 
 
       {/* ABOUT SECTION */}
@@ -450,7 +459,7 @@ const Home: NextPage = () => {
           columnSpacing={5}
           sx={{ mb: '100px' }}
         >
-          
+
           <Grid
             item
             md={6}

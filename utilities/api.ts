@@ -12,18 +12,18 @@ import axios from "axios";
  * AppApi Impl
  */
 export default class AppApi {
-  setAlert: (val: IAlertMessages[]) => void = () => {};
+  setAlert: (val: IAlertMessages[]) => void = () => { };
 
   constructor(setAlert: (val: IAlertMessages[]) => void) {
     this.setAlert = setAlert;
   }
 
-  get = (url: string, apiUrl?: string) => {
-    return axios.get((apiUrl ? apiUrl : process.env.API_URL) + url);
+  get = (url: string, data?: any, apiUrl?: string) => {
+    return axios.get((apiUrl ? apiUrl : process.env.API_URL) + url, data);
   };
 
-  post = (url: string, data: any) => {
-    return axios.post(process.env.API_URL + url, data);
+  post = (url: string, data: any, apiUrl?: string) => {
+    return axios.post((apiUrl ? apiUrl : process.env.API_URL) + url, data);
   };
 
   alert = (message: string, severity: ValidAlert) => {
@@ -39,15 +39,17 @@ export default class AppApi {
   };
 
   error = (e: any) => {
-    console.log("func:api_error:", e);
+    console.log(e);
     const message =
       typeof e === "string"
         ? e
-        : e?.response
-        ? e.response.status === 401
-          ? e.response.data.detail
-          : e.response.data
-        : "Oops :( Some unknown error may have occurred";
+        : e?.message
+          ? e?.message
+          : e.response.status === 401
+            ? "Error " + e.response.status + ': ' + e.response.statusText
+            : e.response.data
+              ? e.response.data
+              : "Oops :( Some unknown error may have occurred";
     if (this !== undefined)
       this.alert(
         typeof message === "string" ? message : JSON.stringify(message),
