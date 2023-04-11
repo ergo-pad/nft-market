@@ -246,7 +246,10 @@ export async function getWalletData(addresses: string[]): Promise<IAssetList> {
           tokenObject.ext == 'aiff' ||
           tokenObject.r7 == '0e020102'
         ) {
-          newAudNftList[newAudNftList.length] = tokenObject;
+          newAudNftList[newAudNftList.length] = {
+            ...tokenObject,
+            type: 'Audio NFT'
+          };
         }
         // if image NFT
         else if (
@@ -261,7 +264,10 @@ export async function getWalletData(addresses: string[]): Promise<IAssetList> {
           tokenObject.r7 == '0e020101' ||
           tokenObject.r7 == '0e0430313031'
         ) {
-          newImgNftList[newImgNftList.length] = tokenObject
+          newImgNftList[newImgNftList.length] = {
+            ...tokenObject,
+            type: 'Image NFT'
+          }
         } else {
           newAssetList[newAssetList.length] = tokenObject;
         }

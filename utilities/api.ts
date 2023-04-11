@@ -18,8 +18,8 @@ export default class AppApi {
     this.setAlert = setAlert;
   }
 
-  get = (url: string) => {
-    return axios.get(process.env.API_URL + url);
+  get = (url: string, apiUrl?: string) => {
+    return axios.get((apiUrl ? apiUrl : process.env.API_URL) + url);
   };
 
   post = (url: string, data: any) => {

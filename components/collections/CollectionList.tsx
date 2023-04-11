@@ -22,10 +22,23 @@ import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel } from '@mui/
 import Link from '@components/Link'
 import { formatNumber } from '@utils/general';
 
+export interface ICollectionRow {
+  rank: number;
+  collection: {
+    image: string;
+    name: string;
+    link: string;
+    sys_name: string;
+  }
+  floorPrice: number;
+  volume: number;
+  items: number;
+  owners: number;
+}
+
 export interface ICollectionListProps {
-  nftListArray: INftItem[];
   setDisplayNumber: React.Dispatch<React.SetStateAction<number>>;
-  notFullWidth?: boolean;
+  collectionRows: ICollectionRow[];
 }
 
 const priceFormatter = (value: number, currency: string) => {
@@ -33,49 +46,10 @@ const priceFormatter = (value: number, currency: string) => {
   return formattedNumber + ' ' + currency
 }
 
-const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumber, notFullWidth }) => {
+const CollectionList: FC<ICollectionListProps> = ({ setDisplayNumber, collectionRows }) => {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up("sm"))
   const [currency, setCurrency] = useState('Erg')
-
-  const rows = [
-    { rank: 1, collection: { image: '/images/collections/ergopad-logo.jpg', name: 'Wrath of Gods', link: '/wrath' }, floorPrice: 10, volume: 2103, items: 3000, owners: 1475 },
-    { rank: 2, collection: { image: '/images/character1.png', name: 'Cybercitizens', link: '/wrath' }, floorPrice: 0.00325, volume: 3256, items: 5000, owners: 5 },
-    { rank: 3, collection: { image: '/images/character2.png', name: 'Ergnomes', link: '/wrath' }, floorPrice: 0.21, volume: 234, items: 280, owners: 22 },
-    { rank: 4, collection: { image: '/images/character3.png', name: 'Inferno Black', link: '/wrath' }, floorPrice: 0.00012, volume: 666, items: 666, owners: 54 },
-    { rank: 5, collection: { image: '/images/character4.png', name: 'Space Farmers', link: '/wrath' }, floorPrice: 62, volume: 723, items: 15, owners: 888888 },
-    { rank: 6, collection: { image: '/images/cube1.png', name: 'WalrusDAO', link: '/wrath' }, floorPrice: 13, volume: 845, items: 873, owners: 7377 },
-    { rank: 7, collection: { image: '/images/cube2.png', name: 'Mutant Apes', link: '/wrath' }, floorPrice: 20, volume: 123, items: 653, owners: 26 },
-    { rank: 8, collection: { image: '/images/nft-cube.png', name: 'ErgoPixels', link: '/wrath' }, floorPrice: 70, volume: 66, items: 54, owners: 12 },
-    { rank: 9, collection: { image: '/images/nft1.png', name: 'Ergo Mummies', link: '/wrath' }, floorPrice: 45, volume: 2000, items: 100000, owners: 1475 },
-    { rank: 10, collection: { image: '/images/nft2.png', name: 'Aneta Angels', link: '/wrath' }, floorPrice: 12, volume: 1000, items: 5444, owners: 43 },
-    { rank: 11, collection: { image: '/images/paideia-circle-logo.png', name: 'Bitmasks', link: '/wrath' }, floorPrice: 450, volume: 1500, items: 2555555, owners: 70 },
-    { rank: 12, collection: { image: '/images/character1.png', name: 'Comet Degens', link: '/wrath' }, floorPrice: 28, volume: 16, items: 5252, owners: 7237 },
-    { rank: 13, collection: { image: '/images/collections/ergopad-logo.jpg', name: 'Wrath of Gods', link: '/wrath' }, floorPrice: 10, volume: 2103, items: 3000, owners: 1475 },
-    { rank: 14, collection: { image: '/images/character1.png', name: 'Cybercitizens', link: '/wrath' }, floorPrice: 15, volume: 3256, items: 5000, owners: 5 },
-    { rank: 15, collection: { image: '/images/character2.png', name: 'Ergnomes', link: '/wrath' }, floorPrice: 12, volume: 234, items: 280, owners: 22 },
-    { rank: 16, collection: { image: '/images/character3.png', name: 'Inferno Black', link: '/wrath' }, floorPrice: 100, volume: 666, items: 666, owners: 54 },
-    { rank: 17, collection: { image: '/images/character4.png', name: 'Space Farmers', link: '/wrath' }, floorPrice: 62, volume: 723, items: 15, owners: 88888888 },
-    { rank: 18, collection: { image: '/images/cube1.png', name: 'WalrusDAO', link: '/wrath' }, floorPrice: 13, volume: 845, items: 873, owners: 7377 },
-    { rank: 19, collection: { image: '/images/cube2.png', name: 'Mutant Apes', link: '/wrath' }, floorPrice: 20, volume: 123, items: 653, owners: 26 },
-    { rank: 20, collection: { image: '/images/nft-cube.png', name: 'ErgoPixels', link: '/wrath' }, floorPrice: 70, volume: 66, items: 54, owners: 12 },
-    { rank: 21, collection: { image: '/images/nft1.png', name: 'Ergo Mummies', link: '/wrath' }, floorPrice: 45, volume: 2000, items: 100000, owners: 1475 },
-    { rank: 22, collection: { image: '/images/nft2.png', name: 'Aneta Angels', link: '/wrath' }, floorPrice: 12, volume: 1000, items: 5444, owners: 43 },
-    { rank: 23, collection: { image: '/images/paideia-circle-logo.png', name: 'Bitmasks', link: '/wrath' }, floorPrice: 450, volume: 1500, items: 2555555, owners: 70 },
-    { rank: 24, collection: { image: '/images/character1.png', name: 'Comet Degens', link: '/wrath' }, floorPrice: 28, volume: 16, items: 5252, owners: 7237 },
-    { rank: 25, collection: { image: '/images/collections/ergopad-logo.jpg', name: 'Wrath of Gods', link: '/wrath' }, floorPrice: 10, volume: 2103, items: 3000, owners: 1475 },
-    { rank: 26, collection: { image: '/images/character1.png', name: 'Cybercitizens', link: '/wrath' }, floorPrice: 15, volume: 3256, items: 5000, owners: 5 },
-    { rank: 27, collection: { image: '/images/character2.png', name: 'Ergnomes', link: '/wrath' }, floorPrice: 12, volume: 234, items: 280, owners: 22 },
-    { rank: 28, collection: { image: '/images/character3.png', name: 'Inferno Black', link: '/wrath' }, floorPrice: 100, volume: 666, items: 666, owners: 54 },
-    { rank: 29, collection: { image: '/images/character4.png', name: 'Space Farmers', link: '/wrath' }, floorPrice: 62, volume: 723, items: 15, owners: 888888 },
-    { rank: 30, collection: { image: '/images/cube1.png', name: 'WalrusDAO', link: '/wrath' }, floorPrice: 13, volume: 845, items: 873, owners: 7377 },
-    { rank: 31, collection: { image: '/images/cube2.png', name: 'Mutant Apes', link: '/wrath' }, floorPrice: 20, volume: 123, items: 653, owners: 26 },
-    { rank: 32, collection: { image: '/images/nft-cube.png', name: 'ErgoPixels', link: '/wrath' }, floorPrice: 70, volume: 66, items: 54, owners: 12 },
-    { rank: 33, collection: { image: '/images/nft1.png', name: 'Ergo Mummies', link: '/wrath' }, floorPrice: 45, volume: 2000, items: 100000, owners: 1475 },
-    { rank: 34, collection: { image: '/images/nft2.png', name: 'Aneta Angels', link: '/wrath' }, floorPrice: 12, volume: 1000, items: 5444, owners: 43 },
-    { rank: 35, collection: { image: '/images/paideia-circle-logo.png', name: 'Bitmasks', link: '/wrath' }, floorPrice: 450, volume: 1500, items: 2555555, owners: 70 },
-    { rank: 36, collection: { image: '/images/character1.png', name: 'Comet Degens', link: '/wrath' }, floorPrice: 28, volume: 16, items: 5252, owners: 7237 },
-  ];
 
   const columns: GridColDef[] = [
     {
@@ -118,7 +92,7 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
     },
     {
       field: 'volume',
-      headerName: 'Volume',
+      headerName: '7 Day Volume',
       type: 'number',
       width: 140,
       valueFormatter: ({ value }) => {
@@ -156,12 +130,19 @@ const CollectionList: FC<ICollectionListProps> = ({ nftListArray, setDisplayNumb
     },
   ];
 
-  const [apiRows, setApiRows] = useState(rows) // use setApiRows when API call collects the data
+  const [apiRows, setApiRows] = useState(collectionRows) // use setApiRows when API call collects the data
   const [currentRows, setCurrentRows] = useState(apiRows) // use setCurrentRows to determine filtered data from sorting, searching, and filtering
   const [filteredRows, setFilteredRows] = useState(apiRows)
   const [searchedRows, setSearchedRows] = useState(apiRows)
+
+  useEffect(() => {
+    setApiRows(collectionRows)
+  }, [collectionRows])
   
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{
+    field: 'rank',
+    sort: 'asc'
+  }]);
 
   useEffect(() => {
     setCurrentRows(filteredRows.filter(o1 => searchedRows.some(o2 => o1.rank === o2.rank)))

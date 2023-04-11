@@ -38,7 +38,8 @@ const User: NextPage = () => {
   const router = useRouter();
   const apiContext = useContext<IApiContext>(ApiContext);
   const { id } = router.query;
-  const [tokensByAddress, setTokensByAddress] = useState<any[]>([])
+  const [imgNfts, setImgNfts] = useState<any[]>([])
+  const [audioNfts, setAudioNfts] = useState<any[]>([])
   const [userProfile, setUserProfile] = useState(user);
   const [tabValue, setTabValue] = React.useState("on-sale");
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -48,11 +49,30 @@ const User: NextPage = () => {
   const [loading, setLoading] = useState(true)
   const [loadingProfile, setLoadingProfile] = useState(true)
 
-
   const fetchData = async (id: string) => {
     setLoading(true)
     const mappedNfts = await getWalletData([id]);
-    const mapped = mappedNfts.imgNfts.map((item, i) => {
+    const imgNfts = mappedNfts.imgNfts.map((item, i) => {
+      return (
+        {
+          imgUrl: item.r9,
+          link: '/marketplace/' + item.id,
+          name: item.name,
+          tokenId: item.id,
+          qty: 1,
+          // price: 1,
+          // currency: '',
+          // rarity: '',
+          // saleType: 'mint' | 'auction' | 'sale',
+          collection: '',
+          collectionLink: '',
+          artist: '',
+          artistLink: '',
+          bx: item.bx
+        }
+      )
+    })
+    const audioNfts = mappedNfts.audioNfts.map((item, i) => {
       return (
         {
           imgUrl: item.r9,
@@ -69,10 +89,12 @@ const User: NextPage = () => {
           artist: '',
           artistLink: '',
           bx: item.bx,
+          type: item.type
         }
       )
-    }) 
-    setTokensByAddress(mapped)
+    })
+    setImgNfts(imgNfts)
+    setAudioNfts(audioNfts)
     setLoading(false)
   }
 
@@ -171,7 +193,7 @@ const User: NextPage = () => {
                 <TokenList
                   // loading={loading}
                   // loadingAmount={10}
-                  nftListArray={tokensByAddress}
+                  nftListArray={[...imgNfts, ...audioNfts]}
                   setDisplayNumber={setNumberNftsShowing}
                   notFullWidth
                 />}
