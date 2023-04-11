@@ -178,8 +178,8 @@ const Collections: NextPage = () => {
       setLoading(true);
       try {
         const [collectionsRes, volumesRes] = await Promise.all([
-          apiContext.api.get(`/collections`, null, skyHarborAPI),
-          apiContext.api.get(`/metrics/topVolumes?limit=1000`, null, skyHarborAPI),
+          apiContext.api.get(`/collections`, skyHarborAPI),
+          apiContext.api.get(`/metrics/topVolumes?limit=1000`, skyHarborAPI),
         ]);
         if (collectionsRes.data) {
           aggList = collectionsRes.data.map((item: ISkyHarborColl, i: number) => {
