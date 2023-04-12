@@ -272,6 +272,17 @@ const NftItem: FC<INftItemProps> = (
                 </Grid>
               </Grid>
             </Grid>
+            <Grid item key={index} xs={12}>
+                <TextField
+                  fullWidth
+                  variant="filled"
+                  id="nft-description"
+                  name="description"
+                  label="Description"
+                  value={thisNft.description}
+                  onChange={handleChange}
+                />
+              </Grid>
             {rarityData.length > 1 && (
               <Grid item xs={6}>
                 <FormControl variant="filled" fullWidth>
@@ -293,7 +304,7 @@ const NftItem: FC<INftItemProps> = (
               </Grid>
             )}
 
-            {thisNft.traits && thisNft.traits[0].key !== '' ? (
+            {thisNft.traits && thisNft.traits[0].key !== '' && (
               thisNft.traits.map((item, i) => {
                 return (
                   <Grid item key={i} xs={6}>
@@ -312,18 +323,6 @@ const NftItem: FC<INftItemProps> = (
                   </Grid>
                 )
               })
-            ) : (
-              <Grid item key={index} xs={12}>
-                <TextField
-                  fullWidth
-                  variant="filled"
-                  id="nft-description"
-                  name="description"
-                  label="Description"
-                  value={thisNft.description}
-                  onChange={handleChange}
-                />
-              </Grid>
             )}
             <Grid item xs={12}>
               <Grid
