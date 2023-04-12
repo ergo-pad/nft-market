@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -10,14 +10,18 @@ import {
   Collapse,
   InputLabel,
   MenuItem,
-  FormControl
-} from '@mui/material'
-import PackTokenSection from '@components/create/PackTokenSection';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { IRarityData } from '@pages/mint';
-import { saleInfoDataInit, ISaleInfoData, packTokenDataInit } from '@pages/mint';
-import dayjs, { Dayjs } from 'dayjs';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+  FormControl,
+} from "@mui/material";
+import PackTokenSection from "@components/create/PackTokenSection";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { IRarityData } from "@pages/mint";
+import {
+  saleInfoDataInit,
+  ISaleInfoData,
+  packTokenDataInit,
+} from "@pages/mint";
+import dayjs, { Dayjs } from "dayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 interface ISalesInfoProps {
   saleInfoData: ISaleInfoData;
@@ -27,64 +31,82 @@ interface ISalesInfoProps {
   rarityData: IRarityData[];
 }
 
-const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearForm, setClearForm, rarityData }) => {
-  const [packTokenData, setPackTokenData] = useState([packTokenDataInit])
-  const [packToggle, setPackToggle] = useState(false)
-  const [dateStart, setDateStart] = useState(new Date(new Date().getTime() + (8.64e+7)))
-  const [dateEnd, setDateEnd] = useState(new Date(new Date().getTime() + (2.6298e+9)))
-  const [nameDesc, setNameDesc] = useState({ saleName: '', saleDescription: '' })
+const SalesInfo: FC<ISalesInfoProps> = ({
+  saleInfoData,
+  setSaleInfoData,
+  clearForm,
+  setClearForm,
+  rarityData,
+}) => {
+  const [packTokenData, setPackTokenData] = useState([packTokenDataInit]);
+  const [packToggle, setPackToggle] = useState(true);
+  const [dateStart, setDateStart] = useState(
+    new Date(new Date().getTime() + 8.64e7)
+  );
+  const [dateEnd, setDateEnd] = useState(
+    new Date(new Date().getTime() + 2.6298e9)
+  );
+  const [nameDesc, setNameDesc] = useState({
+    saleName: "",
+    saleDescription: "",
+  });
 
-  const theme = useTheme()
+  const theme = useTheme();
 
   useEffect(() => {
     setSaleInfoData((prev) => ({
       ...prev,
-      hasPacks: packToggle
-    }))
-  }, [packToggle])
+      hasPacks: packToggle,
+    }));
+  }, [packToggle]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setSaleInfoData(prev => (
-      {
-        ...prev,
-        saleName: nameDesc.saleName,
-        saleDescription: nameDesc.saleDescription
-      }
-    )), 2000);
+    const timeout = setTimeout(
+      () =>
+        setSaleInfoData((prev) => ({
+          ...prev,
+          saleName: nameDesc.saleName,
+          saleDescription: nameDesc.saleDescription,
+        })),
+      2000
+    );
     return () => clearTimeout(timeout);
-  }, [nameDesc.saleName, nameDesc.saleDescription])
+  }, [nameDesc.saleName, nameDesc.saleDescription]);
 
   useEffect(() => {
     setSaleInfoData((prev) => ({
       ...prev,
-      dateEnd: new Date(dateEnd)
-    }))
-  }, [dateEnd])
+      dateEnd: new Date(dateEnd),
+    }));
+  }, [dateEnd]);
 
   useEffect(() => {
     setSaleInfoData((prev) => ({
       ...prev,
-      dateStart: new Date(dateStart)
-    }))
-  }, [dateStart])
+      dateStart: new Date(dateStart),
+    }));
+  }, [dateStart]);
 
   // SALE DATA STATES //
-  const [createSale, setCreateSale] = useState(true)
+  const [createSale, setCreateSale] = useState(true);
   const toggleCreateSale = () => {
-    setCreateSale(!createSale)
-  }
+    setCreateSale(!createSale);
+  };
 
   // CLEAR FORM //
   useEffect(() => {
-    setSaleInfoData(saleInfoDataInit) // this belongs to parent
-    setPackTokenData([packTokenDataInit])
-    setClearForm(false)
-  }, [clearForm])
+    setSaleInfoData(saleInfoDataInit); // this belongs to parent
+    setPackTokenData([packTokenDataInit]);
+    setClearForm(false);
+  }, [clearForm]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setSaleInfoData(prev => ({ ...prev, packs: packTokenData })), 400);
+    const timeout = setTimeout(
+      () => setSaleInfoData((prev) => ({ ...prev, packs: packTokenData })),
+      400
+    );
     return () => clearTimeout(timeout);
-  }, [JSON.stringify(packTokenData)])
+  }, [JSON.stringify(packTokenData)]);
 
   const handleSelectChange = (e: SelectChangeEvent) => {
     setPackTokenData((prevArray) => {
@@ -92,67 +114,70 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
         if (i === 0) {
           return {
             ...item,
-            [e.target.name]: e.target.value // key could be hardcoded as 'currency' since its the only one used here. 
-          }
+            [e.target.name]: e.target.value, // key could be hardcoded as 'currency' since its the only one used here.
+          };
         }
-        return item
-      })
-      return newArray
-    })
+        return item;
+      });
+      return newArray;
+    });
   };
 
-  const handleChangeNum = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChangeNum = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setPackTokenData((prevArray) => {
       const newArray = prevArray.map((item, i) => {
         if (i === 0) {
           return {
             ...item,
-            [e.target.name]: e.target.value
-          }
+            [e.target.name]: e.target.value,
+          };
         }
-        return item
-      })
-      return newArray
-    })
-  }
+        return item;
+      });
+      return newArray;
+    });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNameDesc(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  }
+    setNameDesc((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   return (
     <Box>
       <Box>
-        <Typography variant="h4">
-          Sale info
-        </Typography>
+        <Typography variant="h4">Sale info</Typography>
         <Typography variant="body2">
-          If you choose not to setup a sale, the NFTs will be sent to the artist address as they&apos;re minted.
+          If you choose not to setup a sale, the NFTs will be sent to the artist
+          address as they&apos;re minted.
         </Typography>
         <Grid
           container
           alignItems="center"
           sx={{
-            width: '100%',
-            mb: '0px',
-            '&:hover': {
-              cursor: 'pointer'
-            }
+            width: "100%",
+            mb: "0px",
+            "&:hover": {
+              cursor: "pointer",
+            },
           }}
           onClick={() => toggleCreateSale()}
         >
           <Grid item xs>
-            <Typography variant="h5" sx={{ verticalAlign: 'middle' }}>
+            <Typography variant="h5" sx={{ verticalAlign: "middle" }}>
               Create Sales Portal
             </Typography>
           </Grid>
           <Grid item xs="auto">
             <Typography
               sx={{
-                display: 'inline-block',
-                mr: '6px',
-                verticalAlign: 'middle',
-                color: createSale ? theme.palette.text.primary : theme.palette.text.secondary
+                display: "inline-block",
+                mr: "6px",
+                verticalAlign: "middle",
+                color: createSale
+                  ? theme.palette.text.primary
+                  : theme.palette.text.secondary,
               }}
             >
               Enable
@@ -166,7 +191,7 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
         </Grid>
       </Box>
       <Collapse in={createSale}>
-        <Grid container spacing={2} sx={{ mb: '24px' }}>
+        <Grid container spacing={2} sx={{ mb: "24px" }}>
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -181,18 +206,17 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
           <Grid item container spacing={1}>
             <Grid item xs={12} sm={6}>
               <DateTimePicker
-                renderInput={
-                  (props: any) =>
-                    <TextField
-                      // required
-                      fullWidth
-                      id="date-start"
-                      name="date-start"
-                      variant="filled"
-                      {...props}
-                      InputProps={{ ...props.InputProps, disableUnderline: true }}
-                    />
-                }
+                renderInput={(props: any) => (
+                  <TextField
+                    // required
+                    fullWidth
+                    id="date-start"
+                    name="date-start"
+                    variant="filled"
+                    {...props}
+                    InputProps={{ ...props.InputProps, disableUnderline: true }}
+                  />
+                )}
                 ampm={false}
                 label="Date Start"
                 value={dateStart}
@@ -201,18 +225,17 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
             </Grid>
             <Grid item xs={12} sm={6}>
               <DateTimePicker
-                renderInput={
-                  (props: any) =>
-                    <TextField
-                      // required
-                      fullWidth
-                      id="date-end"
-                      name="date-end"
-                      variant="filled"
-                      {...props}
-                      InputProps={{ ...props.InputProps, disableUnderline: true }}
-                    />
-                }
+                renderInput={(props: any) => (
+                  <TextField
+                    // required
+                    fullWidth
+                    id="date-end"
+                    name="date-end"
+                    variant="filled"
+                    {...props}
+                    InputProps={{ ...props.InputProps, disableUnderline: true }}
+                  />
+                )}
                 ampm={false}
                 label="Date End"
                 value={dateEnd}
@@ -258,8 +281,8 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
                       name="currency"
                       onChange={handleSelectChange}
                     >
-                      <MenuItem value={'SigUSD'}>SigUSD</MenuItem>
-                      <MenuItem value={'Erg'}>Erg</MenuItem>
+                      <MenuItem value={"SigUSD"}>SigUSD</MenuItem>
+                      <MenuItem value={"Erg"}>Erg</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -275,8 +298,9 @@ const SalesInfo: FC<ISalesInfoProps> = ({ saleInfoData, setSaleInfoData, clearFo
           setPackToggle={setPackToggle}
         />
       </Collapse>
-
-      <Button onClick={() => console.log(saleInfoData)}>Console log data</Button>
+      <Button onClick={() => console.log(saleInfoData)}>
+        Console log data
+      </Button>
       <Button onClick={() => setClearForm(true)}>Clear Form</Button>
     </Box>
   );
