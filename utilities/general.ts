@@ -21,7 +21,7 @@ export const aspectRatioResize = (sourceWidth: number, sourceHeight: number, max
   }
 
   return {
-    width: newWidth.toString() + 'px', 
+    width: newWidth.toString() + 'px',
     // height: newHeight.toString() + 'px',
     '&::after': {
       paddingTop: (newHeight / newWidth * 100).toString() + '%',
@@ -44,4 +44,15 @@ export const formatNumber = (num: number, sigFig?: number) => {
     return '0.001';
   }
 };
+
+export const stringToUrl = (str: string): string | undefined => {
+  if (str) {
+    // Replace all spaces with dashes and convert to lowercase
+    str = str.replace(/\s+/g, '-').toLowerCase();
+    // Remove all special characters using a regular expression
+    str = str.replace(/[^\w-]+/g, '');
+    return str;
+  }
+  else return undefined
+}
 

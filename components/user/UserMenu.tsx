@@ -17,6 +17,7 @@ import Logout from '@mui/icons-material/Logout';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import RedeemIcon from '@mui/icons-material/Redeem';
 import SellIcon from '@mui/icons-material/Sell';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface IUserMenuProps {
 
@@ -123,6 +124,12 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
                 <SellIcon fontSize="small" />
               </ListItemIcon>
               Sell Tokens
+            </MenuItem>
+            <MenuItem onClick={() => router.push('/manage-sales')}>
+              <ListItemIcon>
+                <EditIcon fontSize="small" />
+              </ListItemIcon>
+              Manage Sales
             </MenuItem>
             <MenuItem onClick={() => router.push('/user-settings/')}>
               <ListItemIcon>
