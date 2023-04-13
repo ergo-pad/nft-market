@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -7,13 +7,13 @@ import {
   Button,
   Switch,
   Link,
-  useTheme
-} from '@mui/material'
-import FileUploadArea from '@components/forms/FileUploadArea'
-import dayjs, { Dayjs } from 'dayjs';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { IFileUrl } from '@components/forms/FileUploadArea';
-import { ICollectionData, collectionDataInit } from '@pages/mint';
+  useTheme,
+} from "@mui/material";
+import FileUploadAreaIpfs from "@components/forms/FileUploadAreaIpfs";
+import { IFileUrl } from "@components/forms/FileUploadAreaIpfs";
+import dayjs, { Dayjs } from "dayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { ICollectionData, collectionDataInit } from "@pages/mint";
 
 interface ICollectionFormProps {
   collectionData: ICollectionData;
@@ -22,57 +22,78 @@ interface ICollectionFormProps {
   setClearForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectionData, clearForm, setClearForm }) => {
-  const theme = useTheme()
-  const [collectionFeaturedImg, setCollectionFeaturedImg] = useState<IFileUrl[]>([])
-  const [collectionBannerImg, setCollectionBannerImg] = useState<IFileUrl[]>([])
-  const [collectionLogoImg, setCollectionLogoImg] = useState<IFileUrl[]>([])
-  const [clearTriggerCollectionFeatured, setClearTriggerCollectionFeatured] = useState(false)
-  const [clearTriggerCollectionBanner, setClearTriggerCollectionBanner] = useState(false)
-  const [clearTriggerCollectionLogo, setClearTriggerCollectionLogo] = useState(false)
-  const [expiryToggle, setExpiryToggle] = useState(false)
+const CollectionForm: FC<ICollectionFormProps> = ({
+  collectionData,
+  setCollectionData,
+  clearForm,
+  setClearForm,
+}) => {
+  const theme = useTheme();
+  const [collectionFeaturedImg, setCollectionFeaturedImg] = useState<
+    IFileUrl[]
+  >([]);
+  const [collectionBannerImg, setCollectionBannerImg] = useState<IFileUrl[]>(
+    []
+  );
+  const [collectionLogoImg, setCollectionLogoImg] = useState<IFileUrl[]>([]);
+  const [clearTriggerCollectionFeatured, setClearTriggerCollectionFeatured] =
+    useState(false);
+  const [clearTriggerCollectionBanner, setClearTriggerCollectionBanner] =
+    useState(false);
+  const [clearTriggerCollectionLogo, setClearTriggerCollectionLogo] =
+    useState(false);
+  const [expiryToggle, setExpiryToggle] = useState(false);
   const toggleExpiry = () => {
-    setExpiryToggle(!expiryToggle)
-  }
+    setExpiryToggle(!expiryToggle);
+  };
 
   // COLLECTION DATA STATES //
-  const [mintExpiry, setMintExpiry] = useState<Dayjs | null>(dayjs())
+  const [mintExpiry, setMintExpiry] = useState<Dayjs | null>(dayjs());
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCollectionData(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  }
+    setCollectionData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
   useEffect(() => {
-    setCollectionData(prev => ({ ...prev, featuredImageUrl: collectionFeaturedImg[0]?.url }))
-  }, [JSON.stringify(collectionFeaturedImg)])
+    setCollectionData((prev) => ({
+      ...prev,
+      featuredImageUrl: collectionFeaturedImg[0]?.ipfs,
+    }));
+  }, [JSON.stringify(collectionFeaturedImg)]);
   useEffect(() => {
-    setCollectionData(prev => ({ ...prev, bannerImageUrl: collectionBannerImg[0]?.url }))
-  }, [JSON.stringify(collectionBannerImg)])
+    setCollectionData((prev) => ({
+      ...prev,
+      bannerImageUrl: collectionBannerImg[0]?.ipfs,
+    }));
+  }, [JSON.stringify(collectionBannerImg)]);
   useEffect(() => {
-    setCollectionData(prev => ({ ...prev, collectionLogoUrl: collectionLogoImg[0]?.url }))
-  }, [JSON.stringify(collectionLogoImg)])
+    setCollectionData((prev) => ({
+      ...prev,
+      collectionLogoUrl: collectionLogoImg[0]?.ipfs,
+    }));
+  }, [JSON.stringify(collectionLogoImg)]);
   useEffect(() => {
     if (expiryToggle === false) {
-      setCollectionData(prev => ({ ...prev, mintingExpiry: -1 }))
-    }
-    else if (mintExpiry !== null) setCollectionData(prev => ({ ...prev, mintingExpiry: mintExpiry.valueOf() }))
-  }, [expiryToggle, mintExpiry])
+      setCollectionData((prev) => ({ ...prev, mintingExpiry: -1 }));
+    } else if (mintExpiry !== null)
+      setCollectionData((prev) => ({
+        ...prev,
+        mintingExpiry: mintExpiry.valueOf(),
+      }));
+  }, [expiryToggle, mintExpiry]);
 
   // CLEAR FORM //
   useEffect(() => {
-    setClearTriggerCollectionFeatured(true) // this is a trigger to update child state
-    setClearTriggerCollectionBanner(true) // this is a trigger to update child state
-    setClearTriggerCollectionLogo(true) // this is a trigger to update child state
-    setCollectionData(collectionDataInit) // this belongs to parent
-    setClearForm(false)
-  }, [clearForm])
+    setClearTriggerCollectionFeatured(true); // this is a trigger to update child state
+    setClearTriggerCollectionBanner(true); // this is a trigger to update child state
+    setClearTriggerCollectionLogo(true); // this is a trigger to update child state
+    setCollectionData(collectionDataInit); // this belongs to parent
+    setClearForm(false);
+  }, [clearForm]);
 
   return (
     <Box>
-      <Typography variant="h4">
-        Collection Details
-      </Typography>
-
-      <Grid container spacing={2} sx={{ mb: '24px' }}>
+      <Typography variant="h4">Collection Details</Typography>
+      <Grid container spacing={2} sx={{ mb: "24px" }}>
         <Grid item xs={12} md={6}>
           <TextField
             fullWidth
@@ -80,7 +101,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
             id="collection-name"
             label="Collection Name"
             name="collectionName"
-            value={collectionData.collectionName || ''}
+            value={collectionData.collectionName || ""}
             onChange={handleChange}
           />
         </Grid>
@@ -109,7 +130,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <FileUploadArea
+          <FileUploadAreaIpfs
             title="Collection Logo Image"
             fileUrls={collectionLogoImg}
             setFileUrls={setCollectionLogoImg}
@@ -121,7 +142,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <FileUploadArea
+          <FileUploadAreaIpfs
             title="Collection Featured Image"
             fileUrls={collectionFeaturedImg}
             setFileUrls={setCollectionFeaturedImg}
@@ -132,7 +153,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
           />
         </Grid>
         <Grid item xs={12}>
-          <FileUploadArea
+          <FileUploadAreaIpfs
             title="Collection Banner Image"
             fileUrls={collectionBannerImg}
             setFileUrls={setCollectionBannerImg}
@@ -147,25 +168,30 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
         container
         alignItems="center"
         sx={{
-          width: '100%',
+          width: "100%",
         }}
       >
         <Grid item xs>
-          <Typography variant="h5">
-            Final Mint Date
-          </Typography>
+          <Typography variant="h5">Final Mint Date</Typography>
         </Grid>
         <Grid
           item
           xs="auto"
           onClick={() => toggleExpiry()}
           sx={{
-            '&:hover': {
-              cursor: 'pointer'
-            }
+            "&:hover": {
+              cursor: "pointer",
+            },
           }}
         >
-          <Typography sx={{ verticalAlign: 'middle', mb: 0, mr: '6px', display: 'inline-block' }}>
+          <Typography
+            sx={{
+              verticalAlign: "middle",
+              mb: 0,
+              mr: "6px",
+              display: "inline-block",
+            }}
+          >
             Set Expiry Date
           </Typography>
           <Switch
@@ -177,32 +203,38 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
       </Grid>
       <Grid container direction="row" alignItems="center">
         <Grid item xs={12} md={8}>
-          <Typography variant="body2" sx={{ lineHeight: 1.3, mb: { xs: '12px', md: 0 } }}>
-            The final date new tokens can be minted to this collection. To allow minting indefinitely, <Link
+          <Typography
+            variant="body2"
+            sx={{ lineHeight: 1.3, mb: { xs: "12px", md: 0 } }}
+          >
+            The final date new tokens can be minted to this collection. To allow
+            minting indefinitely,{" "}
+            <Link
               onClick={() => setExpiryToggle(false)}
               sx={{
-                '&:hover': { cursor: 'pointer' },
+                "&:hover": { cursor: "pointer" },
                 fontSize: theme.typography.body2.fontSize,
                 lineHeight: 1.3,
               }}
-            >turn off the &quot;Set Expiry&quot; switch
-            </Link>.
+            >
+              turn off the &quot;Set Expiry&quot; switch
+            </Link>
+            .
           </Typography>
         </Grid>
         <Grid item xs={12} md={4}>
           <DateTimePicker
-            renderInput={
-              (props: any) =>
-                <TextField
-                  // required
-                  fullWidth
-                  id="mintingExpiry"
-                  name="mintingExpiry"
-                  variant="filled"
-                  {...props}
-                  InputProps={{ ...props.InputProps, disableUnderline: true }}
-                />
-            }
+            renderInput={(props: any) => (
+              <TextField
+                // required
+                fullWidth
+                id="mintingExpiry"
+                name="mintingExpiry"
+                variant="filled"
+                {...props}
+                InputProps={{ ...props.InputProps, disableUnderline: true }}
+              />
+            )}
             ampm={false}
             disabled={!expiryToggle}
             label="Mint Expiry Date"
@@ -211,7 +243,9 @@ const CollectionForm: FC<ICollectionFormProps> = ({ collectionData, setCollectio
           />
         </Grid>
       </Grid>
-      <Button onClick={() => console.log(collectionData)}>Console log data</Button>
+      <Button onClick={() => console.log(collectionData)}>
+        Console log data
+      </Button>
       <Button onClick={() => setClearForm(true)}>Clear Form</Button>
     </Box>
   );

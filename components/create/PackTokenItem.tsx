@@ -82,7 +82,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({
         if (i === index) {
           return {
             ...item,
-            image: "ipfs://" + packImg[0]?.ipfs,
+            image: packImg[0]?.ipfs,
           };
         }
         return item;
