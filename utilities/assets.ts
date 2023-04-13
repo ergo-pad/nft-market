@@ -39,6 +39,7 @@ export interface IToken {
   amountUSD?: number;
   bx?: { address: string; txId: string | undefined; outputTransactionId: string; }
   type?: string;
+  remainingVest?: number;
 }
 
 const reduceBalances = (balances: IBalances) => {
@@ -187,6 +188,7 @@ export async function getWalletData(addresses: string[]): Promise<IAssetList> {
         },
       };
     });
+
   const balance = reduceBalances(balances.data);
 
   if (balance) {
