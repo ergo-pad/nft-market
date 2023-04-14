@@ -12,6 +12,8 @@ import {
   Stepper,
   Step,
   StepButton,
+  Divider,
+  CircularProgress,
 } from "@mui/material";
 import ArtistForm from "@components/create/ArtistForm";
 import CollectionForm from "@components/create/CollectionForm";
@@ -111,6 +113,18 @@ export interface ITokenDetailsData {
   availableTraits: ITraitsData[];
 }
 
+export interface IMintResult {
+  saleId?: string;
+  collectionId?: string;
+  transactionId?: string;
+  status: string;
+  errorMessage?: string;
+}
+
+const mintResultDataInit: IMintResult = {
+  status: "NOT_INITIALIZED",
+};
+
 export const tokenDetailsDataInit: ITokenDetailsData = {
   nfts: [],
   rarities: [
@@ -207,6 +221,8 @@ const Mint: NextPage = () => {
   const [rarityData, setRarityData] = useState<IRarityData[]>(
     tokenDetailsDataInit.rarities
   );
+  const [resultData, setResultData] = useState<IMintResult>(mintResultDataInit);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // STEPPER LOGIC //
   const [stepperCompleted, setStepperCompleted] = React.useState<{
@@ -298,30 +314,37 @@ const Mint: NextPage = () => {
 
   // SUBMIT FORM //
   const submit = async () => {
-    const artistCreated = await createArtistData(artistData);
-    const saleCreated = await createSaleData(saleInfoData, walletAddress);
-    const collectionCreated = await createCollectionData(
-      collectionData,
-      tokenDetailsData,
-      artistCreated.id,
-      saleCreated.sale.id
-    );
-    const nftUpdated = await createNftData(
-      collectionCreated.id,
-      tokenDetailsData
-    );
-    const tx = await getMintTx(collectionCreated.id);
-    const context = await getErgoWalletContext();
-    const signedtx = await context.sign_tx(tx);
-    const ok = await context.submit_tx(signedtx);
-    apiContext.api.ok(`Submitted Transaction: ${ok}`);
-    // todo: show this data nicely in ok thank you page
-    console.log({
-      saleId: saleCreated.sale.id,
-      collectionId: collectionCreated.id,
-      transactionId: ok,
-      status: "MINTING",
-    });
+    setLoading(true);
+    try {
+      const artistCreated = await createArtistData(artistData);
+      const saleCreated = await createSaleData(saleInfoData, walletAddress);
+      const collectionCreated = await createCollectionData(
+        collectionData,
+        tokenDetailsData,
+        artistCreated.id,
+        saleCreated.sale.id
+      );
+      const nftUpdated = await createNftData(
+        collectionCreated.id,
+        tokenDetailsData
+      );
+      const tx = await getMintTx(collectionCreated.id);
+      const context = await getErgoWalletContext();
+      const signedtx = await context.sign_tx(tx);
+      const ok = await context.submit_tx(signedtx);
+      apiContext.api.ok(`Submitted Transaction: ${ok}`);
+      // todo: show this data nicely in ok thank you page
+      setResultData({
+        saleId: saleCreated.sale.id,
+        collectionId: collectionCreated.id,
+        transactionId: ok,
+        status: "MINTING",
+      });
+    } catch (e: any) {
+      setResultData({ ...resultData, status: "ERRORED" });
+      console.error(e);
+    }
+    setLoading(false);
   };
   const createArtistData = async (data: IArtistData) => {
     try {
@@ -428,7 +451,7 @@ const Mint: NextPage = () => {
         tokens.nfts.map((nft) => {
           return {
             collectionId: collectionId,
-            amount: nft.qty,
+            amount: Number(nft.qty),
             name: nft.nftName,
             image: nft.image,
             description: nft.description ?? "",
@@ -574,9 +597,43 @@ const Mint: NextPage = () => {
           <Grid item lg={9} xs={12} xl={10} sx={{ flex: "1 1 auto" }}>
             {allStepsCompleted() ? (
               <>
-                <Typography sx={{ mt: 2, mb: 1 }}>
-                  All steps completed - you&apos;re finished
+                <Typography variant="h4">Summary</Typography>
+                <Typography sx={{ mt: 2, mb: 2 }}>
+                  All steps completed - We are creating the required stuff
+                  in the background now. You can track the status here.
                 </Typography>
+                <Divider sx={{ mb: 1 }} />
+                {loading ? (
+                  <Grid
+                    sx={{ display: "flex", justifyContent: "center", py: 4 }}
+                  >
+                    <CircularProgress />
+                  </Grid>
+                ) : (
+                  <>
+                    {resultData.saleId && (
+                      <Typography variant="h6" sx={{ my: 1 }}>
+                        Sale Id: {resultData.saleId}
+                      </Typography>
+                    )}
+                    {resultData.collectionId && (
+                      <Typography variant="h6" sx={{ my: 1 }}>
+                        Collection Id: {resultData.collectionId}
+                      </Typography>
+                    )}
+                    {resultData.transactionId && (
+                      <Typography variant="h6" sx={{ my: 1 }}>
+                        Transaction Id: {resultData.transactionId}
+                      </Typography>
+                    )}
+                    {resultData.status && (
+                      <Typography variant="h6" sx={{ my: 1 }}>
+                        Status: {resultData.status}
+                      </Typography>
+                    )}
+                  </>
+                )}
+                <Divider sx={{ mt: 1 }} />
                 <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                   <Box sx={{ flex: "1 1 auto" }} />
                   <Button onClick={handleStepperReset}>Reset</Button>
