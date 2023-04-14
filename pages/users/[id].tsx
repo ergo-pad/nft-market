@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import type { NextPage } from "next";
 import {
-  Grid,
   Typography,
   Box,
   useTheme,
@@ -16,8 +15,8 @@ import UserProfile from "@components/UserProfile";
 import { useRouter } from "next/router";
 import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import TokenList from "@components/TokenList";
-import { getWalletData } from "@utils/assets";
-import LoadingCard from '@components/LoadingCard'
+import TokenListLoadingTest from "@components/TokenListLoadingTest";
+import { getWalletList } from "@utils/assetsNew";
 import { WalletContext } from "@contexts/WalletContext";
 
 const user = {
@@ -39,21 +38,16 @@ const User: NextPage = () => {
   const router = useRouter();
   const apiContext = useContext<IApiContext>(ApiContext);
   const { id, tab } = router.query;
-  const [imgNfts, setImgNfts] = useState<any[]>([])
-  const [audioNfts, setAudioNfts] = useState<any[]>([])
   const [userProfile, setUserProfile] = useState(user);
   const [tabValue, setTabValue] = React.useState('');
   const [loading, setLoading] = useState(true)
   const [loadingProfile, setLoadingProfile] = useState(true)
-  const {
-    walletAddress,
-    dAppWallet,
-  } = useContext(WalletContext);
   const [aggData, setAggData] = useState<any[]>([])
+  const [displayNumber, setDisplayNumber] = useState(12)
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     const path = router.asPath.split("?")[0];
-    router.push(path + `?tab=${newValue}`);
+    router.push(path + `?tab=${newValue}`, undefined, { scroll: false });
     setTabValue(newValue);
   };
 
@@ -64,92 +58,11 @@ const User: NextPage = () => {
     else if (router.isReady) setTabValue('on-sale')
   }, [router.isReady, router.query.tab]);
 
-  useEffect(() => {
-    setAggData([...imgNfts, ...audioNfts])
-  }, [audioNfts, imgNfts])
-
   const fetchData = async (id: string) => {
-    const mappedNfts = await getWalletData([id]);
-    const imgNfts = mappedNfts.imgNfts.map((item, i) => {
-      return (
-        {
-          imgUrl: item.r9,
-          link: '/marketplace/' + item.id,
-          name: item.name,
-          tokenId: item.id,
-          qty: 1,
-          // price: 1,
-          // currency: '',
-          // rarity: '',
-          // saleType: 'mint' | 'auction' | 'sale',
-          collection: '',
-          collectionLink: '',
-          artist: '',
-          artistLink: '',
-          bx: item.bx
-        }
-      )
-    })
-    const audioNfts = mappedNfts.audioNfts.map((item, i) => {
-      return (
-        {
-          imgUrl: item.r9,
-          link: '/marketplace/' + item.id,
-          name: item.name,
-          tokenId: item.id,
-          qty: 1,
-          // price: 1,
-          // currency: '',
-          // rarity: '',
-          // saleType: 'mint' | 'auction' | 'sale',
-          collection: '',
-          collectionLink: '',
-          artist: '',
-          artistLink: '',
-          bx: item.bx,
-          type: item.type
-        }
-      )
-    })
-    setImgNfts(imgNfts)
-    setAudioNfts(audioNfts)
+    const tokenList: any[] = await getWalletList([id]);
+    setAggData(tokenList)
     setLoading(false)
   }
-
-  // const vestedTokensNFTResponse = await axios
-  //   .post(
-  //     `${process.env.API_URL}/vesting/v2/`,
-  //     { addresses: [...addresses] },
-  //     { ...defaultOptions }
-  //   )
-  //   .catch((e) => {
-  //     console.log('ERROR FETCHING', e);
-  //     return {
-  //       data: [],
-  //     };
-  //   });
-  // setVestedTokensNFT(vestedTokensNFTResponse.data);
-
-  const getVestedTokens = async (id: string) => {
-    let addressArray = []
-    if (id) {
-      addressArray = [id.toString()]
-      if (dAppWallet.addresses.length > 0) {
-        if (dAppWallet.addresses.includes(id.toString())) addressArray = [dAppWallet.addresses]
-      }
-      try {
-        const res = await apiContext.api.post(
-          `/vesting/v2/`,
-          { addresses: addressArray },
-          process.env.ERGOPAD_API
-        );
-        console.log(res.data)
-      } catch (e: any) {
-        console.log(e)
-        apiContext.api.error(e);
-      }
-    }
-  };
 
   useEffect(() => {
     const getUserProfile = async () => {
@@ -166,25 +79,8 @@ const User: NextPage = () => {
     if (id) {
       getUserProfile();
       fetchData(id.toString())
-      getVestedTokens(id.toString())
     }
-  }, [id]);
-
-  // LOADING TEST
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setLoadingProfile(prevLoading => !prevLoading);
-  //   }, 2000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  /////////////////////////////////////////////////////////////////////////////
-  // USE THIS FOR API CALL TO FETCH MORE CARDS IF ONLY LOADING A FEW AT A TIME
-  // CURRENTLY NOT USED
-  // CAN BE CHANGED IN <TokenList>
-  const [numberNftsShowing, setNumberNftsShowing] = useState(24)
-  /////////////////////////////////////////////////////////////////////////////
+  }, [id]); // id is better named userAddress. Comes from the URL
 
   return (
     <>
@@ -221,7 +117,7 @@ const User: NextPage = () => {
             <TabPanel value="on-sale" sx={customTabPanelSx}>
               <TokenList
                 nftListArray={recentNfts}
-                setDisplayNumber={setNumberNftsShowing}
+                setDisplayNumber={setDisplayNumber}
                 notFullWidth
               />
             </TabPanel>
@@ -233,12 +129,11 @@ const User: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="owned" sx={customTabPanelSx}>
-              <TokenList
+              <TokenListLoadingTest
                 loading={loading}
                 setLoading={setLoading}
-                loadingAmount={10}
+                loadingAmount={12}
                 nftListArray={aggData}
-                setDisplayNumber={setNumberNftsShowing}
                 notFullWidth
               />
             </TabPanel>
