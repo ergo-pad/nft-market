@@ -8,7 +8,8 @@ import {
   Dialog,
   Typography,
   Box,
-  Divider
+  Divider,
+  CircularProgress
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
@@ -54,10 +55,9 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, notFullWidth, loading, s
   }, [sortedData]);
 
   const updateAllData = (data: any[]) => {
-    setDisplayedData(data)
+    setSearchedData(data)
     setFilteredData(data)
     setSortedData(data)
-    setSearchedData(data)
   }
 
   useEffect(() => {
@@ -74,17 +74,18 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, notFullWidth, loading, s
         loading: true
       }
     })
+    setDisplayedData(list)
     updateAllData(list)
     setRawData(list)
 
     if (!loading) setLocalLoading(false)
     async function fetchData() {
-      const chunks = chunkArray(list, 3);
+      const chunks = chunkArray(list, 8);
       for (const chunk of chunks) {
         await fetchDataChunk(chunk);
       }
     }
-    
+
     async function fetchDataChunk(chunk: any) {
       const additionalData = await tokenListInfo(chunk);
       setRawData(prevState => {
@@ -95,7 +96,7 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, notFullWidth, loading, s
         return newList;
       });
     }
-    
+
     fetchData();
     setDisableFilters(false)
   }, [nftListArray])
@@ -110,53 +111,6 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, notFullWidth, loading, s
 
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up("sm"))
-
-  interface VestingObject {
-    [key: string]: {
-      'Vesting Key Id': string;
-      'Remaining': number;
-      [key: string]: any;
-    }[];
-  }
-
-  const getVestedTokens = async (id: string) => {
-    const vestedTokens = (object: VestingObject) => {
-      let tokenList: any[] = []
-      for (let [key, value] of Object.entries(object)) {
-        value.map((item: any, i: number) => {
-          const thisToken = {
-            name: key + ' Vesting Key',
-            tokenId: item['Vesting Key Id'],
-            qty: 1,
-            link: '/marketplace/' + item['Vesting Key Id'],
-            remainingVest: item['Remaining']
-          }
-          tokenList.push(thisToken)
-        })
-      }
-
-      return tokenList
-    }
-
-    let addressArray: string[] = []
-    if (id) {
-      addressArray = [id.toString()]
-      if (dAppWallet.addresses.length > 0) {
-        if (dAppWallet.addresses.includes(id.toString())) addressArray = dAppWallet.addresses
-      }
-      try {
-        const res = await apiContext.api.post(
-          `/vesting/v2/`,
-          { addresses: addressArray },
-          process.env.ERGOPAD_API
-        );
-        setVestingNfts(vestedTokens(res.data))
-      } catch (e: any) {
-        console.log(e)
-        apiContext.api.error(e);
-      }
-    }
-  };
 
   return (
     <>
@@ -213,11 +167,9 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, notFullWidth, loading, s
         sx={{ mb: "24px" }}
       >
         {loading || localLoading ? (
-          Array(loadingAmount ? loadingAmount : 12).fill(
-            <Grid item xs={1}>
-              <LoadingCard />
-            </Grid>
-          )
+          <Box sx={{ textAlign: 'center', py: '10vh', width: '100%' }}>
+            <CircularProgress />
+          </Box>
         ) : (
           displayedData.length > 0 ? displayedData.map((item: any, i: number) => {
             return (

@@ -132,15 +132,10 @@ export const getWalletList = async (addresses: string[]): Promise<any> => {
     .catch((err) => {
       console.log('ERROR FETCHING: ', err);
       return {
-        data: {
-          assets: [],
-          audioNfts: [],
-          imgNfts: [],
-        },
+        data: {},
       };
     });
   const balance = reduceBalances(balances.data);
-  console.log('getWalletList')
   if (balance) return balance.tokens
   else return []
 }
@@ -157,7 +152,7 @@ export const tokenListInfo = async (tokens: any[]) => {
         type: res.data.nftType,
         artist: res.data.minterAddress,
         imgUrl: res.data.extraMetaData?.link,
-        collection: res.data.extraMetaData.standard2Data?.collection?.name,
+        collection: res.data.extraMetaData?.standard2Data?.collection?.name,
         loading: false
       }
     }

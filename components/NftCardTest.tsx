@@ -18,6 +18,8 @@ import useResizeObserver from "use-resize-observer";
 import { getArtist } from '@utils/get-artist';
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import HideImageIcon from '@mui/icons-material/HideImage';
+import axios from 'axios';
+import { getNautilusAddressMapper, ASSET_URL } from "@utilities/LogoMapper";
 
 // import dynamic from 'next/dynamic'
 // const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
@@ -41,6 +43,7 @@ export interface INftItem {
   explicit?: boolean;
   type?: string;
   loading?: boolean;
+  remainingVest?: number;
 }
 
 interface INftCard {
@@ -95,6 +98,64 @@ const NftCard: FC<INftCard> = ({
     if (width > 260) setNewWidth(width)
   }, [width])
 
+  const [imageUrl, setImageUrl] = useState<string>('')
+  useEffect(() => {
+    if (nftData.imgUrl) {
+      const ipfsPrefix = 'ipfs://';
+      const url = nftData.imgUrl
+      if (!url.startsWith(ipfsPrefix) && url.startsWith('http://')) setImageUrl('https://' + url.substring(7))
+      else if (!url.startsWith(ipfsPrefix)) setImageUrl(url)
+      else setImageUrl(url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`))
+    }
+    else if (nftData.imgUrl) setImageUrl(nftData.imgUrl)
+    else setImageUrl('')
+  }, [nftData])
+
+  const [artist, setArtist] = useState<string | null>(null);
+  const [showArtist, setShowArtist] = useState(true)
+  useEffect(() => {
+    const fetchArtist = async () => {
+      if (nftData.tokenId) {
+        let artist = null
+        const cache = localStorage.getItem(`token-artist-${nftData.tokenId}`)
+        if (cache) {
+          artist = cache
+        }
+        else {
+          const apiCall = await axios
+            .get(process.env.ERGOPAD_API + `/asset/info/${nftData.tokenId}/minter`)
+            .catch((err) => {
+              console.log("ERROR FETCHING: ", err);
+            });
+
+          if (apiCall?.data) {
+            artist = apiCall.data.minterAddress
+            localStorage.setItem(`token-artist-${nftData.tokenId}`, artist)
+          }
+        }
+        if (artist === null || artist === 'null') {
+          setShowArtist(false)
+          setArtist(null);
+        }
+        else setArtist(artist);
+      }
+    }
+    if (!nftData.loading) fetchArtist();
+  }, [nftData]);
+
+  const [assetMapper, setAssetMapper] = useState<any>({});
+  useEffect(() => {
+    let isMounted = true;
+    const loadMapper = async () => {
+      const mapper = await getNautilusAddressMapper();
+      if (isMounted) setAssetMapper(mapper);
+    };
+    loadMapper();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <>
       <Card
@@ -139,13 +200,13 @@ const NftCard: FC<INftCard> = ({
                 borderBottomWidth: '1px',
                 borderBottomStyle: 'solid',
                 borderBottomColor: theme.palette.divider,
-                backgroundImage: nftData.imgUrl ? `url(${nftData.imgUrl})` : '',
+                backgroundImage: imageUrl ? `url(${imageUrl})` : '',
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center center",
                 transition: 'height 70ms linear'
               }}>
-                {nftData.type === 'Audio NFT' && (
+                {nftData.type === 'AUDIO' && (
                   <AudiotrackIcon
                     sx={{
                       position: 'absolute',
@@ -157,7 +218,23 @@ const NftCard: FC<INftCard> = ({
                     }}
                   />
                 )}
-                {nftData.imgUrl === undefined && nftData.type != 'Audio NFT' && (
+                {nftData.imgUrl === undefined && nftData.type === 'OTHER' && assetMapper[nftData.tokenId] && (
+                  <TokenIcon src={ASSET_URL + "/" + assetMapper[nftData.tokenId]}
+                    sx={{
+                      position: 'absolute',
+                      top: '42%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                  />
+                )
+                }
+                {nftData.remainingVest && 
+                <Box>
+                  Vested tokens remaining: {nftData.remainingVest}
+                </Box>
+                }
+                {nftData.imgUrl === undefined && nftData.type != 'AUDIO' && !assetMapper[nftData.tokenId] && (
                   <HideImageIcon
                     sx={{
                       position: 'absolute',
@@ -314,25 +391,33 @@ const NftCard: FC<INftCard> = ({
                     nftData.collection
                   )}
                   {' '}
-                  {nftData.artist &&
+                  {showArtist && (
                     <Typography
                       sx={{
                         fontStyle: 'italic',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
-                        textOverflow: nftData.artist && 'ellipsis',
+                        textOverflow: artist && 'ellipsis',
                       }}
                     >
-
-                      <>By <Link
-                        href={'/users/' + nftData.artist}
-                      >
-                        {nftData.artist}
-                      </Link>
-                      </>
-
+                      {artist ? (
+                        <>By <Link
+                          href={'/users/' + artist}
+                        >
+                          {artist}
+                        </Link>
+                        </>
+                      ) : (
+                        <Skeleton
+                          variant="text"
+                          sx={{
+                            fontSize: '1.1rem',
+                            display: 'inline-block',
+                            width: '220px'
+                          }} />
+                      )}
                     </Typography>
-                  }
+                  )}
                 </Box>
               </Grid2>
             </Grid2>
@@ -401,6 +486,12 @@ const BpCheckedIcon = styled(BpIcon)(({ theme }) => ({
   'input:hover ~ &': {
     backgroundColor: '#106ba3',
   },
+}));
+
+const TokenIcon = styled("img")(() => ({
+  width: "8rem",
+  height: "8rem",
+  borderRadius: "8px",
 }));
 
 export default NftCard;
