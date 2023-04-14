@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Typography, Button, Box } from "@mui/material";
 import ArtistForm from "@components/create/ArtistForm";
 import { IArtistData, artistDataInit } from "@pages/mint";
-import UserProfile from "@components/UserProfile";
+import UserProfile from "@components/user/UserProfile";
 import { getErgoWalletContext } from "@components/wallet/AddWallet";
 import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import { WalletContext } from "@contexts/WalletContext";

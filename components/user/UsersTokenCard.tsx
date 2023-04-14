@@ -46,7 +46,7 @@ export interface INftItem {
   remainingVest?: number;
 }
 
-interface INftCard {
+interface IUsersTokenCard {
   nftData: INftItem;
   index?: number;
   selected?: boolean[];
@@ -57,7 +57,7 @@ const randomInteger = (min: number, max: number) => {
   return (min + Math.random() * (max - min)).toFixed();
 };
 
-const NftCard: FC<INftCard> = ({
+const UsersTokenCard: FC<IUsersTokenCard> = ({
   nftData,
   index,
   selected,
@@ -494,4 +494,4 @@ const TokenIcon = styled("img")(() => ({
   borderRadius: "8px",
 }));
 
-export default NftCard;
+export default UsersTokenCard;

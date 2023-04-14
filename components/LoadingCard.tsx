@@ -11,7 +11,7 @@ import {
 import useResizeObserver from "use-resize-observer";
 import Grid2 from '@mui/material/Unstable_Grid2'; // Grid version 2
 
-const NftCard: FC = () => {
+const LoadingCard: FC = () => {
   const theme = useTheme()
   const { ref, width = 1 } = useResizeObserver<HTMLDivElement>();
   const [newWidth, setNewWidth] = useState(300)
@@ -70,4 +70,4 @@ const NftCard: FC = () => {
     </>
   );
 };
-export default NftCard;
+export default LoadingCard;

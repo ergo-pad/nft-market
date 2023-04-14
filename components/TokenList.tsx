@@ -18,6 +18,7 @@ import SearchBar from '@components/SearchBar'
 import SortBy from '@components/SortBy'
 import LoadingCard from '@components/LoadingCard'
 import { filterInit, IFilters } from '@components/FilterOptions';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface ITokenListProps {
   nftListArray: INftItem[];
