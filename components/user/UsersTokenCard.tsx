@@ -15,7 +15,6 @@ import { useRouter } from 'next/router'
 import { styled } from '@mui/material/styles';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import useResizeObserver from "use-resize-observer";
-import { getArtist } from '@utils/get-artist';
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import HideImageIcon from '@mui/icons-material/HideImage';
 import axios from 'axios';
@@ -46,7 +45,7 @@ export interface INftItem {
   remainingVest?: number;
 }
 
-interface INftCard {
+interface IUsersTokenCard {
   nftData: INftItem;
   index?: number;
   selected?: boolean[];
@@ -57,7 +56,7 @@ const randomInteger = (min: number, max: number) => {
   return (min + Math.random() * (max - min)).toFixed();
 };
 
-const NftCard: FC<INftCard> = ({
+const UsersTokenCard: FC<IUsersTokenCard> = ({
   nftData,
   index,
   selected,
@@ -494,4 +493,4 @@ const TokenIcon = styled("img")(() => ({
   borderRadius: "8px",
 }));
 
-export default NftCard;
+export default UsersTokenCard;

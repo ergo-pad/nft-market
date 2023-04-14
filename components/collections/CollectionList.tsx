@@ -15,7 +15,6 @@ import {
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
 import CollectionFilterOptions from "@components/collections/CollectionFilterOptions";
-import NftCard, { INftItem } from '@components/NftCard';
 import SearchBar from '@components/SearchBar'
 import CollectionSort from '@components/collections/CollectionSort'
 import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel } from '@mui/x-data-grid';

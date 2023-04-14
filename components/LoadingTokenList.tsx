@@ -10,11 +10,7 @@ import {
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
-import FilterOptions from "@components/FilterOptions";
-import NftCard, { INftItem } from '@components/NftCard';
 import SearchBar from '@components/SearchBar'
-import SortBy from '@components/SortBy'
-import { ICollectionTraits, ICollectionRarities } from "@components/collections/Properties";
 import LoadingCard from '@components/LoadingCard'
 
 export interface ConfirmationDialogRawProps {
@@ -25,12 +21,12 @@ export interface ConfirmationDialogRawProps {
   onClose: (value?: string) => void;
 }
 
-export interface ITokenListProps {
+export interface ILoadingTokenListProps {
   numberToDisplay?: number;
   notFullWidth?: boolean;
 }
 
-const TokenList: FC<ITokenListProps> = ({ numberToDisplay, notFullWidth }) => {
+const LoadingTokenList: FC<ILoadingTokenListProps> = ({ numberToDisplay, notFullWidth }) => {
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [filterDialogvalue, setFilterDialogValue] = React.useState("What");
   const [updatedData, setUpdatedData] = useState([''])
@@ -170,4 +166,4 @@ function ConfirmationDialogRaw(props: ConfirmationDialogRawProps) {
   );
 }
 
-export default TokenList
+export default LoadingTokenList

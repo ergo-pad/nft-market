@@ -4,7 +4,7 @@ import type { AppProps } from "next/app";
 import { DarkTheme, LightTheme } from "@theme/theme";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Layout from "components/Layout";
+import Layout from "@components/layout/Layout";
 import Head from "next/head";
 import { AnimatePresence } from "framer-motion";
 import { ThemeContext } from "@contexts/ThemeContext";

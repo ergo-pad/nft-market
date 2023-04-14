@@ -11,11 +11,11 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { recentNfts } from "@components/placeholders/recentNfts";
-import UserProfile from "@components/UserProfile";
+import UserProfile from "@components/user/UserProfile";
 import { useRouter } from "next/router";
 import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import TokenList from "@components/TokenList";
-import TokenListLoadingTest from "@components/TokenListLoadingTest";
+import UsersTokenList from "@components/user/UsersTokenList";
 import { getWalletList } from "@utils/assetsNew";
 import { WalletContext } from "@contexts/WalletContext";
 
@@ -129,7 +129,7 @@ const User: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="owned" sx={customTabPanelSx}>
-              <TokenListLoadingTest
+              <UsersTokenList
                 loading={loading}
                 setLoading={setLoading}
                 loadingAmount={12}

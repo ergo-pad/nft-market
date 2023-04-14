@@ -17,13 +17,13 @@ import { ThemeContext } from '@emotion/react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useRouter } from 'next/router'
 
-interface INftCardProps {
+interface IBasicCardProps {
   imgUrl?: string;
   link?: string;
   name?: string;
 }
 
-const NftCard: FC<INftCardProps> = ({ imgUrl, link, name }) => {
+const BasicCard: FC<IBasicCardProps> = ({ imgUrl, link, name }) => {
   const router = useRouter();
 
   const randomInteger = (min: number, max: number) => {
@@ -76,4 +76,4 @@ const NftCard: FC<INftCardProps> = ({ imgUrl, link, name }) => {
   );
 };
 
-export default NftCard;
+export default BasicCard;
