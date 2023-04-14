@@ -15,7 +15,6 @@ import { useRouter } from 'next/router'
 import { styled } from '@mui/material/styles';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import useResizeObserver from "use-resize-observer";
-import { getArtist } from '@utils/get-artist';
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import HideImageIcon from '@mui/icons-material/HideImage';
 
@@ -95,26 +94,7 @@ const SaleCard: FC<ISaleCard> = ({
   const [artist, setArtist] = useState<string | null>(null);
   const [showArtist, setShowArtist] = useState(true)
 
-  useEffect(() => {
-    const fetchArtist = async () => {
-      if (nftData.tokenId) {
-        let artist = null
-        if (localStorage.getItem(`token-artist-${nftData.tokenId}`)) {
-          artist = localStorage.getItem(`token-artist-${nftData.tokenId}`)
-        }
-        else {
-          artist = await getArtist(nftData.tokenId);
-          localStorage.setItem(`token-artist-${nftData.tokenId}`, artist)
-        }
-        if (artist === null || artist === 'null') {
-          setShowArtist(false)
-          setArtist(null);
-        }
-        else setArtist(artist);
-      }
-    }
-    fetchArtist();
-  }, [nftData.tokenId]);
+
 
   return (
     <>

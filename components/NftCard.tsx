@@ -15,9 +15,10 @@ import { useRouter } from 'next/router'
 import { styled } from '@mui/material/styles';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import useResizeObserver from "use-resize-observer";
-import { getArtist } from '@utils/get-artist';
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import HideImageIcon from '@mui/icons-material/HideImage';
+import axios from 'axios';
+import { getNautilusAddressMapper, ASSET_URL } from "@utilities/LogoMapper";
 
 // import dynamic from 'next/dynamic'
 // const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
@@ -34,13 +35,17 @@ export interface INftItem {
   currency?: string;
   rarity?: string;
   saleType?: 'mint' | 'auction' | 'sale';
+  artist?: string;
+  artistLink?: string;
   collection?: string;
   collectionLink?: string;
   explicit?: boolean;
   type?: string;
+  loading?: boolean;
+  remainingVest?: number;
 }
 
-interface INftCard {
+interface INftCardCard {
   nftData: INftItem;
   index?: number;
   selected?: boolean[];
@@ -51,7 +56,7 @@ const randomInteger = (min: number, max: number) => {
   return (min + Math.random() * (max - min)).toFixed();
 };
 
-const NftCard: FC<INftCard> = ({
+const NftCardCard: FC<INftCardCard> = ({
   nftData,
   index,
   selected,
@@ -92,19 +97,40 @@ const NftCard: FC<INftCard> = ({
     if (width > 260) setNewWidth(width)
   }, [width])
 
+  const [imageUrl, setImageUrl] = useState<string>('')
+  useEffect(() => {
+    if (nftData.imgUrl) {
+      const ipfsPrefix = 'ipfs://';
+      const url = nftData.imgUrl
+      if (!url.startsWith(ipfsPrefix) && url.startsWith('http://')) setImageUrl('https://' + url.substring(7))
+      else if (!url.startsWith(ipfsPrefix)) setImageUrl(url)
+      else setImageUrl(url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`))
+    }
+    else if (nftData.imgUrl) setImageUrl(nftData.imgUrl)
+    else setImageUrl('')
+  }, [nftData])
+
   const [artist, setArtist] = useState<string | null>(null);
   const [showArtist, setShowArtist] = useState(true)
-
   useEffect(() => {
     const fetchArtist = async () => {
       if (nftData.tokenId) {
         let artist = null
-        if (localStorage.getItem(`token-artist-${nftData.tokenId}`)) {
-          artist = localStorage.getItem(`token-artist-${nftData.tokenId}`)
+        const cache = localStorage.getItem(`token-artist-${nftData.tokenId}`)
+        if (cache) {
+          artist = cache
         }
         else {
-          artist = await getArtist(nftData.tokenId);
-          localStorage.setItem(`token-artist-${nftData.tokenId}`, artist)
+          const apiCall = await axios
+            .get(process.env.ERGOPAD_API + `/asset/info/${nftData.tokenId}/minter`)
+            .catch((err) => {
+              console.log("ERROR FETCHING: ", err);
+            });
+
+          if (apiCall?.data) {
+            artist = apiCall.data.minterAddress
+            localStorage.setItem(`token-artist-${nftData.tokenId}`, artist)
+          }
         }
         if (artist === null || artist === 'null') {
           setShowArtist(false)
@@ -113,8 +139,21 @@ const NftCard: FC<INftCard> = ({
         else setArtist(artist);
       }
     }
-    fetchArtist();
-  }, [nftData.tokenId]);
+    if (!nftData.loading) fetchArtist();
+  }, [nftData]);
+
+  const [assetMapper, setAssetMapper] = useState<any>({});
+  useEffect(() => {
+    let isMounted = true;
+    const loadMapper = async () => {
+      const mapper = await getNautilusAddressMapper();
+      if (isMounted) setAssetMapper(mapper);
+    };
+    loadMapper();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <>
@@ -140,122 +179,154 @@ const NftCard: FC<INftCard> = ({
             false
           }
         >
-          <Box ref={ref} sx={{
-            height: `${newWidth}px`,
-            minHeight: '260px',
-            borderBottomWidth: '1px',
-            borderBottomStyle: 'solid',
-            borderBottomColor: theme.palette.divider,
-            backgroundImage: nftData.imgUrl ? `url(${nftData.imgUrl})` : '',
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center center",
-            transition: 'height 70ms linear'
-          }}>
-            {nftData.type === 'Audio NFT' && (
-              <AudiotrackIcon
-                sx={{
-                  position: 'absolute',
-                  color: theme.palette.divider,
-                  fontSize: '8rem',
-                  top: '42%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)'
-                }}
-              />
-            )}
-            {nftData.imgUrl === undefined && nftData.type != 'Audio NFT' && (
-              <HideImageIcon
-              sx={{
-                position: 'absolute',
-                color: theme.palette.divider,
-                fontSize: '5rem',
-                top: '42%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)'
-              }}
-            />
-            )}
-          </Box>
-          {nftData.price && setSelected === undefined && (
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                p: '8px',
-                background: 'rgba(255,255,255,0.1)',
-                backdropFilter: 'blur(6px)',
-                color: '#fff',
-                borderRadius: '6px',
-              }}
-            >
-              <Typography sx={{ fontWeight: '700', }}>
-                {nftData.price + ' ' + nftData.currency}
-              </Typography>
-            </Box>
-          )}
-          {selected !== undefined && index !== undefined && (
-            <BpCheckbox
-              sx={{
-                position: 'absolute',
-                top: 1,
-                left: 1,
-              }}
-              checked={selected[index] !== undefined ? selected[index] : false}
-              inputProps={{ 'aria-label': 'selected-nft' }}
-            />
-          )}
-          <CardContent sx={{ position: 'relative' }}>
-            {nftData.saleType && setSelected === undefined && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: '-16px',
-                  right: '16px',
-                  height: '28px',
-                  p: '2px 8px',
-                  background: theme.palette.primary.main,
-                  color: theme.palette.background.default,
-                  borderRadius: '50px',
-                }}
-              >
-                <Typography sx={{ fontWeight: '700', }}>
-                  {SaleTypeSwitch(nftData.saleType)}
-                </Typography>
+          {nftData.loading ? (
+            <>
+              <Skeleton variant="rectangular" width={newWidth} height={newWidth} sx={{
+                minWidth: '100%',
+                borderBottomWidth: '1px',
+                borderBottomStyle: 'solid',
+                borderBottomColor: theme.palette.divider,
+              }} />
+              <CardContent sx={{ position: 'relative' }}>
+                <Skeleton variant="text" sx={{ fontSize: '1.27rem' }} />
+              </CardContent>
+            </>
+          ) : (
+            <>
+              <Box ref={ref} sx={{
+                height: `${newWidth}px`,
+                minHeight: '260px',
+                borderBottomWidth: '1px',
+                borderBottomStyle: 'solid',
+                borderBottomColor: theme.palette.divider,
+                backgroundImage: imageUrl ? `url(${imageUrl})` : '',
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center center",
+                transition: 'height 70ms linear'
+              }}>
+                {nftData.type === 'AUDIO' && (
+                  <AudiotrackIcon
+                    sx={{
+                      position: 'absolute',
+                      color: theme.palette.divider,
+                      fontSize: '8rem',
+                      top: '42%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                  />
+                )}
+                {nftData.imgUrl === undefined && nftData.type === 'OTHER' && assetMapper[nftData.tokenId] && (
+                  <TokenIcon src={ASSET_URL + "/" + assetMapper[nftData.tokenId]}
+                    sx={{
+                      position: 'absolute',
+                      top: '42%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                  />
+                )
+                }
+                {nftData.remainingVest && 
+                <Box>
+                  Vested tokens remaining: {nftData.remainingVest}
+                </Box>
+                }
+                {nftData.imgUrl === undefined && nftData.type != 'AUDIO' && !assetMapper[nftData.tokenId] && (
+                  <HideImageIcon
+                    sx={{
+                      position: 'absolute',
+                      color: theme.palette.divider,
+                      fontSize: '5rem',
+                      top: '42%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                  />
+                )}
               </Box>
-            )}
-            <Typography
-              sx={{
-                fontWeight: '600',
-                fontSize: '1.27rem',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}
-            >
-              {nftData.name}
-            </Typography>
-            {/* {nftData.saleEnd && (
-            <Box>
-              <AccessTimeIcon
-                sx={{
-                  verticalAlign: '-0.25em',
-                  mr: '5px',
-                }}
-              />
-              <Box
-                sx={{
-                  display: 'inline-block',
-                }}
-              >
-                <TimeRemaining
-                  endTime={nftData.saleEnd}
+              {nftData.price && setSelected === undefined && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '16px',
+                    right: '16px',
+                    p: '8px',
+                    background: 'rgba(255,255,255,0.1)',
+                    backdropFilter: 'blur(6px)',
+                    color: '#fff',
+                    borderRadius: '6px',
+                  }}
+                >
+                  <Typography sx={{ fontWeight: '700', }}>
+                    {nftData.price + ' ' + nftData.currency}
+                  </Typography>
+                </Box>
+              )}
+              {selected !== undefined && index !== undefined && (
+                <BpCheckbox
+                  sx={{
+                    position: 'absolute',
+                    top: 1,
+                    left: 1,
+                  }}
+                  checked={selected[index] !== undefined ? selected[index] : false}
+                  inputProps={{ 'aria-label': 'selected-nft' }}
                 />
-              </Box>
-            </Box>
-          )} */}
-          </CardContent>
+              )}
+              <CardContent sx={{ position: 'relative' }}>
+                {nftData.saleType && setSelected === undefined && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: '-16px',
+                      right: '16px',
+                      height: '28px',
+                      p: '2px 8px',
+                      background: theme.palette.primary.main,
+                      color: theme.palette.background.default,
+                      borderRadius: '50px',
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: '700', }}>
+                      {SaleTypeSwitch(nftData.saleType)}
+                    </Typography>
+                  </Box>
+                )}
+                <Typography
+                  sx={{
+                    fontWeight: '600',
+                    fontSize: '1.27rem',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  {nftData.name}
+                </Typography>
+                {/* {nftData.saleEnd && (
+                      <Box>
+                        <AccessTimeIcon
+                          sx={{
+                            verticalAlign: '-0.25em',
+                            mr: '5px',
+                          }}
+                        />
+                        <Box
+                          sx={{
+                            display: 'inline-block',
+                          }}
+                        >
+                          <TimeRemaining
+                            endTime={nftData.saleEnd}
+                          />
+                        </Box>
+                      </Box>
+                    )} */}
+              </CardContent>
+            </>
+          )}
         </CardActionArea>
         <CardActions
           sx={{
@@ -263,71 +334,93 @@ const NftCard: FC<INftCard> = ({
             pt: 0
           }}
         >
-          <Grid2
-            container
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{
-              width: '100%',
-            }}
-          >
-            <Grid2>
-              <Box
-                sx={{
-                  fontWeight: '700',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {nftData.collectionLink ? (
-                  <Link
-                    href={nftData.collectionLink}
-                    sx={{
-                      color: theme.palette.text.secondary,
-                      textDecoration: 'none',
-                      '&:hover': {
-                        textDecoration: 'underline'
-                      }
-                    }}
-                  >
-                    {nftData.collection}
-                  </Link>
-                ) : (
-                  nftData.collection
-                )}
-                {' '}
-                {showArtist && (
-                  <Typography
+          {nftData.loading ? (
+            <Grid2
+              container
+              direction="column"
+              justifyContent="space-between"
+              alignItems="left"
+              sx={{
+                width: '100%',
+              }}
+            >
+              <Grid2>
+                <Skeleton variant="text" sx={{ fontSize: '0.8rem' }} />
+              </Grid2>
+              <Grid2>
+                <Skeleton variant="text" sx={{ fontSize: '0.8rem' }} />
+              </Grid2>
+              <Grid2>
+                <Skeleton variant="text" sx={{ fontSize: '0.8rem' }} />
+              </Grid2>
+            </Grid2>
+          ) : (
+            <Grid2
+              container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{
+                width: '100%',
+              }}
+            >
+              <Grid2>
+                <Box
                   sx={{
-                    fontStyle: 'italic',
+                    fontWeight: '700',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    textOverflow: artist && 'ellipsis',
+                    textOverflow: 'ellipsis'
                   }}
                 >
-                  {artist ? (
-                    <>By <Link
-                      href={'/users/' + artist}
-                    >
-                      {artist}
-                    </Link>
-                    </>
-                  ) : (
-                    <Skeleton
-                      variant="text"
+                  {nftData.collectionLink ? (
+                    <Link
+                      href={nftData.collectionLink}
                       sx={{
-                        fontSize: '1.1rem',
-                        display: 'inline-block',
-                        width: '220px'
-                      }} />
+                        color: theme.palette.text.secondary,
+                        textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline'
+                        }
+                      }}
+                    >
+                      {nftData.collection}
+                    </Link>
+                  ) : (
+                    nftData.collection
                   )}
-                </Typography>
-                )}
-              </Box>
+                  {' '}
+                  {showArtist && (
+                    <Typography
+                      sx={{
+                        fontStyle: 'italic',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: artist && 'ellipsis',
+                      }}
+                    >
+                      {artist ? (
+                        <>By <Link
+                          href={'/users/' + artist}
+                        >
+                          {artist}
+                        </Link>
+                        </>
+                      ) : (
+                        <Skeleton
+                          variant="text"
+                          sx={{
+                            fontSize: '1.1rem',
+                            display: 'inline-block',
+                            width: '220px'
+                          }} />
+                      )}
+                    </Typography>
+                  )}
+                </Box>
+              </Grid2>
             </Grid2>
-          </Grid2>
+          )}
         </CardActions>
       </Card>
     </>
@@ -394,4 +487,10 @@ const BpCheckedIcon = styled(BpIcon)(({ theme }) => ({
   },
 }));
 
-export default NftCard;
+const TokenIcon = styled("img")(() => ({
+  width: "8rem",
+  height: "8rem",
+  borderRadius: "8px",
+}));
+
+export default NftCardCard;

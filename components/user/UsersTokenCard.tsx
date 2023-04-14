@@ -15,7 +15,6 @@ import { useRouter } from 'next/router'
 import { styled } from '@mui/material/styles';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import useResizeObserver from "use-resize-observer";
-import { getArtist } from '@utils/get-artist';
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import HideImageIcon from '@mui/icons-material/HideImage';
 import axios from 'axios';
