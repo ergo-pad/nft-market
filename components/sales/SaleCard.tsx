@@ -27,20 +27,22 @@ export interface ISaleCardItem {
   imgUrl?: string;
   link: string;
   name: string;
-  tokenId: string;
-  qty?: number;
-  price: number;
-  currency: string;
+  qtyRemaining?: number;
+  qtyMinted?: number;
+  price?: number; // optional for now, awaiting API update
+  currency?: string; // optional for now, awaiting API update
   rarity?: string;
   saleType: 'mint' | 'auction' | 'sale';
   collection?: string;
-  collectionLink?: string;
+  collectionId?: string;
+  artist?: string;
+  artistName?: string;
   explicit?: boolean;
   type?: string;
 }
 
 interface ISaleCard {
-  nftData: ISaleCardItem;
+  cardData: ISaleCardItem;
   index?: number;
   selected?: boolean[];
   setSelected?: React.Dispatch<React.SetStateAction<boolean[]>>;
@@ -51,7 +53,7 @@ const randomInteger = (min: number, max: number) => {
 };
 
 const SaleCard: FC<ISaleCard> = ({
-  nftData,
+  cardData,
   index,
   selected,
   setSelected
@@ -91,11 +93,6 @@ const SaleCard: FC<ISaleCard> = ({
     if (width > 260) setNewWidth(width)
   }, [width])
 
-  const [artist, setArtist] = useState<string | null>(null);
-  const [showArtist, setShowArtist] = useState(true)
-
-
-
   return (
     <>
       <Card
@@ -113,7 +110,7 @@ const SaleCard: FC<ISaleCard> = ({
         }}
       >
         <CardActionArea
-          href={setSelected === undefined ? nftData.link : ''}
+          href={setSelected === undefined ? cardData.link : ''}
           onClick={() => setSelected != undefined && handleSelect()}
           disableRipple={selected !== undefined && index !== undefined ?
             true :
@@ -126,13 +123,13 @@ const SaleCard: FC<ISaleCard> = ({
             borderBottomWidth: '1px',
             borderBottomStyle: 'solid',
             borderBottomColor: theme.palette.divider,
-            backgroundImage: nftData.imgUrl ? `url(${nftData.imgUrl})` : '',
+            backgroundImage: cardData.imgUrl ? `url(${cardData.imgUrl})` : '',
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center center",
             transition: 'height 70ms linear'
           }}>
-            {nftData.type === 'Audio NFT' && (
+            {cardData.type === 'Audio NFT' && (
               <AudiotrackIcon
                 sx={{
                   position: 'absolute',
@@ -144,20 +141,20 @@ const SaleCard: FC<ISaleCard> = ({
                 }}
               />
             )}
-            {nftData.imgUrl === undefined && nftData.type != 'Audio NFT' && (
+            {cardData.imgUrl === undefined && cardData.type != 'Audio NFT' && (
               <HideImageIcon
-              sx={{
-                position: 'absolute',
-                color: theme.palette.divider,
-                fontSize: '5rem',
-                top: '42%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)'
-              }}
-            />
+                sx={{
+                  position: 'absolute',
+                  color: theme.palette.divider,
+                  fontSize: '5rem',
+                  top: '42%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)'
+                }}
+              />
             )}
           </Box>
-          {nftData.price && setSelected === undefined && (
+          {cardData.price !== undefined && setSelected === undefined && (
             <Box
               sx={{
                 position: 'absolute',
@@ -171,7 +168,7 @@ const SaleCard: FC<ISaleCard> = ({
               }}
             >
               <Typography sx={{ fontWeight: '700', }}>
-                {nftData.price + ' ' + nftData.currency}
+                {cardData.price + ' ' + cardData.currency}
               </Typography>
             </Box>
           )}
@@ -187,7 +184,7 @@ const SaleCard: FC<ISaleCard> = ({
             />
           )}
           <CardContent sx={{ position: 'relative' }}>
-            {nftData.saleType && setSelected === undefined && (
+            {cardData.saleType && setSelected === undefined && (
               <Box
                 sx={{
                   position: 'absolute',
@@ -201,7 +198,7 @@ const SaleCard: FC<ISaleCard> = ({
                 }}
               >
                 <Typography sx={{ fontWeight: '700', }}>
-                  {SaleTypeSwitch(nftData.saleType)}
+                  {SaleTypeSwitch(cardData.saleType)}
                 </Typography>
               </Box>
             )}
@@ -214,9 +211,9 @@ const SaleCard: FC<ISaleCard> = ({
                 textOverflow: 'ellipsis'
               }}
             >
-              {nftData.name}
+              {cardData.name}
             </Typography>
-            {/* {nftData.saleEnd && (
+            {/* {cardData.saleEnd && (
             <Box>
               <AccessTimeIcon
                 sx={{
@@ -230,7 +227,7 @@ const SaleCard: FC<ISaleCard> = ({
                 }}
               >
                 <TimeRemaining
-                  endTime={nftData.saleEnd}
+                  endTime={cardData.saleEnd}
                 />
               </Box>
             </Box>
@@ -261,9 +258,9 @@ const SaleCard: FC<ISaleCard> = ({
                   textOverflow: 'ellipsis'
                 }}
               >
-                {nftData.collectionLink ? (
+                {cardData.collection && (
                   <Link
-                    href={nftData.collectionLink}
+                    href={'/collections/' + cardData.collectionId}
                     sx={{
                       color: theme.palette.text.secondary,
                       textDecoration: 'none',
@@ -272,38 +269,26 @@ const SaleCard: FC<ISaleCard> = ({
                       }
                     }}
                   >
-                    {nftData.collection}
+                    {cardData.collection}
                   </Link>
-                ) : (
-                  nftData.collection
                 )}
                 {' '}
-                {showArtist && (
+                {cardData.artist && (
                   <Typography
-                  sx={{
-                    fontStyle: 'italic',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: artist && 'ellipsis',
-                  }}
-                >
-                  {artist ? (
+                    sx={{
+                      fontStyle: 'italic',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: cardData.artist && 'ellipsis',
+                    }}
+                  >
                     <>By <Link
-                      href={'/users/' + artist}
+                      href={'/users/' + cardData.artist}
                     >
-                      {artist}
+                      {cardData.artist}
                     </Link>
                     </>
-                  ) : (
-                    <Skeleton
-                      variant="text"
-                      sx={{
-                        fontSize: '1.1rem',
-                        display: 'inline-block',
-                        width: '220px'
-                      }} />
-                  )}
-                </Typography>
+                  </Typography>
                 )}
               </Box>
             </Grid2>

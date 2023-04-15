@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import { recentNfts } from '@components/placeholders/recentNfts'
-import TokenList from '@components/TokenList';
+import SaleList from '@components/sales/SaleList';
 
 // const marketStats = [
 //   {
@@ -90,12 +90,7 @@ const Sales: NextPage = () => {
           </Grid> */}
         </Grid>
       </Grid>
-      <TokenList
-        loading={loading}
-        loadingAmount={10}
-        nftListArray={recentNfts}
-        setDisplayNumber={setNumberNftsShowing}
-      />
+      <SaleList />
     </Container>
   )
 }

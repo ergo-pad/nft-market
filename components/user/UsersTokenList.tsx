@@ -68,7 +68,7 @@ const UsersTokenList: FC<IUsersTokenListProps> = ({ nftListArray, notFullWidth, 
     const list = nftListArray.map((item, i) => {
       return {
         name: item.name,
-        link: '/marketplace/' + item.tokenId,
+        link: '/marketplace/token/' + item.tokenId,
         tokenId: item.tokenId,
         qty: item.amount,
         loading: true

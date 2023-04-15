@@ -1,366 +1,106 @@
 import React, { FC, useState, useEffect } from 'react';
-import type { NextPage } from 'next'
+import { useRouter } from 'next/router';
 import {
   Grid,
-  Container,
   Typography,
   Box,
   Card,
   CardContent,
-  Avatar,
   useTheme,
   useMediaQuery,
-  Icon,
-  Tooltip,
-  Fade,
-  Grow,
-  Divider
+  Skeleton
 } from '@mui/material'
 import Link from '@components/Link'
-import ButtonLink from '@components/ButtonLink'
-import Image from 'next/image';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import dynamic from 'next/dynamic'
-import AuctionBid from '@components/token/AuctionBid';
-import DirectSalesCard, { IDirectSalesCardProps } from '@components/token/DirectSalesCard';
-import MarketSalesCard, { ISalesCardProps } from '@components/token/MarketSalesCard';
-import TokenProperties from '@components/token/TokenProperties';
-import TokenActivity, { ITokenActivity } from '@components/token/TokenActivity';
-import Nft from '@pages/marketplace/[id]';
-import CollectionsIcon from '@mui/icons-material/Collections';
-import MoodIcon from '@mui/icons-material/Mood';
+import { getAssetInfo, resolveIpfs } from '@utils/assetsNew';
+import HideImageIcon from '@mui/icons-material/HideImage';
+import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 
-/// API NEEDED ////////
-const ApiPriceConversion: { [key: string]: number } = {
-  erg: 1.51,
-  ergopad: 0.006
+const textSx = {
+  mb: 0,
+  fontSize: '16px',
+  lineHeight: 1.25
 }
-/// END API NEEDED ///
 
-////////////////////////////////////////////////////////////////////////////////////////
-// BEGIN SAMPLE DATA ///////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
+const boldTextSx = {
+  mb: 0,
+  fontSize: '16px',
+  lineHeight: 1.25,
+  fontWeight: 700
+}
 
-const apiGetSaleById = {
-  "id": "3357bcf6-baa5-4337-a9a0-468364d8a1fd",
-  "name": "Sale Name",
-  "description": "This is the longer sale description, added by the user. ",
-  "startTime": "2023-01-10T11:41:57Z",
-  "endTime": "2023-04-30T23:27:54Z",
-  "sellerWallet": "9h7L7sUHZk43VQC3PHtSp5ujAWcZtYmWATBH746wi75C5XHi68b",
-  "saleWallet": "3n7SxSJE7u1zXqj3JmTPYgnEv7ZGc8ULnfeWCDDgij11rrik43ZWTXAwJyGJondbZ6ssk1yQMbCTpkAd3oqXb2EJ6U1h1wk11asoHuFiF8qZs46eXqvfHUbvPkXa2YVM8bKw53UBsNwpmbV2MfEFi1uoC3hAJ2p4v1y75zxYG",
-  "packs": [
-    {
-      "id": "53b93d59-5e46-4ef8-8f24-81e5704ad51e",
-      "name": "Single NFT",
-      "image": "https://ipfs.io/ipfs/QmXuAc2oQfvbTLmMr4FG3FWriRbuWetCfnu3RdSbq18JKe/ergnomes_s2_airdrop.png",
-      "price": [
-        {
-          "id": "15b4c4f2-4415-4a3f-9777-b9f6bbed02eb",
-          "tokenId": "0000000000000000000000000000000000000000000000000000000000000000",
-          "amount": 1000000,
-          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
-        }
-      ],
-      "content": [
-        {
-          "id": "44126fcf-140c-4270-89e9-dea71bed1944",
-          "rarity": [
-            {
-              "odds": 100,
-              "rarity": "_pt_rarity_Single NFT"
-            }
-          ],
-          "amount": 1,
-          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
-        }
-      ]
-    },
-    {
-      "id": "a4b49f9c-9a68-406a-a6b2-f221e31592bd",
-      "name": "3 Pack",
-      "image": "https://ipfs.io/ipfs/QmXuAc2oQfvbTLmMr4FG3FWriRbuWetCfnu3RdSbq18JKe/ergnomes_s2_airdrop.png",
-      "price": [
-        {
-          "id": "fc2561d4-d35b-47a3-b082-1e71f946832e",
-          "tokenId": "0000000000000000000000000000000000000000000000000000000000000000",
-          "amount": 1000000,
-          "packId": "a4b49f9c-9a68-406a-a6b2-f221e31592bd"
-        }
-      ],
-      "content": [
-        {
-          "id": "111df494-c887-4f3b-937e-99b13f65981a",
-          "rarity": [
-            {
-              "odds": 100,
-              "rarity": "_pt_rarity_3 Pack"
-            }
-          ],
-          "amount": 3,
-          "packId": "a4b49f9c-9a68-406a-a6b2-f221e31592bd"
-        }
-      ]
+interface JsonObject {
+  [key: string]: any;
+}
+
+const flattenJSON = (jsonData: JsonObject): JsonObject => {
+  const _flattenJSON = (obj: JsonObject = {}, res: JsonObject = {}): JsonObject => {
+    Object.keys(obj).forEach((key) => {
+      if (typeof obj[key] !== 'object') {
+        res[key] = obj[key];
+      } else {
+        _flattenJSON(obj[key], res);
+      }
+    });
+    return res;
+  };
+  return _flattenJSON(jsonData);
+};
+
+const parseDescription = (description: string) => {
+  try {
+    return flattenJSON(JSON.parse(description));
+  } catch (e) {
+    try {
+      // parse error some descriptions have unicode escape characters as the first character
+      return flattenJSON(JSON.parse(description.slice(1)));
+    } catch (e) {
+      // description is a string
+      return { description: description ? description : '' };
     }
-  ],
-  "tokens": [],
-  "initialNanoErgFee": 10000000000,
-  "saleFeePct": 5
-}
-
-const saleInfo = {
-  saleName: '',
-  saleDescription: '',
-  collection: {
-    name: '',
-    description: '',
-    featuredImage: '',
-    totalQty: 3000,
-  },
-  tokens: [
-    {
-      title: 'Blockheads Single',
-      description: 'This is the description of the token. You will get one Blockhead selected at random. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      price: 10,
-      currency: 'Erg',
-      mintDate: new Date(1663353871000),
-      tokenId: '9a8b5be32311f123c4e40f22233da12125c2123dcfd8d6a98e5a3659d38511c8',
-      views: 124,
-      collectionTitle: 'Wrath of Gods',
-      collectionUrl: '/collections/wrath-of-gods',
-      artistName: 'Paideia',
-      artistAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-      artistLogoUrl: '/images/paideia-circle-logo.png',
-      traits: [
-        {
-          traitName: 'Rarity',
-          value: 'Common',
-          qtyWithTrait: 2600
-        },
-        {
-          traitName: 'Color',
-          value: 'Blue',
-          qtyWithTrait: 130
-        },
-        {
-          traitName: 'Speed',
-          value: '54',
-          qtyWithTrait: 16
-        },
-        {
-          traitName: 'Hair',
-          value: 'Mohawk',
-          qtyWithTrait: 521
-        },
-      ]
-    }
-  ]
-}
-
-const NftType = {
-  title: 'Monk & Fox #0017',
-  description: 'This is the description of the token. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  mintDate: new Date(1663353871000),
-  tokenId: '9a8b5be32311f123c4e40f22233da12125c2123dcfd8d6a98e5a3659d38511c8',
-  views: 124,
-  category: 'Rare',
-  collectionTitle: 'Wrath of Gods',
-  collectionUrl: '/collections/wrath-of-gods',
-  artistName: 'Paideia',
-  artistAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-  artistLogoUrl: '/images/paideia-circle-logo.png',
-  traits: [
-    {
-      traitName: 'Rarity',
-      value: 'Common',
-      qtyWithTrait: 2600
-    },
-    {
-      traitName: 'Color',
-      value: 'Blue',
-      qtyWithTrait: 130
-    },
-    {
-      traitName: 'Speed',
-      value: '54',
-      qtyWithTrait: 16
-    },
-    {
-      traitName: 'Hair',
-      value: 'Mohawk',
-      qtyWithTrait: 521
-    },
-  ]
-}
-
-const collectionInfo = {
-  totalQty: 3000
-}
-
-const auctionHistory: IAuctionDetailProps[] = [
-  {
-    time: new Date(1679078760000),
-    bidderName: 'Eelon Musk',
-    bidderAddress: '9cmRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidderLogoUrl: '/images/users/eelon-musk.png',
-    bidPrice: 14,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1679035514000),
-    bidderAddress: '9fdPnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidPrice: 13,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1678999514000),
-    bidderAddress: '9xyZdDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidPrice: 12,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1678999214000),
-    bidderName: 'Alone Musk',
-    bidderAddress: '9abCdDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidderLogoUrl: '/images/users/alone-musk.png',
-    bidPrice: 11,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1678912814000),
-    bidderName: 'Elon Mask',
-    bidderAddress: '9tuVzDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidderLogoUrl: '/images/users/elon-mask.png',
-    bidPrice: 10,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1678905614000),
-    bidderAddress: '9heLlOa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidPrice: 9,
-    bidCurrency: 'Erg',
-  },
-  {
-    time: new Date(1664348610000),
-    bidderAddress: '9isItMeYoureLookiNgFor8SGYUbFpqTwE9G78yffudKq59xTa9',
-    bidPrice: 8,
-    bidCurrency: 'Erg',
-  },
-]
-
-const activities: ITokenActivity[] = [
-  {
-    tokenImageUrl: '/images/character1.png',
-    tokenName: 'Blockheads 3 pack',
-    tokenUrl: '',
-    collectionName: 'Ergopad NFTs',
-    collectionUrl: '/collections/ergopad-nfts',
-    initiatorAvatarUrl: '/images/character4.png',
-    initiatorUsername: 'Phil',
-    initiatorAddress: '9isItMeYoureLookiNgFor8SGYUbFpqTwE9G78yffudKq59xTa9',
-    action: 'purchased',
-    date: new Date(1678521600000),
-    transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
-  },
-  {
-    tokenImageUrl: '/images/character1.png',
-    tokenName: 'Blockheads 3 pack',
-    tokenUrl: '',
-    collectionName: 'Ergopad NFTs',
-    collectionUrl: '/collections/ergopad-nfts',
-    initiatorAvatarUrl: '/images/character2.png',
-    initiatorUsername: 'John',
-    initiatorAddress: '9isItMeYoureLookiNgFor8SGYUbFpqTwE9G78yffudKq59xTa9',
-    action: 'opened',
-    date: new Date(1678701600000),
-    transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
-  },
-  {
-    tokenImageUrl: '/images/character1.png',
-    tokenName: 'Blockheads 3 pack',
-    tokenUrl: '',
-    collectionName: 'Ergopad NFTs',
-    collectionUrl: '/collections/ergopad-nfts',
-    initiatorAvatarUrl: '/images/users/alone-musk.png',
-    initiatorUsername: 'Alice',
-    initiatorAddress: '9isItMeYoureLookiNgFor8SGYUbFpqTwE9G78yffudKq59xTa9',
-    action: 'sale-init',
-    date: new Date(1678608000000),
-    transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
-  },
-  {
-    tokenImageUrl: '/images/character1.png',
-    tokenName: 'Blockheads 3 pack',
-    tokenUrl: '',
-    collectionName: 'Ergopad NFTs',
-    collectionUrl: '/collections/ergopad-nfts',
-    initiatorAvatarUrl: '/images/users/alone-musk.png',
-    initiatorUsername: 'Alice',
-    initiatorAddress: '9isItMeYoureLookiNgFor8SGYUbFpqTwE9G78yffudKq59xTa9',
-    action: 'auction-init',
-    date: new Date(1678608000000),
-    transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
-  },
-  {
-    tokenImageUrl: '/images/character1.png',
-    tokenName: 'Blockheads 3 pack',
-    tokenUrl: '',
-    collectionName: 'Ergopad NFTs',
-    collectionUrl: '/collections/ergopad-nfts',
-    initiatorAvatarUrl: '/images/users/alone-musk.png',
-    initiatorUsername: 'Alice',
-    initiatorAddress: '9isItMeYoureLookiNgFor8SGYUbFpqTwE9G78yffudKq59xTa9',
-    action: 'auction-won',
-    date: new Date(1678608000000),
-    transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
-  },
-  {
-    tokenImageUrl: '/images/character1.png',
-    tokenName: 'Blockheads 3 pack',
-    tokenUrl: '',
-    collectionName: 'Ergopad NFTs',
-    collectionUrl: '/collections/ergopad-nfts',
-    initiatorAvatarUrl: '/images/users/alone-musk.png',
-    initiatorUsername: 'Alice',
-    initiatorAddress: '9isItMeYoureLookiNgFor8SGYUbFpqTwE9G78yffudKq59xTa9',
-    action: 'minted',
-    date: new Date(1678608000000),
-    transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
-  },
-]
-
-////////////////////////////////////////////////////////////////////////////////////////
-// END SAMPLE DATA /////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-
-interface IAuctionDetailProps {
-  time: Date;
-  bidderName?: string;
-  bidderAddress: string;
-  bidderLogoUrl?: string;
-  bidPrice: number;
-  bidCurrency: string;
-}
+  }
+};
 
 const TokenInfo: FC<{
   tokenId: string;
-  directSaleInfo?: IDirectSalesCardProps;
-  marketplaceSaleInfo?: ISalesCardProps;
 }> = (props) => {
-  const apiCallFromAddress = {
-    ...NftType,
-    tokenId: props.tokenId
-  }
-  console.log(apiGetSaleById)
   const theme = useTheme()
-  const [tabValue, setTabValue] = React.useState('info');
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    setTabValue(newValue);
-  };
+
+  const [loading, setLoading] = useState(true)
+  const [tokenDetails, setTokenDetails] = useState<any>({})
+
+  const fetchData = async (id: string) => {
+    setLoading(true)
+    const fetchedInfo = await getAssetInfo(id);
+    console.log(fetchedInfo.data)
+    if (fetchedInfo.data.extraMetaData.standard != 2) {
+      const metaData = parseDescription(fetchedInfo.data.description)
+      const filteredMetaData: any = {};
+      for (let key in metaData) {
+        if (key.toLowerCase() !== 'description') {
+          filteredMetaData[key] = metaData[key];
+        }
+      }
+      setTokenDetails({
+        tokenId: props.tokenId,
+        name: fetchedInfo.data.name,
+        imgUrl: fetchedInfo.data.extraMetaData.link && resolveIpfs(fetchedInfo.data.extraMetaData.link),
+        metaData: filteredMetaData,
+        type: fetchedInfo.data.nftType,
+        description: metaData.description ? metaData.description : metaData.Description
+      })
+    }
+    setLoading(false)
+  }
+
+  // CHANGE THIS
+  // check token info once the API knows if this is a sale or not
+  // because the sale may be providing pack token images
+  useEffect(() => {
+    if (props.tokenId.length === 64) fetchData(props.tokenId)
+    else setLoading(false)
+  }, [props.tokenId])
+
   return (
     <>
       <Grid
@@ -380,18 +120,76 @@ const TokenInfo: FC<{
             sx={{
               position: 'relative',
               mb: '24px',
+              width: '100%',
+              transform: 'height 0.2s linear',
             }}
           >
-            <Image
-              src="/images/cube2.png"
-              layout="responsive"
-              height={'100%'}
-              width={'100%'}
-              style={{
-                borderRadius: '8px',
-              }}
-              alt="cube"
-            />
+            {loading ?
+              <Box
+                sx={{
+                  width: '100%',
+                  pb: '100%',
+                }}
+              >
+                <Skeleton
+                  variant="rectangular"
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    height: '100%',
+                    width: '100%',
+                    borderRadius: '8px',
+                  }}
+                />
+              </Box>
+              :
+              <>
+                {tokenDetails.imgUrl ?
+                  <img
+                    src={tokenDetails.imgUrl}
+                    height='100%'
+                    width='100%'
+                    style={{
+                      borderRadius: '8px',
+                    }}
+                    alt="cube"
+                  />
+                  :
+                  <Box
+                    sx={{
+                      width: '100%',
+                      pb: '100%',
+                      background: theme.palette.background.paper,
+                      borderRadius: '8px'
+                    }}
+                  >
+                    {tokenDetails.type === 'AUDIO' ? (
+                      <AudiotrackIcon
+                        sx={{
+                          position: 'absolute',
+                          color: theme.palette.divider,
+                          fontSize: '12rem',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)'
+                        }}
+                      />
+                    ) : (
+                      <HideImageIcon
+                        sx={{
+                          position: 'absolute',
+                          color: theme.palette.divider,
+                          fontSize: '12rem',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)'
+                        }}
+                      />
+                    )}
+                  </Box>
+                }
+              </>
+            }
           </Box>
 
         </Grid>
@@ -400,187 +198,88 @@ const TokenInfo: FC<{
             pr: { xs: 0, md: '24px' },
           }}
         >
-          <Box
-            sx={{
-              height: '100%',
-              position: 'relative',
-            }}
-          >
-            <Typography variant="h4" sx={{ mb: '24px' }}>
-              {apiCallFromAddress.title}
-            </Typography>
+          <Typography variant="h3" sx={{ mb: 1 }}>
+            {tokenDetails.name}
+          </Typography>
+          <Typography variant="body2">
+            {tokenDetails.description}
+          </Typography>
 
-            <Box sx={{ mb: '12px' }}>
-              {
-                (
-                  (
-                    props.marketplaceSaleInfo &&
-                    props.marketplaceSaleInfo.auction &&
-                    ((props.marketplaceSaleInfo.auction.endTime.getTime() - (Date.now() / 1000)) > 0)
-                  ) ||
-                  props.marketplaceSaleInfo && props.marketplaceSaleInfo.sale
-                ) && <MarketSalesCard {...props.marketplaceSaleInfo} />
-                ||
-                props.directSaleInfo &&
-                <DirectSalesCard {...props.directSaleInfo} />
-              }
-            </Box>
-
-            <Box sx={{ width: '100%', typography: 'body1' }}>
-              <TabContext value={tabValue}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                  <TabList
-                    onChange={handleTabChange}
-                    aria-label="NFT Information Tabs"
-                    variant="fullWidth"
-                    scrollButtons="auto"
-                    allowScrollButtonsMobile
-                  >
-                    <Tab label="Information" value="info" />
-                    {
-                      props.marketplaceSaleInfo && props.marketplaceSaleInfo.auction && <Tab label="Bids" value="auction" />}
-                    <Tab label="Properties" value="properties" />
-                    <Tab label="Activity" value="activity" />
-                  </TabList>
-                </Box>
-
-                {/* INFO TAB */}
-                <Grow in={tabValue == 'info'} mountOnEnter unmountOnExit>
-                  <TabPanel value="info">
-                    <Typography variant="h6" sx={{ mb: '12px' }}>Token Description</Typography>
-
-                    <Typography variant="body2" sx={{ mb: '32px' }}>
-                      {apiCallFromAddress.description}
+          <Card sx={{ mb: 2 }}>
+            <CardContent sx={{ pb: '8px!important' }}>
+              <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                <Grid item>
+                  <Typography sx={boldTextSx}>
+                    Collection:
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography color="text.secondary" sx={textSx}>
+                    <Link href={'/'}>
+                      Collection Name
+                    </Link>
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                <Grid item>
+                  <Typography sx={boldTextSx}>
+                    Artist:
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography color="text.secondary" sx={textSx}>
+                    <Link href={'/'}>
+                      Artist Name
+                    </Link>
+                  </Typography>
+                </Grid>
+              </Grid>
+              {tokenDetails.type && (
+                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Grid item>
+                    <Typography sx={boldTextSx}>
+                      Token Type:
                     </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography color="text.secondary" sx={textSx}>
+                      {tokenDetails.type}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
+            </CardContent>
+          </Card>
 
-                    <Typography variant="h6" sx={{ mb: '12px' }}>Metadata</Typography>
-
-                    {/* TOKEN ID */}
-                    <Box
-                      sx={{
-                        mb: '12px',
-                        color: theme.palette.text.secondary,
-                        // whiteSpace: 'nowrap',
-                        display: 'flex',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: 'inline-block',
-                          color: theme.palette.text.secondary,
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        <Icon sx={{ display: 'inline-block', verticalAlign: 'middle', mr: '6px', mt: '-3px' }}>tag</Icon>
-                        Token ID: {' '}
-                        <Link href={'https://explorer.ergoplatform.com/en/token/' + apiCallFromAddress.tokenId}>
-                          {apiCallFromAddress.tokenId}
-                        </Link>
-                      </Box>
-                    </Box>
-
-                    {/* DATE MINTED */}
-                    <Box
-                      sx={{
-                        mb: '12px',
-                        color: theme.palette.text.secondary
-                      }}
-                    >
-                      <Icon sx={{ verticalAlign: 'middle', mr: '6px', mt: '-3px' }}>calendar_today</Icon>
-                      Date Minted: <Box sx={{ display: 'inline-block', color: theme.palette.text.primary }}>{apiCallFromAddress.mintDate.toDateString()}</Box>
-                    </Box>
-
-                    {/* Collection */}
-                    <Box
-                      sx={{
-                        mb: '12px',
-                        color: theme.palette.text.secondary
-                      }}
-                    >
-                      <CollectionsIcon sx={{ verticalAlign: 'middle', mr: '6px', mt: '-3px' }} />
-                      Collection: <Link href={apiCallFromAddress.collectionUrl} sx={{ display: 'inline-block' }}>{apiCallFromAddress.collectionTitle}</Link>
-                    </Box>
-
-                    {/* Artist */}
-                    <Box
-                      sx={{
-                        mb: '12px',
-                        color: theme.palette.text.secondary
-                      }}
-                    >
-                      <MoodIcon sx={{ verticalAlign: 'middle', mr: '6px', mt: '-3px' }} />
-                      Artist: <Link href={'/users/' + apiCallFromAddress.artistAddress} sx={{ display: 'inline-block' }}>{apiCallFromAddress.artistName}</Link>
-                    </Box>
-
-                  </TabPanel>
-                </Grow >
-
-                {/* AUCTION TAB */}
-                <Grow in={tabValue == 'auction'} mountOnEnter unmountOnExit>
-                  <TabPanel value="auction">
-                    {auctionHistory.map((props, i) => {
-                      return (
-                        <AuctionBid
-                          name={props.bidderName}
-                          pfpUrl={props.bidderLogoUrl}
-                          address={props.bidderAddress}
-                          date={props.time}
-                          price={{
-                            price: props.bidPrice,
-                            currency: props.bidCurrency,
-                            usdConversion: ApiPriceConversion[props.bidCurrency.toLowerCase()]
-                          }}
-                          timeIcon="schedule"
-                          key={i}
-                        />
-                      )
-                    })}
-                  </TabPanel>
-                </Grow >
-
-                {/* TRAITS TAB */}
-                <Grow in={tabValue == 'properties'} mountOnEnter unmountOnExit>
-                  <TabPanel value="properties">
-                    <TokenProperties
-                      collectionTotalQty={collectionInfo.totalQty}
-                      traits={NftType.traits}
-                    />
-                  </TabPanel>
-                </Grow >
-
-                {/* ACTIVITY TAB */}
-                <Grow in={tabValue == 'activity'} mountOnEnter unmountOnExit>
-                  <TabPanel value="activity">
-                    {activities.map((item, i) => {
-                      return (
-                        <TokenActivity
-                          tokenImageUrl={item.tokenImageUrl}
-                          tokenName={item.tokenName}
-                          tokenUrl={item.tokenUrl}
-                          collectionName={item.collectionName}
-                          collectionUrl={item.collectionUrl}
-                          initiatorAvatarUrl={item.initiatorAvatarUrl}
-                          initiatorUsername={item.initiatorUsername}
-                          initiatorAddress={item.initiatorAddress} // for URL 
-                          action={item.action}
-                          date={item.date}
-                          transactionUrl={item.transactionUrl}
-                          key={i}
-                          index={i}
-                        />
-                      )
-                    })}
-                  </TabPanel>
-                </Grow >
-
-              </TabContext>
-            </Box>
-
-          </Box>
+          {tokenDetails.metaData !== undefined && Object.keys(tokenDetails.metaData).length !== 0 && (
+            <Card sx={{ mb: 2 }}>
+              <CardContent sx={{ pb: '8px!important' }}>
+                <Typography variant="h5">
+                  Token Metadata
+                </Typography>
+                {Object.keys(tokenDetails.metaData)
+                  .filter((key) => !key.match(/^[0-9]+$/))
+                  .map((key, i) => (
+                    <Grid container justifyContent="space-between" key={i} sx={{ mb: 1 }}>
+                      <Grid item>
+                        <Typography sx={boldTextSx}>
+                          {key.charAt(0).toUpperCase() + key.slice(1)}:
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Typography color="text.secondary" sx={textSx}>
+                          {tokenDetails.metaData[key]}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  ))
+                }
+              </CardContent>
+            </Card>
+          )}
         </Grid>
-      </Grid>
+      </Grid >
     </>
   )
 };

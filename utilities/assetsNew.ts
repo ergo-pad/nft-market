@@ -42,6 +42,13 @@ export interface IToken {
   remainingVest?: number;
 }
 
+export function resolveIpfs(url: string) {
+  const ipfsPrefix = 'ipfs://';
+  if (!url.startsWith(ipfsPrefix) && url.startsWith('http://')) return 'https://' + url.substring(7);
+  else if (!url.startsWith(ipfsPrefix)) return url;
+  else return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
+}
+
 const reduceBalances = (balances: IBalances) => {
   try {
     if (Object.keys(balances).length === 0) {
@@ -99,7 +106,7 @@ const reduceBalances = (balances: IBalances) => {
   }
 };
 
-const getAssetInfo = (id: string) => {
+export const getAssetInfo = (id: string) => {
   const box = localStorage.getItem(generateAssetInfoStorageKey(id));
   if (box === null) {
     return axios
