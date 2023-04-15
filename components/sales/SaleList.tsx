@@ -1,4 +1,4 @@
-import React, { FC, useState, useMemo, useEffect } from 'react';
+import React, { FC, useState, useEffect, useContext } from 'react';
 import {
   Grid,
   Button,
@@ -8,6 +8,7 @@ import {
   Dialog,
   Typography,
   Box,
+  CircularProgress,
   Divider
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
@@ -17,26 +18,26 @@ import NftCard, { INftItem } from '@components/NftCard';
 import SearchBar from '@components/SearchBar'
 import SortBy from '@components/SortBy'
 import LoadingCard from '@components/LoadingCard'
+import SaleCard, { ISaleCardItem } from '@components/sales/SaleCard';
 import { filterInit, IFilters } from '@components/FilterOptions';
+import { ApiContext, IApiContext } from "@contexts/ApiContext";
 
 export interface ISaleListProps {
-  nftListArray: INftItem[];
-  setDisplayNumber: React.Dispatch<React.SetStateAction<number>>;
   notFullWidth?: boolean;
-  loading?: boolean;
-  setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-  loadingAmount?: number;
 }
 
-const SaleList: FC<ISaleListProps> = ({ nftListArray, setDisplayNumber, notFullWidth, loading, setLoading, loadingAmount }) => {
+const SaleList: FC<ISaleListProps> = ({ notFullWidth }) => {
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
-  const [rawData, setRawData] = useState(nftListArray)
-  const [filteredData, setFilteredData] = useState(nftListArray)
-  const [sortedData, setSortedData] = useState(nftListArray)
-  const [searchedData, setSearchedData] = useState(nftListArray)
-  const [mixedData, setMixedData] = useState(rawData)
-  const [displayedData, setDisplayedData] = useState<INftItem[]>(nftListArray) // data after search, sort, and filter
+  const [rawData, setRawData] = useState<any[]>([])
+  const [filteredData, setFilteredData] = useState<any[]>([])
+  const [sortedData, setSortedData] = useState<any[]>([])
+  const [searchedData, setSearchedData] = useState<any[]>([])
+  const [mixedData, setMixedData] = useState<any[]>([])
+  const [displayedData, setDisplayedData] = useState<ISaleCardItem[]>([]) // data after search, sort, and filter
   const [localLoading, setLocalLoading] = useState(true)
+  const [disableFilters, setDisableFilters] = useState(true)
+  const [vestingNfts, setVestingNfts] = useState<any[]>([])
+  const apiContext = useContext<IApiContext>(ApiContext);
 
   useEffect(() => {
     const newData = filteredData.filter(o1 => searchedData.some(o2 => o1.tokenId === o2.tokenId))
@@ -47,18 +48,50 @@ const SaleList: FC<ISaleListProps> = ({ nftListArray, setDisplayNumber, notFullW
     if (displayedData !== sortedData) setDisplayedData(sortedData)
   }, [sortedData]);
 
-  useEffect(() => {
-    setRawData(nftListArray)
-    setDisplayedData(nftListArray)
-    setFilteredData(nftListArray)
-    setSortedData(nftListArray)
-    setSearchedData(nftListArray)
-    if (!loading) setLocalLoading(false)
-  }, [nftListArray])
-
-  const displayMore = () => {
-    setDisplayNumber((prev: number) => prev + 12)
+  const updateAllData = (data: any[]) => {
+    setSearchedData(data)
+    setFilteredData(data)
+    setSortedData(data)
   }
+
+  useEffect(() => {
+    updateAllData(rawData)
+  }, [rawData])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const saleList = await apiContext.api.get("/sale")
+      const currentSales = saleList.data
+        .filter((item: any) => item?.status === 'WAITING' || item?.status === 'LIVE')
+        .map((item: any) => {
+          return {
+            imgUrl: '',
+            link: '/marketplace/sale/' + item.id,
+            name: item.name,
+            qtyRemaining: item.tokensTotal,
+            qtyMinted: item.startingTokensTotal,
+            price: 
+              item.packs[0]?.price?.tokenId === "0000000000000000000000000000000000000000000000000000000000000000" 
+                ? item.packs[0]?.price?.amount 
+                : 0, // temporary, until we are certain how to derive price from any sale. 
+            currency: 'Erg', // need to look up SigUSD option
+            saleType: 'mint',
+            collection: item.collection?.name,
+            collectionId: item.collection?.id,
+            artist: item.artist?.address,
+            artistName: item.artist?.name,
+            // explicit: false,
+            // type: '',
+          }
+        })
+      setDisplayedData(currentSales)
+      updateAllData(currentSales)
+      setRawData(currentSales)
+      setLocalLoading(false)
+    }
+    fetchData();
+    setDisableFilters(false)
+  }, [])
 
   const handleDialogClick = () => {
     setFilterDialogOpen(true);
@@ -125,18 +158,16 @@ const SaleList: FC<ISaleListProps> = ({ nftListArray, setDisplayNumber, notFullW
         columns={{ xs: 1, sm: 2, md: 3, lg: notFullWidth ? 3 : 4, xl: notFullWidth ? 4 : 5 }}
         sx={{ mb: "24px" }}
       >
-        {loading || localLoading ? (
-          Array(loadingAmount ? loadingAmount : 12).fill(
-            <Grid item xs={1}>
-              <LoadingCard />
-            </Grid>
-          )
+        {localLoading ? (
+          <Box sx={{ textAlign: 'center', py: '10vh', width: '100%' }}>
+            <CircularProgress />
+          </Box>
         ) : (
           displayedData.length > 0 ? displayedData.map((item: any, i: number) => {
             return (
               <Grid key={i} item xs={1}>
-                <NftCard
-                  nftData={item}
+                <SaleCard
+                  cardData={item}
                 />
               </Grid>
             )

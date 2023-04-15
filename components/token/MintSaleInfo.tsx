@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import {
   Grid,
@@ -22,6 +22,97 @@ import { formatNumber } from '@utils/general';
 import { getTokenData, IToken } from '@utils/assets';
 import HideImageIcon from '@mui/icons-material/HideImage';
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
+import { ApiContext, IApiContext } from "@contexts/ApiContext";
+
+interface ISale {
+  id: string;
+  name: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  sellerWallet: string;
+  saleWallet: string;
+  packs: IPack[];
+  collection?: ICollection;
+  artist?: IArtist;
+}
+
+interface IPack {
+  id: string;
+  name: string;
+  image: string;
+  price: IPrice[];
+  content: IContent[];
+}
+
+interface IPrice {
+  id: string;
+  tokenId: string;
+  amount: number;
+  packId: string;
+}
+
+interface IContent {
+  id: string;
+  rarity: IRarity[];
+  amount: number;
+  packId: string;
+}
+
+interface IRarity {
+  odds: number;
+  rarity: string;
+}
+
+interface ICollection {
+  id: string;
+  artistId: string;
+  name: string;
+  tokenId: string | null;
+  description: string;
+  bannerImageUrl: string;
+  featuredImageUrl: string;
+  collectionLogoUrl: string;
+  category: string;
+  mintingExpiry: number;
+  rarities: {
+    image: string;
+    rarity: string;
+    description: string;
+  }[];
+  availableTraits: {
+    max?: number;
+    tpe: string;
+    name: string;
+    image: string;
+    description: string;
+  }[];
+  saleId: string;
+  status: string;
+  mintingTxId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface IArtist {
+  id: string;
+  address: string;
+  name: string;
+  website: string;
+  tagline: string;
+  avatarUrl: string;
+  bannerUrl: string;
+  social: {
+    url: string;
+    socialNetwork: string;
+  }[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ICollectionData {
+
+}
 
 // Packs or no packs? 
 //    a) If packs, are there more than one pack type? 
@@ -78,13 +169,8 @@ const parseDescription = (description: string) => {
 };
 
 const MintSaleInfo: FC<{
-  tokenId: string;
+  saleId: string;
 }> = (props) => {
-  const apiCallFromAddress = {
-    ...NftType,
-    tokenId: props.tokenId,
-    hasPackTokens: true
-  }
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
   const [selected, setSelected] = useState<boolean[]>([])
@@ -95,27 +181,61 @@ const MintSaleInfo: FC<{
     currency: 'Erg',
   })
   const [featuredImage, setFeaturedImage] = useState('')
-
-  const [apiGetSaleById, setApiGetSaleById] = useState(apiGetSaleByIdNoPack)
+  const [loading, setLoading] = useState(true)
+  const [apiGetSaleById, setApiGetSaleById] = useState<ISale>({
+    id: "",
+    name: "",
+    description: "",
+    startTime: "",
+    endTime: "",
+    sellerWallet: "",
+    saleWallet: "",
+    packs: [{
+      id: "",
+      name: "",
+      image: "",
+      price: [
+        {
+          id: "",
+          tokenId: "",
+          amount: 1,
+          packId: ""
+        }
+      ],
+      content: [
+        {
+          id: "",
+          rarity: [
+            {
+              odds: 100,
+              rarity: ""
+            }
+          ],
+          amount: 1,
+          packId: ""
+        }
+      ]
+    }]
+  })
+  const apiContext = useContext<IApiContext>(ApiContext);
 
   useEffect(() => {
-    if (props.tokenId === 'packs') {
-      setApiGetSaleById(apiGetSaleByIdThreePacks)
+    const fetchData = async () => {
+      const currentSale: any = await apiContext.api.get(`/sale/${props.saleId}`)
+      setApiGetSaleById(currentSale.data)
+      setLoading(false)
     }
-    if (props.tokenId === 'single') {
-      setApiGetSaleById(apiGetSaleByIdOnePack)
-    }
-  }, [props.tokenId])
+    fetchData();
+  }, [props.saleId])
 
-  // NOTE CURRENCY IS NAN IF NOT ERG. NEEDS FIX LATER
   useEffect(() => {
-    if (apiGetSaleById !== undefined && apiGetSaleById.packs.length > 1) {
+    if (apiGetSaleById !== undefined && apiGetSaleById.packs.length > 3) {
       setSelected(apiGetSaleById.packs.map((_item, i) => i === 0 ? true : false))
       setSalesProps({
         tokenName: apiGetSaleById.packs[0].name,
         openNow: true,
         price: Number((apiGetSaleById.packs[0].price[0].amount * 0.000000001).toFixed(3)),
-        currency: apiGetSaleById.packs[0].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'NaN',
+        currency: apiGetSaleById.packs[0].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'SigUSD',
       })
       setFeaturedImage(apiGetSaleById.packs[0].image)
     }
@@ -124,7 +244,7 @@ const MintSaleInfo: FC<{
         tokenName: apiGetSaleById.packs[0].name,
         openNow: true,
         price: Number((apiGetSaleById.packs[0].price[0].amount * 0.000000001).toFixed(3)),
-        currency: apiGetSaleById.packs[0].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'NaN',
+        currency: apiGetSaleById.packs[0].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'SigUSD',
       })
       setFeaturedImage(apiGetSaleById.packs[0].image)
     }
@@ -133,7 +253,7 @@ const MintSaleInfo: FC<{
         tokenName: apiGetSaleById.packs[0].name,
         openNow: false,
         price: Number((apiGetSaleById.packs[0].price[0].amount * 0.000000001).toFixed(3)),
-        currency: apiGetSaleById.packs[0].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'NaN',
+        currency: apiGetSaleById.packs[0].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'SigUSD',
       })
     }
   }, [apiGetSaleById])
@@ -154,7 +274,6 @@ const MintSaleInfo: FC<{
 
   }, [selected.toString()])
 
-  const [loading, setLoading] = useState(true)
   const [tokenDetails, setTokenDetails] = useState<any>({
     name: '',
     token: '',
@@ -176,10 +295,10 @@ const MintSaleInfo: FC<{
   // CHANGE THIS
   // check token info once the API knows if this is a sale or not
   // because the sale may be providing pack token images
-  useEffect(() => {
-    if (props.tokenId.length === 64) fetchData(props.tokenId)
-    else setLoading(false)
-  }, [props.tokenId])
+  // useEffect(() => {
+  //   if (props.tokenId.length === 64) fetchData(props.tokenId)
+  //   else setLoading(false)
+  // }, [props.tokenId])
 
   return (
     <>
@@ -227,14 +346,14 @@ const MintSaleInfo: FC<{
                 {featuredImage ? (
                   <>
                     <img
-                    src={featuredImage}
-                    height='100%'
-                    width='100%'
-                    style={{
-                      borderRadius: '8px',
-                    }}
-                    alt="cube"
-                  />
+                      src={featuredImage}
+                      height='100%'
+                      width='100%'
+                      style={{
+                        borderRadius: '8px',
+                      }}
+                      alt="cube"
+                    />
                   </>
                 ) : tokenDetails.r9 && tokenDetails.type === 'Image NFT' ?
                   <img
@@ -299,34 +418,38 @@ const MintSaleInfo: FC<{
 
           <Card sx={{ mb: 2 }}>
             <CardContent sx={{ pb: '8px!important' }}>
-              <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-                <Grid item>
-                  <Typography sx={boldTextSx}>
-                    Collection:
-                  </Typography>
+              {apiGetSaleById.collection && (
+                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Grid item>
+                    <Typography sx={boldTextSx}>
+                      Collection:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography color="text.secondary" sx={textSx}>
+                      <Link href={'/collections/' + apiGetSaleById.collection.id}>
+                        {apiGetSaleById.collection.name}
+                      </Link>
+                    </Typography>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Typography color="text.secondary" sx={textSx}>
-                    <Link href={apiCallFromAddress.collectionUrl}>
-                      {apiCallFromAddress.collectionTitle}
-                    </Link>
-                  </Typography>
+              )}
+              {apiGetSaleById.artist && (
+                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Grid item>
+                    <Typography sx={boldTextSx}>
+                      Artist:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography color="text.secondary" sx={textSx}>
+                      <Link href={'/users/' + apiGetSaleById.artist.address}>
+                        {apiGetSaleById.artist.address}
+                      </Link>
+                    </Typography>
+                  </Grid>
                 </Grid>
-              </Grid>
-              <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-                <Grid item>
-                  <Typography sx={boldTextSx}>
-                    Artist:
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <Typography color="text.secondary" sx={textSx}>
-                    <Link href={'/users/' + apiCallFromAddress.artistAddress}>
-                      {apiCallFromAddress.artistName}
-                    </Link>
-                  </Typography>
-                </Grid>
-              </Grid>
+              )}
               {apiGetSaleById.endTime && (
                 <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
                   <Grid item>
@@ -336,7 +459,7 @@ const MintSaleInfo: FC<{
                   </Grid>
                   <Grid item>
                     <Typography color="text.secondary" sx={textSx}>
-                      {dayjs(apiGetSaleById.endTime).toString()}
+                      {dayjs(apiGetSaleById?.endTime).toString()}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -399,18 +522,19 @@ const MintSaleInfo: FC<{
             </Card>
           )}
 
-          {apiGetSaleById !== undefined && apiGetSaleById.packs.length > 1 && (
+          {apiGetSaleById !== undefined && apiGetSaleById.packs.length > 3 && (
             <>
               <Paper sx={{ mb: 2, p: 2 }}>
                 <Typography variant="h5">
                   Choose a pack
                 </Typography>
-                {apiGetSaleById.packs.map((item, i) => {
+                {apiGetSaleById.packs.filter((_item, i) => i % 3 === 0).map((item, i) => {
+                  const packIndex = i * 3
                   return (
                     <PackTokenSelector
-                      key={i}
-                      index={i}
-                      packInfo={apiGetSaleById.packs[i]}
+                      key={packIndex}
+                      index={packIndex}
+                      packInfo={apiGetSaleById.packs[packIndex]}
                       selected={selected}
                       setSelected={setSelected}
                     />
@@ -422,7 +546,8 @@ const MintSaleInfo: FC<{
                   Pack Contents
                 </Typography>
                 <List dense sx={{ transition: 'height 0.2s ease-out', height: '100%' }}>
-                  {apiGetSaleById.packs.map((pack, i) => {
+                  {apiGetSaleById.packs.filter((_item, i) => i % 3 === 0).map((pack, index) => {
+                    const i = index * 3
                     return (
                       <Collapse key={i} in={selected[i]}>
                         {pack.content.map((content, i) => {
@@ -465,8 +590,8 @@ const MintSaleInfo: FC<{
             </>
           )}
           {apiGetSaleById !== undefined &&
-            apiGetSaleById.packs.length === 1 &&
-            apiGetSaleById.packs[0].image !== '' && (
+            apiGetSaleById.packs.length <= 3 &&
+            (
               apiGetSaleById.packs[0].content.map((content, i) => {
                 const totalOdds = content.rarity.reduce(function (tot, arr) {
                   return tot + arr.odds;
@@ -525,269 +650,3 @@ const plural = (str: string, num: number) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/// API NEEDED ////////
-const ApiPriceConversion: { [key: string]: number } = {
-  erg: 1.51,
-  ergopad: 0.006
-}
-/// END API NEEDED ///
-
-////////////////////////////////////////////////////////////////////////////////////////
-// BEGIN SAMPLE DATA ///////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-
-const apiGetSaleByIdThreePacks = {
-  "id": "3357bcf6-baa5-4337-a9a0-468364d8a1fd",
-  "name": "Blitz TCG: 1st Edition",
-  "description": "This is the sale description, added by the user. It can be as long or short as they choose, or left off. ",
-  "startTime": "2023-01-10T11:41:57Z",
-  "endTime": "2023-04-30T23:27:54Z",
-  "sellerWallet": "9h7L7sUHZk43VQC3PHtSp5ujAWcZtYmWATBH746wi75C5XHi68b",
-  "saleWallet": "3n7SxSJE7u1zXqj3JmTPYgnEv7ZGc8ULnfeWCDDgij11rrik43ZWTXAwJyGJondbZ6ssk1yQMbCTpkAd3oqXb2EJ6U1h1wk11asoHuFiF8qZs46eXqvfHUbvPkXa2YVM8bKw53UBsNwpmbV2MfEFi1uoC3hAJ2p4v1y75zxYG",
-  "packs": [
-    {
-      "id": "53b93d59-5e46-4ef8-8f24-81e5704ad51e",
-      "name": "Single",
-      "image": "/images/nft1.png",
-      "price": [
-        {
-          "id": "15b4c4f2-4415-4a3f-9777-b9f6bbed02eb",
-          "tokenId": "0000000000000000000000000000000000000000000000000000000000000000",
-          "amount": 7000000000,
-          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
-        }
-      ],
-      "content": [
-        {
-          "id": "44126fcf-140c-4270-89e9-dea71bed1944",
-          "rarity": [
-            {
-              "odds": 20,
-              "rarity": "_pt_rarity_Single NFT"
-            }
-          ],
-          "amount": 1,
-          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
-        }
-      ]
-    },
-    {
-      "id": "a4b49f9c-9a68-406a-a6b2-f221e31592bd",
-      "name": "3 Pack",
-      "image": "/images/nft2.png",
-      "price": [
-        {
-          "id": "fc2561d4-d35b-47a3-b082-1e71f946832e",
-          "tokenId": "0000000000000000000000000000000000000000000000000000000000000000",
-          "amount": 10000000000,
-          "packId": "a4b49f9c-9a68-406a-a6b2-f221e31592bd"
-        }
-      ],
-      "content": [
-        {
-          "id": "111df494-c887-4f3b-937e-99b13f65981a",
-          "rarity": [
-            {
-              "odds": 100,
-              "rarity": "Rare"
-            },
-            {
-              "odds": 25,
-              "rarity": "Common"
-            }
-          ],
-          "amount": 1,
-          "packId": "a4b49f9c-9a68-406a-a6b2-f221e31592bd"
-        },
-        {
-          "id": "111df494-c887-4f3b-937e-99b13f65981a",
-          "rarity": [
-            {
-              "odds": 100,
-              "rarity": "_pt_rarity_3 Pack"
-            },
-          ],
-          "amount": 2,
-          "packId": "a4b49f9c-9a68-406a-a6b2-f221e31592bd"
-        }
-      ]
-    },
-    {
-      "id": "a4b49f9c-9a68-406a-a6b2-f221e31592bd",
-      "name": "5 Pack",
-      "image": "/images/Frame_230048.png",
-      "price": [
-        {
-          "id": "fc2561d4-d35b-47a3-b082-1e71f946832e",
-          "tokenId": "0000000000000000000000000000000000000000000000000000000000000000",
-          "amount": 15000000000,
-          "packId": "a4b49f9c-9a68-406a-a6b2-f221e31592bd"
-        }
-      ],
-      "content": [
-        {
-          "id": "111df494-c887-4f3b-937e-99b13f65981a",
-          "rarity": [
-            {
-              "odds": 100,
-              "rarity": "_pt_rarity_5 Pack"
-            }
-          ],
-          "amount": 3,
-          "packId": "a4b49f9c-9a68-406a-a6b2-f221e31592bd"
-        }
-      ]
-    }
-  ],
-  "tokens": [],
-  "initialNanoErgFee": 10000000000,
-  "saleFeePct": 5
-}
-
-const apiGetSaleByIdOnePack = {
-  "id": "3357bcf6-baa5-4337-a9a0-468364d8a1fd",
-  "name": "Blockhead Single Pack",
-  "description": "This is the sale description, added by the user. It can be as long or short as they choose, or left off. ",
-  "startTime": "2023-01-10T11:41:57Z",
-  "endTime": "2023-04-30T23:27:54Z",
-  "sellerWallet": "9h7L7sUHZk43VQC3PHtSp5ujAWcZtYmWATBH746wi75C5XHi68b",
-  "saleWallet": "3n7SxSJE7u1zXqj3JmTPYgnEv7ZGc8ULnfeWCDDgij11rrik43ZWTXAwJyGJondbZ6ssk1yQMbCTpkAd3oqXb2EJ6U1h1wk11asoHuFiF8qZs46eXqvfHUbvPkXa2YVM8bKw53UBsNwpmbV2MfEFi1uoC3hAJ2p4v1y75zxYG",
-  "packs": [
-    {
-      "id": "53b93d59-5e46-4ef8-8f24-81e5704ad51e",
-      "name": "Single NFT",
-      "image": "/images/Frame_230048.png",
-      "price": [
-        {
-          "id": "15b4c4f2-4415-4a3f-9777-b9f6bbed02eb",
-          "tokenId": "0000000000000000000000000000000000000000000000000000000000000000",
-          "amount": 7000000000,
-          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
-        }
-      ],
-      "content": [
-        {
-          "id": "44126fcf-140c-4270-89e9-dea71bed1944",
-          "rarity": [
-            {
-              "odds": 20,
-              "rarity": "_pt_rarity_Single NFT"
-            }
-          ],
-          "amount": 1,
-          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
-        }
-      ]
-    }
-  ],
-  "tokens": [],
-  "initialNanoErgFee": 10000000000,
-  "saleFeePct": 5
-}
-
-const apiGetSaleByIdNoPack = {
-  "id": "3357bcf6-baa5-4337-a9a0-468364d8a1fd",
-  "name": "Sale Name",
-  "description": "This is the sale description, added by the user. It can be as long or short as they choose, or left off. ",
-  "startTime": "2023-01-10T11:41:57Z",
-  "endTime": "2023-04-30T23:27:54Z",
-  "sellerWallet": "9h7L7sUHZk43VQC3PHtSp5ujAWcZtYmWATBH746wi75C5XHi68b",
-  "saleWallet": "3n7SxSJE7u1zXqj3JmTPYgnEv7ZGc8ULnfeWCDDgij11rrik43ZWTXAwJyGJondbZ6ssk1yQMbCTpkAd3oqXb2EJ6U1h1wk11asoHuFiF8qZs46eXqvfHUbvPkXa2YVM8bKw53UBsNwpmbV2MfEFi1uoC3hAJ2p4v1y75zxYG",
-  "packs": [
-    {
-      "id": "53b93d59-5e46-4ef8-8f24-81e5704ad51e",
-      "name": "Single NFT",
-      "image": "",
-      "price": [
-        {
-          "id": "15b4c4f2-4415-4a3f-9777-b9f6bbed02eb",
-          "tokenId": "0000000000000000000000000000000000000000000000000000000000000000",
-          "amount": 7000000000,
-          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
-        }
-      ],
-      "content": [
-        {
-          "id": "44126fcf-140c-4270-89e9-dea71bed1944",
-          "rarity": [
-            {
-              "odds": 20,
-              "rarity": "_pt_rarity_Single NFT"
-            }
-          ],
-          "amount": 1,
-          "packId": "53b93d59-5e46-4ef8-8f24-81e5704ad51e"
-        }
-      ]
-    }
-  ],
-  "tokens": [],
-  "initialNanoErgFee": 10000000000,
-  "saleFeePct": 5
-}
-
-const collection = {
-  address: "9asdfgEGZKHfKCUasdfvreqK6s6KiALNCFxojUa4Tbibw2Ajw1JFo",
-  collectionName: "Ergopad NFTs",
-  collectionLogo: "/images/collections/ergopad-logo.jpg",
-  bannerUrl: undefined,
-  description: "A psychological phenomenon known as the mere exposure effect is where we develop a preference just because we are familiar with things.",
-  socialLinks: [],
-  category: '',
-  website: 'http://ergopad.io',
-  totalQty: 3000
-};
-
-const NftType = {
-  title: 'Monk & Fox #0017',
-  description: 'This is the description of the token. Suspendisse a, risus nec condimentum volutpat accumsan dui, tincidunt dolor. Id eu, dolor quam fames nisi. Id eu, dolor quam fames nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  mintDate: new Date(1663353871000),
-  tokenId: '9a8b5be32311f123c4e40f22233da12125c2123dcfd8d6a98e5a3659d38511c8',
-  views: 124,
-  category: 'Rare',
-  collectionTitle: 'Wrath of Gods',
-  collectionUrl: '/collections/wrath-of-gods',
-  artistName: 'Paideia',
-  artistAddress: '9gbRnDa1Hih5TepwqAv33b8SGYUbFpqTwE9G78yffudKq59xTa9',
-  artistLogoUrl: '/images/paideia-circle-logo.png',
-  traits: [
-    {
-      traitName: 'Rarity',
-      value: 'Common',
-      qtyWithTrait: 2600
-    },
-    {
-      traitName: 'Color',
-      value: 'Blue',
-      qtyWithTrait: 130
-    },
-    {
-      traitName: 'Speed',
-      value: '54',
-      qtyWithTrait: 16
-    },
-    {
-      traitName: 'Hair',
-      value: 'Mohawk',
-      qtyWithTrait: 521
-    },
-  ]
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////
-// END SAMPLE DATA /////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////

@@ -4,31 +4,29 @@ import { useRouter } from "next/router";
 import {
   Container,
 } from '@mui/material'
-import TokenInfo from '@components/token/TokenInfo';
 import MintSaleInfo from '@components/token/MintSaleInfo';
 import { ISalesCardProps } from '@components/token/MarketSalesCard';
-import { getTokenData, IToken } from '@utils/assets';
 
-const Token: NextPage = () => {
+const Sale: NextPage = () => {
   const router = useRouter()
-  const { id } = router.query;
-  const [tokenId, setTokenId] = useState('')
+  const { saleId } = router.query;
+  const [thisSaleId, setThisSaleId] = useState('')
 
   useEffect(() => {
-    if (id) {
-      setTokenId(id.toString())
+    if (saleId) {
+      setThisSaleId(saleId.toString())
     }
-  }, [id]);
+  }, [saleId]);
 
   return (
     <>
       <Container sx={{ my: '36px' }}>
         <MintSaleInfo
-          tokenId={tokenId}
+          saleId={thisSaleId}
         />
       </Container >
     </>
   )
 }
 
-export default Token
+export default Sale
