@@ -427,7 +427,7 @@ const MintSaleInfo: FC<{
                   </Grid>
                   <Grid item>
                     <Typography color="text.secondary" sx={textSx}>
-                      <Link href={'/collection/' + apiGetSaleById.collection.id}>
+                      <Link href={'/collections/' + apiGetSaleById.collection.id}>
                         {apiGetSaleById.collection.name}
                       </Link>
                     </Typography>
