@@ -161,7 +161,7 @@ const FilterOptions: FC<IFilterOptions> = ({ data, setFilteredValues, filteredVa
     }));
   };
 
-  useEffect(() => {
+  const filterData = () => {
     const filteredData = data.filter(item => {
       const saleType = item.saleType
       const selectedSaleStatusNames = filters.saleStatus
@@ -177,7 +177,11 @@ const FilterOptions: FC<IFilterOptions> = ({ data, setFilteredValues, filteredVa
       return !filters.price.min || item.price > filters.price.min;
     })
     setFilteredValues(filterMin);
-  }, [filters])
+  }
+
+  useEffect(() => {
+    filterData()
+  }, [filters, data])
 
   const saleStatusCheckHandleChange = (i: number) => {
     setFilters(prevFilters => {

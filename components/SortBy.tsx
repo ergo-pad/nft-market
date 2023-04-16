@@ -9,49 +9,19 @@ import { SxProps } from "@mui/material";
 
 interface ISortByProps {
   sx?: SxProps;
-  inputData: any[];
-  setSortedData: React.Dispatch<React.SetStateAction<any[]>>;
-  controlledSortOption?: string;
-  setControlledSortOption?: React.Dispatch<React.SetStateAction<string>>;
+  sortOption: string;
+  setSortOption: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const SortBy: FC<ISortByProps> = ({
   sx,
-  inputData,
-  setSortedData,
-  controlledSortOption,
-  setControlledSortOption
+  sortOption,
+  setSortOption
 }) => {
-  const [sortOption, setSortOption] = React.useState("");
-
-  useEffect(() => {
-    if (controlledSortOption) setSortOption(controlledSortOption)
-  }, [controlledSortOption])
-
-  useEffect(() => {
-    sortData(sortOption)
-  }, [inputData, sortOption])
 
   const handleChange = (event: SelectChangeEvent) => {
     setSortOption(event.target.value as string);
-    if (setControlledSortOption) {
-      setControlledSortOption(event.target.value as string)
-    }
   };
-
-  const sortData = (sort: string) => {
-    if (sort === 'price-lowtohigh') {
-      const sorted = [...inputData].sort((a, b) => (a.price === undefined ? 1 : b.price === undefined ? -1 : a.price - b.price));
-      setSortedData(sorted);
-    }
-    else if (sort === 'price-hightolow') {
-      const sorted = [...inputData].sort((a, b) => (a.price === undefined ? 1 : b.price === undefined ? -1 : b.price - a.price));
-      setSortedData(sorted);
-    }
-    else {
-      setSortedData([...inputData]); // create a new array before setting the state
-    }
-  }
 
   return (
     <FormControl fullWidth sx={sx} variant="filled">
@@ -66,8 +36,8 @@ const SortBy: FC<ISortByProps> = ({
         <MenuItem value="">
           No sorting
         </MenuItem>
-        <MenuItem value={"price-lowtohigh"}>Price: low to high</MenuItem>
-        <MenuItem value={"price-hightolow"}>Price: high to low</MenuItem>
+        <MenuItem value={"price-asc"}>Price: low to high</MenuItem>
+        <MenuItem value={"price-desc"}>Price: high to low</MenuItem>
         {/* <MenuItem value={"ending-soonest"}>Ending Soonest</MenuItem>
         <MenuItem value={"ending-latest"}>Ending Latest</MenuItem>
         <MenuItem value={"newest-first"}>Newest Listings First</MenuItem>

@@ -111,8 +111,6 @@ const User: NextPage = () => {
           {/* ON SALE TAB */}
           <Fade
             in={tabValue == "on-sale"}
-            mountOnEnter
-            unmountOnExit
           >
             <TabPanel value="on-sale" sx={customTabPanelSx}>
               <TokenList
@@ -125,14 +123,10 @@ const User: NextPage = () => {
           {/* OWNED TAB */}
           <Fade
             in={tabValue == "owned"}
-            mountOnEnter
-            unmountOnExit
           >
             <TabPanel value="owned" sx={customTabPanelSx}>
               <UsersTokenList
                 loading={loading}
-                setLoading={setLoading}
-                loadingAmount={12}
                 nftListArray={aggData}
                 notFullWidth
               />
@@ -141,8 +135,6 @@ const User: NextPage = () => {
           {/* ACTIVITY TAB */}
           <Fade
             in={tabValue == "activity"}
-            mountOnEnter
-            unmountOnExit
           >
             <TabPanel value="activity" sx={customTabPanelSx}>
               <Typography sx={{ mb: "24px" }}>Past sales activity</Typography>
