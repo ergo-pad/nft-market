@@ -34,6 +34,7 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
   const [rawData, setRawData] = useState(nftListArray)
   const [filteredData, setFilteredData] = useState(nftListArray)
   const [sortedData, setSortedData] = useState(nftListArray)
+  const [sortOption, setSortOption] = useState('')
   const [searchedData, setSearchedData] = useState(nftListArray)
   const [mixedData, setMixedData] = useState(rawData)
   const [displayedData, setDisplayedData] = useState<INftItem[]>(nftListArray) // data after search, sort, and filter
@@ -81,8 +82,8 @@ const TokenList: FC<ITokenListProps> = ({ nftListArray, setDisplayNumber, notFul
         {desktop && (
           <Grid item sm>
             <SortBy
-              inputData={mixedData}
-              setSortedData={setSortedData}
+              sortOption={sortOption}
+              setSortOption={setSortOption}
             />
           </Grid>
         )}
@@ -253,10 +254,10 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
             <Typography variant="h5" sx={{ mb: 0 }}>Sort</Typography>
             <Divider sx={{ mb: 2 }} />
             <SortBy
-              inputData={mixedData}
-              setSortedData={setLocalSortedData}
-              controlledSortOption={sortOption}
-              setControlledSortOption={setSortOption}
+              // inputData={mixedData}
+              // setSortedData={setLocalSortedData}
+              sortOption={sortOption}
+              setSortOption={setSortOption}
               sx={{ mb: "24px" }}
             />
           </>

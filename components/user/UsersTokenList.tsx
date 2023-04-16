@@ -15,7 +15,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useTheme } from "@mui/material/styles";
 import FilterOptions from "@components/FilterOptions";
 import UsersTokenCard, { INftItem } from '@components/user/UsersTokenCard';
-import SearchBar from '@components/SearchBar'
+import BasicSearchBar from '@components/BasicSearchBar'
 import SortBy from '@components/SortBy'
 import LoadingCard from '@components/LoadingCard'
 import { filterInit, IFilters } from '@components/FilterOptions';
@@ -27,42 +27,68 @@ export interface IUsersTokenListProps {
   nftListArray: any[];
   notFullWidth?: boolean;
   loading?: boolean;
-  setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-  loadingAmount?: number;
 }
 
-const UsersTokenList: FC<IUsersTokenListProps> = ({ nftListArray, notFullWidth, loading, setLoading, loadingAmount }) => {
+const searchAndFilterAndSortData = (filteredData: any[], search: string, searchKey: string, sortBy: string) => {
+  let newData = filteredData
+  console.log(filteredData)
+  if (search) {
+    newData = filteredData.filter(
+      (item) => item[searchKey].toLowerCase().indexOf(search.toLowerCase()) > -1
+    );
+  }
+  if (sortBy) {
+    const sortDirection = sortBy.split('-')[1]
+    const sortKey = sortBy.split('-')[0]
+    if (sortDirection === 'asc') {
+      newData = newData.sort((a, b) => {
+        if (a[sortKey] < b[sortKey]) {
+          return -1;
+        }
+        if (a[sortKey] > b[sortKey]) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    if (sortDirection === 'desc') {
+      newData = newData.sort((a, b) => {
+        if (a[sortKey] > b[sortKey]) {
+          return -1;
+        }
+        if (a[sortKey] < b[sortKey]) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+  }
+  return newData;
+};
+
+const UsersTokenList: FC<IUsersTokenListProps> = ({ nftListArray, notFullWidth, loading }) => {
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [rawData, setRawData] = useState<any[]>([])
   const [filteredData, setFilteredData] = useState<any[]>([])
-  const [sortedData, setSortedData] = useState<any[]>([])
-  const [searchedData, setSearchedData] = useState<any[]>([])
-  const [mixedData, setMixedData] = useState<any[]>([])
-  const [displayedData, setDisplayedData] = useState<INftItem[]>([]) // data after search, sort, and filter
+  const [sortBy, setSortBy] = useState('')
+  const [searchString, setSearchString] = useState<string>('')
+  const [displayedData, setDisplayedData] = useState<INftItem[]>([{link: '', name: '', tokenId: ''}]) // data after search, sort, and filter
   const [localLoading, setLocalLoading] = useState(true)
-  const [disableFilters, setDisableFilters] = useState(true)
-  const { walletAddress, dAppWallet } = useContext(WalletContext);
-  const [vestingNfts, setVestingNfts] = useState<any[]>([])
-  const apiContext = useContext<IApiContext>(ApiContext);
+  const [ready, setReady] = useState(false)
+
+  console.log(displayedData)
 
   useEffect(() => {
-    const newData = filteredData.filter(o1 => searchedData.some(o2 => o1.tokenId === o2.tokenId))
-    if (mixedData !== newData) setMixedData(newData)
-  }, [filteredData, searchedData]);
-
-  useEffect(() => {
-    if (displayedData !== sortedData) setDisplayedData(sortedData)
-  }, [sortedData]);
-
-  const updateAllData = (data: any[]) => {
-    setSearchedData(data)
-    setFilteredData(data)
-    setSortedData(data)
-  }
-
-  useEffect(() => {
-    updateAllData(rawData)
-  }, [rawData])
+    if (ready) {
+      const sorted = searchAndFilterAndSortData(
+        filteredData,
+        searchString,
+        'name',
+        sortBy
+      )
+      setDisplayedData(sorted)
+    }
+  }, [filteredData, searchString, sortBy]);
 
   useEffect(() => {
     const list = nftListArray.map((item, i) => {
@@ -75,10 +101,10 @@ const UsersTokenList: FC<IUsersTokenListProps> = ({ nftListArray, notFullWidth, 
       }
     })
     setDisplayedData(list)
-    updateAllData(list)
     setRawData(list)
-
+    setFilteredData(list)
     if (!loading) setLocalLoading(false)
+
     async function fetchData() {
       const chunks = chunkArray(list, 8);
       for (const chunk of chunks) {
@@ -95,10 +121,24 @@ const UsersTokenList: FC<IUsersTokenListProps> = ({ nftListArray, notFullWidth, 
         });
         return newList;
       });
+      setDisplayedData(prevState => {
+        const newList = prevState.map(item => {
+          const apiItem = additionalData.find(apiItem => apiItem.tokenId === item.tokenId);
+          return apiItem ? { ...item, ...apiItem } : item;
+        });
+        return newList;
+      })
+      setFilteredData(prevState => {
+        const newList = prevState.map(item => {
+          const apiItem = additionalData.find(apiItem => apiItem.tokenId === item.tokenId);
+          return apiItem ? { ...item, ...apiItem } : item;
+        });
+        return newList;
+      })
     }
-
+    
     fetchData();
-    setDisableFilters(false)
+    setReady(true)
   }, [nftListArray])
 
   const handleDialogClick = () => {
@@ -116,13 +156,13 @@ const UsersTokenList: FC<IUsersTokenListProps> = ({ nftListArray, notFullWidth, 
     <>
       <Grid container sx={{ mb: 2 }} spacing={2}>
         <Grid item xs sm={7}>
-          <SearchBar data={rawData} searchKey="name" setFilteredValue={setSearchedData} />
+          <BasicSearchBar searchString={searchString} setSearchString={setSearchString} />
         </Grid>
         {desktop && (
           <Grid item sm>
             <SortBy
-              inputData={mixedData}
-              setSortedData={setSortedData}
+              sortOption={sortBy}
+              setSortOption={setSortBy}
             />
           </Grid>
         )}
@@ -151,12 +191,10 @@ const UsersTokenList: FC<IUsersTokenListProps> = ({ nftListArray, notFullWidth, 
             open={filterDialogOpen}
             onClose={handleDialogClose}
             rawData={rawData}
-            sortedData={sortedData}
-            setSortedData={setSortedData}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
             filteredData={filteredData}
             setFilteredData={setFilteredData}
-            displayedData={displayedData}
-            mixedData={mixedData}
           />
         </Grid>
       </Grid>
@@ -199,12 +237,10 @@ interface FilterDialogProps {
   open: boolean;
   onClose: (value?: string) => void;
   rawData: INftItem[];
-  sortedData: any[];
-  setSortedData: React.Dispatch<React.SetStateAction<any[]>>;
+  sortBy: string;
+  setSortBy: React.Dispatch<React.SetStateAction<string>>;
   filteredData: any[];
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
-  displayedData: any[];
-  mixedData: any[];
 }
 
 const FilterDialog: FC<FilterDialogProps> = (props) => {
@@ -212,18 +248,14 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
     onClose,
     open,
     rawData,
-    sortedData,
-    setSortedData,
+    sortBy,
+    setSortBy,
     filteredData,
     setFilteredData,
-    displayedData,
-    mixedData,
     ...other
   } = props;
   const [localFilteredData, setLocalFilteredData] = useState(rawData);
-  const [localSortedData, setLocalSortedData] = useState<any[]>([])
-  const [savedSortOption, setSavedSortOption] = useState('')
-  const [sortOption, setSortOption] = useState('');
+  const [localSortOption, setLocalSortOption] = useState('')
   const [prevFilters, setPrevFilters] = useState<IFilters>(filterInit);
   const [filters, setFilters] = useState<IFilters>(filterInit);
 
@@ -231,7 +263,7 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
     setLocalFilteredData(rawData)
     setFilters(filterInit)
     if (!desktop) {
-      setSortOption('')
+      setSortBy('')
     }
   }, [rawData])
 
@@ -239,8 +271,7 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
     setLocalFilteredData(filteredData)
     setFilters(prevFilters)
     if (!desktop) {
-      setLocalSortedData(sortedData)
-      setSortOption(savedSortOption)
+      setLocalSortOption(sortBy)
     }
     onClose();
   };
@@ -249,8 +280,7 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
     setFilteredData(localFilteredData)
     setPrevFilters(filters)
     if (!desktop) {
-      setSavedSortOption(sortOption)
-      setSortedData(localSortedData)
+      setSortBy(localSortOption)
     }
     onClose();
   };
@@ -258,7 +288,7 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
   const clearFilters = () => {
     setFilters(filterInit)
     if (!desktop) {
-      setSortOption('')
+      setLocalSortOption('')
     }
   }
 
@@ -294,11 +324,8 @@ const FilterDialog: FC<FilterDialogProps> = (props) => {
             <Typography variant="h5" sx={{ mb: 0 }}>Sort</Typography>
             <Divider sx={{ mb: 2 }} />
             <SortBy
-              inputData={mixedData}
-              setSortedData={setLocalSortedData}
-              controlledSortOption={sortOption}
-              setControlledSortOption={setSortOption}
-              sx={{ mb: "24px" }}
+              sortOption={localSortOption}
+              setSortOption={setLocalSortOption}
             />
           </>
         }
