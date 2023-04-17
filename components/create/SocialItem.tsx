@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import {
   Grid,
   Select,
@@ -86,6 +86,10 @@ const SocialItem: FC<{
     setSocialData(c => c.filter((_current, i) => i !== idx))
     setErrors(c => c.filter((_current, i) => i !== idx))
   }
+
+  useEffect(() => {
+    setSortOption(socialData[index].network)
+  }, [socialData])
 
   return (
     <Grid container spacing={1} sx={{

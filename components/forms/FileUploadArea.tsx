@@ -15,11 +15,13 @@ import {
   ListItemText,
   IconButton,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import Image from "next/image";
 import { bytesToSize, aspectRatioResize } from "@utilities/general";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import { resolveIpfs } from "@utils/assetsNew";
 
 interface IFileData {
   currentFile: File;
@@ -195,6 +197,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
   const [inputKey, setInputKey] = useState(randomNumber());
 
   const standardUpload = async () => {
+    setIsLoading(true);
     try {
       const promises = fileData.map(async (file) => {
         const formData = new FormData();
@@ -216,6 +219,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
     } catch (e) {
       console.log(e);
     }
+    setIsLoading(false);
   };
 
   const handleUpload = async () => {
@@ -224,9 +228,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       console.log("Please, select the file(s) you want to upload");
       return;
     }
-    setIsLoading(true);
     standardUpload();
-    setIsLoading(false);
   };
 
   // auto upload if fileData changes and autoUpload is true
@@ -242,8 +244,8 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
         sx
           ? sx
           : {
-              height: "100%",
-            }
+            height: "100%",
+          }
       }
     >
       <Box
@@ -273,6 +275,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                 <Typography>{title}</Typography>
               </Grid>
               <Grid item>
+                {isLoading && <CircularProgress />}
                 <Button
                   size="small"
                   onClick={() => handleUpload()}
@@ -303,7 +306,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
           // onDragOver={e => handleDragOver(e)}
           onDragEnter={(e) => handleDragEnter(e)}
           onDragLeave={(e) => handleDragLeave(e)}
-          // onDrop={e => handleDrop(e)}
+        // onDrop={e => handleDrop(e)}
         >
           <Input
             ref={inputFileRef}
@@ -387,7 +390,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                   }}
                 >
                   {fileData?.[0]?.previewImage != "" &&
-                  fileData?.[0]?.currentFile?.name != undefined ? (
+                    fileData?.[0]?.currentFile?.name != undefined ? (
                     <>
                       {type === "avatar" ? (
                         <Box sx={{ mx: "auto" }}>
@@ -527,7 +530,37 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
             })}
           </List>
         )}
+        {(fileUrls[0]?.url || fileUrls[0]?.ipfs) && (
+          <Box sx={{ mt: 1 }}>
+            Current Image&#40;s&#41;:
+            {fileUrls.map((item, i) => {
+              if (item.url) {
+                const lastPeriodIndex = item.url.lastIndexOf(".")
+                const secondLastPeriodIndex = item.url.lastIndexOf(".", lastPeriodIndex - 1);
+                const extractedString = item.url.substring(secondLastPeriodIndex + 1);
+                return (
+                  <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center' }} key={i}>
+                    <Avatar src={item.url} variant="rounded" sx={{ mr: 1 }} />
+                    <Typography sx={{ flex: 1 }}>{extractedString}</Typography>
+                  </Box>
+                )
+              }
+              if (item.ipfs) {
+                const url = resolveIpfs(item.ipfs)
+                return (
+                  <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center' }} key={i}>
+                    <Avatar src={url} variant="rounded" sx={{ mr: 1 }} />
+                    <Typography sx={{ flex: 1 }}>{url}</Typography>
+                  </Box>
+                )
+              }
+              return null
+            })}
+          </Box>
+        )}
       </Box>
+
+
     </Box>
   );
 };

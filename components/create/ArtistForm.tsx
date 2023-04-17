@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import SocialSection from '@components/create/SocialSection';
 import { IFileUrl } from '@components/forms/FileUploadArea';
 import { IArtistData, artistDataInit } from '@pages/mint';
+import { ApiContext, IApiContext } from "@contexts/ApiContext";
 
 const artistSocialsInit = {
   id: uuidv4(),
@@ -39,6 +40,7 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
     setAddWalletModalOpen
   } = useContext(WalletContext);
   const theme = useTheme()
+  const apiContext = useContext<IApiContext>(ApiContext);
 
   // ARTIST DATA STATES //
   const [artistAvatarImg, setArtistAvatarImg] = useState<IFileUrl[]>([])
@@ -52,7 +54,7 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
   const handleArtistChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setArtistData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
-  
+
   const handleWebsiteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isUrl = validateWebsiteUrl(e.target.value)
     if (isUrl) setWebsiteError(false)
@@ -88,6 +90,41 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
     setArtistData(artistDataInit)
     setClearForm(false)
   }, [clearForm])
+
+  useEffect(() => {
+    const getUserProfile = async () => {
+      try {
+        const res = await apiContext.api.get(`/user/${walletAddress}`);
+        setArtistData({
+          address: walletAddress,
+          name: res.data.name,
+          website: res.data.website,
+          tagline: res.data.tagline,
+          avatarUrl: res.data.pfpUrl,
+          bannerUrl: res.data.bannerUrl,
+          social: res.data.socials,
+        })
+        setArtistAvatarImg([{
+          url: res.data.pfpUrl,
+          ipfs: ''
+        }])
+        setArtistBannerImg([{
+          url: res.data.bannerUrl,
+          ipfs: ''
+        }])
+        setArtistSocials(res.data.socials.map((item: any) => {
+          return {
+            id: uuidv4(),
+            network: item.socialNetwork,
+            url: item.url
+          }
+        }))
+      } catch (e: any) {
+        apiContext.api.error(e);
+      }
+    };
+    if (walletAddress) getUserProfile()
+  }, [walletAddress]);
 
   return (
     <Box>

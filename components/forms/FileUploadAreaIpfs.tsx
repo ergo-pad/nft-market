@@ -15,12 +15,14 @@ import {
   ListItemText,
   IconButton,
   Avatar,
+  CircularProgress
 } from "@mui/material";
 import Image from "next/image";
 import { bytesToSize, aspectRatioResize } from "@utilities/general";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { storeNFT } from "@utils/nft-storage";
 import axios from "axios";
+import { resolveIpfs } from "@utils/assets";
 
 interface IFileData {
   currentFile: File;
@@ -93,7 +95,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!multiple) {
+    if (!multiple && fileData[0].previewImage) {
       if (expectedImgHeight && expectedImgWidth) {
         setAspect(
           aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350)
@@ -204,6 +206,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   const [inputKey, setInputKey] = useState(randomNumber());
 
   const ipfsUpload = async () => {
+    setIsLoading(true);
     try {
       const promises = fileData.map(async (file) => {
         const formData = new FormData();
@@ -235,6 +238,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
     } catch (e) {
       console.log(e);
     }
+    setIsLoading(false);
   };
 
   const handleUpload = async () => {
@@ -243,9 +247,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
       console.log("Please, select the file(s) you want to upload");
       return;
     }
-    setIsLoading(true);
     ipfsUpload();
-    setIsLoading(false);
   };
 
   // auto upload if fileData changes and autoUpload is true
@@ -292,6 +294,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
                 <Typography>{title}</Typography>
               </Grid>
               <Grid item>
+              {isLoading && <CircularProgress />}
                 <Button
                   size="small"
                   onClick={() => handleUpload()}
@@ -545,6 +548,34 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
               );
             })}
           </List>
+        )}
+        {(fileUrls[0]?.url || fileUrls[0]?.ipfs) && !multiple && (
+          <Box sx={{ mt: 1 }}>
+            Current Image&#40;s&#41;:
+            {fileUrls.map((item, i) => {
+              if (item.url) {
+                const lastPeriodIndex = item.url.lastIndexOf(".")
+                const secondLastPeriodIndex = item.url.lastIndexOf(".", lastPeriodIndex - 1);
+                const extractedString = item.url.substring(secondLastPeriodIndex + 1);
+                return (
+                  <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center', mb: 1 }} key={i}>
+                    <Avatar src={item.url} variant="rounded" sx={{ mr: 1 }} />
+                    <Typography sx={{ flex: 1 }}>{extractedString}</Typography>
+                  </Box>
+                )
+              }
+              if (item.ipfs) {
+                const url = resolveIpfs(item.ipfs)
+                return (
+                  <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center', mb: 1 }} key={i}>
+                    <Avatar src={url} variant="rounded" sx={{ mr: 1 }} />
+                    <Typography sx={{ flex: 1 }}>{url}</Typography>
+                  </Box>
+                )
+              }
+              return null
+            })}
+          </Box>
         )}
       </Box>
     </Box>
