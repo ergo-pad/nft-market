@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import type { NextPage } from "next";
-import {
-  Typography,
-  Box,
-  useTheme,
-  Fade
-} from "@mui/material";
+import { Typography, Box, useTheme, Fade } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -17,7 +12,6 @@ import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import TokenList from "@components/TokenList";
 import UsersTokenList from "@components/user/UsersTokenList";
 import { getWalletList } from "@utils/assetsNew";
-import { WalletContext } from "@contexts/WalletContext";
 
 const user = {
   address: "",
@@ -39,11 +33,11 @@ const User: NextPage = () => {
   const apiContext = useContext<IApiContext>(ApiContext);
   const { id, tab } = router.query;
   const [userProfile, setUserProfile] = useState(user);
-  const [tabValue, setTabValue] = React.useState('');
-  const [loading, setLoading] = useState(true)
-  const [loadingProfile, setLoadingProfile] = useState(true)
-  const [aggData, setAggData] = useState<any[]>([])
-  const [displayNumber, setDisplayNumber] = useState(12)
+  const [tabValue, setTabValue] = React.useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [aggData, setAggData] = useState<any[]>([]);
+  const [displayNumber, setDisplayNumber] = useState(12);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     const path = router.asPath.split("?")[0];
@@ -54,31 +48,29 @@ const User: NextPage = () => {
   useEffect(() => {
     if (tab) {
       setTabValue(tab.toString());
-    }
-    else if (router.isReady) setTabValue('on-sale')
+    } else if (router.isReady) setTabValue("on-sale");
   }, [router.isReady, router.query.tab]);
 
   const fetchData = async (id: string) => {
     const tokenList: any[] = await getWalletList([id]);
-    setAggData(tokenList)
-    setLoading(false)
-  }
+    setAggData(tokenList);
+    setLoading(false);
+  };
 
   useEffect(() => {
     const getUserProfile = async () => {
-      setLoadingProfile(true)
+      setLoadingProfile(true);
       try {
         const res = await apiContext.api.get(`/user/${id}`);
         setUserProfile(res.data);
       } catch (e: any) {
-        console.log(e)
         apiContext.api.error(e);
       }
-      setLoadingProfile(false)
+      setLoadingProfile(false);
     };
     if (id) {
       getUserProfile();
-      fetchData(id.toString())
+      fetchData(id.toString());
     }
   }, [id]); // id is better named userAddress. Comes from the URL
 
@@ -109,9 +101,7 @@ const User: NextPage = () => {
           </Box>
 
           {/* ON SALE TAB */}
-          <Fade
-            in={tabValue == "on-sale"}
-          >
+          <Fade in={tabValue == "on-sale"}>
             <TabPanel value="on-sale" sx={customTabPanelSx}>
               <TokenList
                 nftListArray={recentNfts}
@@ -121,9 +111,7 @@ const User: NextPage = () => {
             </TabPanel>
           </Fade>
           {/* OWNED TAB */}
-          <Fade
-            in={tabValue == "owned"}
-          >
+          <Fade in={tabValue == "owned"}>
             <TabPanel value="owned" sx={customTabPanelSx}>
               <UsersTokenList
                 loading={loading}
@@ -133,9 +121,7 @@ const User: NextPage = () => {
             </TabPanel>
           </Fade>
           {/* ACTIVITY TAB */}
-          <Fade
-            in={tabValue == "activity"}
-          >
+          <Fade in={tabValue == "activity"}>
             <TabPanel value="activity" sx={customTabPanelSx}>
               <Typography sx={{ mb: "24px" }}>Past sales activity</Typography>
             </TabPanel>
