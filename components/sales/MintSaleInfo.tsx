@@ -229,22 +229,19 @@ const MintSaleInfo: FC<{
   }, [props.saleId])
 
   useEffect(() => {
-    if (apiGetSaleById !== undefined && apiGetSaleById.packs.length > 3) {
-      setSelected(apiGetSaleById.packs.map((_item, i) => i === 0 ? true : false))
+    const price = apiGetSaleById.packs[0].price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04'
+      ? Number(apiGetSaleById.packs[0].price[0].amount)
+      : Number((apiGetSaleById.packs[0].price[0].amount * 0.000000001).toFixed(3))
+    const currency = apiGetSaleById.packs[0].price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04'
+      ? 'SigUSD' : 'Erg'
+    if (apiGetSaleById !== undefined && apiGetSaleById.packs.length >= 3) {
+      setSelected(apiGetSaleById.packs.filter((_item, i) => i % 3 === 0).map((item, i) => {
+          return i === 0 ? true : false }))
       setSalesProps({
         tokenName: apiGetSaleById.packs[0].name,
         openNow: true,
-        price: Number((apiGetSaleById.packs[0].price[0].amount * 0.000000001).toFixed(3)),
-        currency: apiGetSaleById.packs[0].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'SigUSD',
-      })
-      setFeaturedImage(apiGetSaleById.packs[0].image)
-    }
-    else if (apiGetSaleById !== undefined && apiGetSaleById.packs.length === 1 && apiGetSaleById.packs[0].image !== '') {
-      setSalesProps({
-        tokenName: apiGetSaleById.packs[0].name,
-        openNow: true,
-        price: Number((apiGetSaleById.packs[0].price[0].amount * 0.000000001).toFixed(3)),
-        currency: apiGetSaleById.packs[0].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'SigUSD',
+        price: price,
+        currency: currency
       })
       setFeaturedImage(apiGetSaleById.packs[0].image)
     }
@@ -252,8 +249,8 @@ const MintSaleInfo: FC<{
       setSalesProps({
         tokenName: apiGetSaleById.packs[0].name,
         openNow: false,
-        price: Number((apiGetSaleById.packs[0].price[0].amount * 0.000000001).toFixed(3)),
-        currency: apiGetSaleById.packs[0].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'SigUSD',
+        price: price,
+        currency: currency
       })
     }
   }, [apiGetSaleById])
@@ -261,17 +258,22 @@ const MintSaleInfo: FC<{
   useEffect(() => {
     selected.map((item, i) => {
       if (item) {
+        const packIndex = i * 3
+        const price = apiGetSaleById.packs[packIndex].price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04'
+          ? Number(apiGetSaleById.packs[packIndex].price[0].amount)
+          : Number((apiGetSaleById.packs[packIndex].price[0].amount * 0.000000001).toFixed(3))
+        const currency = apiGetSaleById.packs[packIndex].price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04'
+          ? 'SigUSD' : 'Erg'
         setSalesProps({
-          tokenName: apiGetSaleById.packs[i].name,
+          tokenName: apiGetSaleById.packs[packIndex].name,
           openNow: true,
-          price: Number((apiGetSaleById.packs[i].price[0].amount * 0.000000001).toFixed(3)),
-          currency: apiGetSaleById.packs[i].price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ? 'Erg' : 'NaN',
+          price: price,
+          currency: currency,
         })
-        setFeaturedImage(apiGetSaleById.packs[i].image)
+        setFeaturedImage(apiGetSaleById.packs[packIndex].image)
       }
       return item
     })
-
   }, [selected.toString()])
 
   const [tokenDetails, setTokenDetails] = useState<any>({
@@ -450,6 +452,20 @@ const MintSaleInfo: FC<{
                   </Grid>
                 </Grid>
               )}
+              {apiGetSaleById.startTime && (
+                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Grid item>
+                    <Typography sx={boldTextSx}>
+                      Sale Start:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography color="text.secondary" sx={textSx}>
+                      {dayjs(apiGetSaleById?.startTime).toString()}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
               {apiGetSaleById.endTime && (
                 <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
                   <Grid item>
@@ -532,8 +548,8 @@ const MintSaleInfo: FC<{
                   const packIndex = i * 3
                   return (
                     <PackTokenSelector
-                      key={packIndex}
-                      index={packIndex}
+                      key={i}
+                      index={i}
                       packInfo={apiGetSaleById.packs[packIndex]}
                       selected={selected}
                       setSelected={setSelected}
@@ -547,9 +563,8 @@ const MintSaleInfo: FC<{
                 </Typography>
                 <List dense sx={{ transition: 'height 0.2s ease-out', height: '100%' }}>
                   {apiGetSaleById.packs.filter((_item, i) => i % 3 === 0).map((pack, index) => {
-                    const i = index * 3
                     return (
-                      <Collapse key={i} in={selected[i]}>
+                      <Collapse key={index} in={selected[index]}>
                         {pack.content.map((content, i) => {
                           const totalOdds = content.rarity.reduce(function (tot, arr) {
                             return tot + arr.odds;
