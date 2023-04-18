@@ -181,6 +181,7 @@ const Open: NextPage = () => {
                 collection: item.collection ? item.collection : undefined,
                 artist: '', // need to implement getArtist()
                 imgUrl: item.imgUrl ? item.imgUrl : `/images/placeholder/${rand}.jpg`,
+                tokenId: item.tokenId
               }
             )
           })}

@@ -131,7 +131,16 @@ const setAssetInfo = (id: string, res: { data: any; }) => {
   }
 };
 
-export const getWalletList = async (addresses: string[]): Promise<any> => {
+interface IWalletListToken {
+  amount: number;
+  decimals: number;
+  name: string;
+  price: number;
+  tokenId: string;
+  tokenType: string;
+}
+
+export const getWalletList = async (addresses: string[]): Promise<IWalletListToken[] | []> => {
   const balances = await axios
     .post(`${process.env.ERGOPAD_API}/asset/balances/`, {
       addresses: addresses,
@@ -143,7 +152,11 @@ export const getWalletList = async (addresses: string[]): Promise<any> => {
       };
     });
   const balance = reduceBalances(balances.data);
-  if (balance) return balance.tokens
+  if (balance) {
+    console.log(balance.tokens)
+    return balance.tokens
+  }
+
   else return []
 }
 
