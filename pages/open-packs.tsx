@@ -6,13 +6,14 @@ import {
   Container,
   Typography,
   Box,
-  useScrollTrigger
+  useScrollTrigger,
+  CircularProgress
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { recentNfts } from '@components/placeholders/recentNfts'
 import OpenPacks from '@components/dialogs/OpenPacks';
 import { WalletContext } from '@contexts/WalletContext';
 import NftCard from '@components/NftCard';
+import { getWalletList, tokenListInfo } from "@utils/assetsNew";
 
 const randomInteger = (min: number, max: number) => {
   return (min + Math.random() * (max - min)).toFixed();
@@ -24,9 +25,11 @@ const Open: NextPage = () => {
   const {
     walletAddress,
     setAddWalletModalOpen,
+    dAppWallet
   } = useContext(WalletContext);
-
+  const [nftList, setNftList] = useState<any[] | undefined>()
   const [selected, setSelected] = useState<boolean[]>([])
+  const [loading, setLoading] = useState(true)
 
   const selectAll = () => {
     setSelected(prev => (
@@ -40,10 +43,23 @@ const Open: NextPage = () => {
     ))
   }
 
-  const apiCallGETnfts = recentNfts
+  const fetchData = async (addresses: any[]) => {
+    const tokenList: any[] = await getWalletList(addresses);
+    const additionalData = await tokenListInfo(tokenList);
+    const packTokenList = additionalData.filter((item) => item.type === 'PACK')
+    setNftList(packTokenList)
+    setSelected(packTokenList.map(() => {
+      return false
+    }))
+    setLoading(false)
+  };
+
   useEffect(() => {
-    setSelected(apiCallGETnfts.map((item) => false))
-  }, [apiCallGETnfts])
+    if (dAppWallet.connected === true) {
+      fetchData(dAppWallet.addresses);
+    }
+    else fetchData([walletAddress])
+  }, [dAppWallet, walletAddress]);
 
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
@@ -54,7 +70,7 @@ const Open: NextPage = () => {
 
   return (
     <>
-      {walletAddress !== '' && apiCallGETnfts.length > 1 && (
+      {walletAddress !== '' && nftList && (
         <Box
           sx={{
             position: 'fixed',
@@ -109,42 +125,56 @@ const Open: NextPage = () => {
 
           </Grid>
         </Grid>
-        {walletAddress !== '' ? (
-          <Grid
-            container
-            spacing={2}
-            columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
-            sx={{ mb: "80px" }}
-          >
-            {apiCallGETnfts.map((item, i) => {
-              return (
-                <Grid key={i} item xs={1}>
-                  <NftCard
-                    nftData={item}
-                    index={i}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                </Grid>
-              )
-            })}
-          </Grid>
-        ) : (
-          <Box sx={{ textAlign: 'center', py: '20vh' }}>
-            <Typography variant="body2" sx={{ mb: '12px' }}>
-              You must connect a wallet to use this feature.
-            </Typography>
-            <Button variant="contained" onClick={() => setAddWalletModalOpen(true)}>
-              Connect Now
-            </Button>
+        {loading
+          ?
+          <Box sx={{ textAlign: 'center', py: '10vh', width: '100%' }}>
+            <CircularProgress />
           </Box>
-        )}
+          : walletAddress !== '' && nftList && nftList.length > 0
+            ?
+            <Grid
+              container
+              spacing={2}
+              columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
+              sx={{ mb: "80px" }}
+            >
+              {nftList.map((item: any, i: number) => {
+                return (
+                  <Grid key={i} item xs={1}>
+                    <NftCard
+                      nftData={item}
+                      index={i}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  </Grid>
+                )
+              })}
+            </Grid>
+            :
+            walletAddress !== '' && nftList && nftList.length === 0 ? 
+            <Box sx={{ textAlign: 'center', py: '20vh' }}>
+              <Typography variant="h4" color="text.secondary">
+                You don&apos;t have any unopened packs. 
+              </Typography>
+            </Box>
+            :
+            <Box sx={{ textAlign: 'center', py: '20vh' }}>
+              <Typography variant="body2" sx={{ mb: '12px' }}>
+                You must connect a wallet to use this feature.
+              </Typography>
+              <Button variant="contained" onClick={() => setAddWalletModalOpen(true)}>
+                Connect Now
+              </Button>
+            </Box>
+        }
 
       </Container>
-      <OpenPacks
-        open={confirmationOpen}
-        setOpen={setConfirmationOpen}
-        packs={recentNfts.filter((_item, i) => selected[i] === true).map((item) => {
+      {nftList && selected.find((item => item === true)) &&
+        <OpenPacks
+          open={confirmationOpen}
+          setOpen={setConfirmationOpen}
+          packs={nftList.filter((_item, i) => selected[i] === true).map((item) => {
             return (
               {
                 name: item.name,
@@ -153,8 +183,9 @@ const Open: NextPage = () => {
                 imgUrl: item.imgUrl ? item.imgUrl : `/images/placeholder/${rand}.jpg`,
               }
             )
-        })}
-      />
+          })}
+        />
+      }
     </>
   )
 }

@@ -56,3 +56,16 @@ export const stringToUrl = (str: string): string | undefined => {
   else return undefined
 }
 
+export const slugify = (str: string) => {
+  const urlSafeChars = /[a-z0-9-]/;
+  const slug = str
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+  return encodeURIComponent(
+    [...slug]
+      .map((c) => (urlSafeChars.test(c) ? c : encodeURIComponent(c)))
+      .join("")
+  );
+}
