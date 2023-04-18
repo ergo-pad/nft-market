@@ -12,6 +12,7 @@ import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import TokenList from "@components/TokenList";
 import UsersTokenList from "@components/user/UsersTokenList";
 import { getWalletList } from "@utils/assetsNew";
+import SaleList from "@components/sales/SaleList";
 
 const user = {
   address: "",
@@ -37,7 +38,6 @@ const User: NextPage = () => {
   const [loading, setLoading] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [aggData, setAggData] = useState<any[]>([]);
-  const [displayNumber, setDisplayNumber] = useState(12);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     const path = router.asPath.split("?")[0];
@@ -103,11 +103,12 @@ const User: NextPage = () => {
           {/* ON SALE TAB */}
           <Fade in={tabValue == "on-sale"}>
             <TabPanel value="on-sale" sx={customTabPanelSx}>
-              <TokenList
-                nftListArray={recentNfts}
-                setDisplayNumber={setDisplayNumber}
-                notFullWidth
-              />
+              {userProfile.address && !loadingProfile &&
+                <SaleList
+                  artistAddress={userProfile.address}
+                  notFullWidth
+                />
+              }
             </TabPanel>
           </Fade>
           {/* OWNED TAB */}

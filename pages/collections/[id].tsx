@@ -12,6 +12,7 @@ import {
   // DialogActions,
   // DialogContent,
   // DialogTitle,
+  Typography
 } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
@@ -31,19 +32,21 @@ import { v4 as uuidv4 } from 'uuid';
 import CollectionActivity, { ICollectionActivity } from "@components/collections/CollectionActivity";
 import TokenList from "@components/TokenList";
 import { ICollectionTraits, ICollectionRarities } from "@components/collections/Properties";
+import SaleList from "@components/sales/SaleList";
 
-///////////////////////////////////////////////////////////////////
-// BEGIN PLACEHOLDER DATA /////////////////////////////////////////
+// INIT
 const collection: ICollectionProfileProps = {
-  address: "9asdfgEGZKHfKCUasdfvreqK6s6KiALNCFxojUa4Tbibw2Ajw1JFo",
-  collectionName: "Ergopad NFTs",
-  collectionLogo: "/images/collections/ergopad-logo.jpg",
+  address: "",
+  collectionName: "",
+  collectionLogo: "",
   bannerUrl: undefined,
-  description: "A psychological phenomenon known as the mere exposure effect is where we develop a preference just because we are familiar with things.",
+  description: "",
   socialLinks: [],
   category: '',
-  website: 'http://ergopad.io',
+  website: '',
 };
+
+// LEFT AS AN EXAMPLE FOR WHEN THE API IS WORKING
 const collectionTraits: ICollectionTraits[] = [
   {
     traitName: 'Level',
@@ -80,24 +83,8 @@ const collectionTraits: ICollectionTraits[] = [
     ]
   },
 ];
-const collectionRarities: ICollectionRarities[] = [
-  {
-    rarity: 'Common',
-    amount: 1605
-  },
-  {
-    rarity: 'Uncommon',
-    amount: 842
-  },
-  {
-    rarity: 'Rare',
-    amount: 320
-  },
-  {
-    rarity: 'Legendary',
-    amount: 16
-  }
-];
+
+// EXAMPLE FOR HOW TO BUILD THE API 
 const activities: ICollectionActivity[] = [
   {
     tokenImageUrl: '/images/character1.png',
@@ -139,8 +126,7 @@ const activities: ICollectionActivity[] = [
     transactionUrl: 'https://explorer.ergoplatform.com/en/transactions/878e006879bac87cf1b1a46be411f323489de68d67821a227851dc95f6a9e2e1'
   },
 ];
-// END PLACEHOLDER DATA ///////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
+// END PLACEHOLDER DATA //
 
 const customTabPanelSx = {
   pt: "24px",
@@ -154,16 +140,53 @@ const Collection: NextPage = () => {
   const { id } = router.query;
   const [collectionProfile, setCollectionProfile] = useState(collection);
   const [tabValue, setTabValue] = React.useState("sales");
-  const [numberNftsShowing, setNumberNftsShowing] = useState(24)
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
+  const [collectionRarities, setCollectionRarities] = useState<ICollectionRarities[]>([{
+    rarity: '',
+    amount: 0
+  }])
+  const [collectionTraits, setCollectionTraits] = useState<ICollectionTraits[]>([{
+    traitName: '',
+    id: uuidv4(),
+    type: 'Property'
+  }])
 
   useEffect(() => {
     const getCollectionProfile = async () => {
       try {
-        const res = await apiContext.api.get(`/collection/${id}`);
-        setCollectionProfile(res.data);
+        const res = await apiContext.api.get(`/collection`);
+        const collection = res.data.find((obj: any) => {
+          return obj.id === id?.toString()
+        })
+        console.log(res.data)
+        setCollectionProfile({
+          address: "missing-artist-address",
+          collectionName: collection.name,
+          collectionLogo: collection.collectionLogoUrl,
+          bannerUrl: collection.bannerImageUrl,
+          description: collection.description,
+          socialLinks: [{
+            socialNetwork: 'Twitter',
+            url: 'http://twitter.com/missing-socials'
+          }],
+          category: collection.category,
+          website: "https://missing-website.com"
+        });
+        setCollectionRarities(collection.rarities.map((item: any) => {
+          return {
+            rarity: item.rarity,
+            // amount: 0
+          }
+        }))
+        setCollectionTraits(collection.availableTraits.map((item: any) => {
+          return {
+            type: item.tpe.toLowerCase().replace(/^\w/, (c: string) => c.toUpperCase()),
+            id: uuidv4(),
+            traitName: item.name
+          }
+        }))
       } catch (e: any) {
         apiContext.api.error(e);
       }
@@ -205,11 +228,13 @@ const Collection: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="sales" sx={customTabPanelSx}>
-              <TokenList
-                nftListArray={recentNfts}
-                setDisplayNumber={setNumberNftsShowing}
-                notFullWidth
-              />
+              {id &&
+                <SaleList
+                  collection={id.toString()}
+                  notFullWidth
+                />
+              }
+
             </TabPanel>
           </Fade>
           {/* PROPERTIES TAB */}
@@ -229,6 +254,9 @@ const Collection: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="activity" sx={customTabPanelSx}>
+              <Typography sx={{ mb: 1 }}>
+                Sample Data:
+              </Typography>
               {activities.map((item, i) => {
                 return (
                   <CollectionActivity

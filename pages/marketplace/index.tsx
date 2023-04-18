@@ -28,21 +28,6 @@ import SaleList from '@components/sales/SaleList';
 // ]
 
 const Sales: NextPage = () => {
-  const [loading, setLoading] = useState(false)
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setLoading(false)
-  //   }, 1500);
-
-  //   // Clean up the timer on unmount
-  //   return () => clearTimeout(timer);
-  // }, [])
-
-  // USE THIS FOR API CALL TO KNOW THE NUMBER OF NFT CARDS TO FETCH
-  // CAN BE CHANGED IN <TokenList>
-  const [numberNftsShowing, setNumberNftsShowing] = useState(24)
-
   return (
     <Container sx={{ mt: '30px', mb: '50px' }}>
       <Grid container>
