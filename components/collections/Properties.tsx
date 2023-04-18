@@ -27,7 +27,7 @@ export interface ICollectionTraits {
 
 export interface ICollectionRarities {
   rarity: string;
-  amount: number;
+  amount?: number;
 }
 
 interface IPropertiesProps {
@@ -75,7 +75,7 @@ const Properties: FC<IPropertiesProps> = ({ traits, rarities }) => {
   const theme = useTheme()
   return (
     <>
-      {rarities.length > 0 && (
+      {rarities[0].rarity && rarities[0].rarity !== 'Default' && (
         <Accordion>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -90,7 +90,7 @@ const Properties: FC<IPropertiesProps> = ({ traits, rarities }) => {
                 return (
                   <ListItem key={i}>
                     <ListItemText>
-                      {item.rarity + ' (' + item.amount + ')'}
+                      {item.rarity + (item.amount !== undefined ? (' (' + item.amount + ')') : '')}
                     </ListItemText>
                   </ListItem>
                 )

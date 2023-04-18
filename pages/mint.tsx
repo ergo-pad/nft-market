@@ -26,6 +26,7 @@ import { v4 as uuidv4 } from "uuid";
 import { WalletContext } from "@contexts/WalletContext";
 import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import { getErgoWalletContext } from "@components/wallet/AddWallet";
+import Link from "@components/Link";
 
 const SIGUSD_TOKEN_ID =
   "03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04";
@@ -623,7 +624,7 @@ const Mint: NextPage = () => {
                     )}
                     {resultData.transactionId && (
                       <Typography variant="h6" sx={{ my: 1 }}>
-                        Transaction Id: {resultData.transactionId}
+                        Transaction Id: <Link href={'https://explorer.ergoplatform.com/en/transactions/' + resultData.transactionId}>{resultData.transactionId}</Link>
                       </Typography>
                     )}
                     {resultData.status && (

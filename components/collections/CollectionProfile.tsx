@@ -186,7 +186,7 @@ const CollectionProfile: FC<ICollectionProfileProps> = ({
                           fontWeight: "700",
                         }}
                       >
-                        3000
+                        -
                       </Typography>
                       <Typography
                         sx={{
@@ -204,7 +204,7 @@ const CollectionProfile: FC<ICollectionProfileProps> = ({
                           fontWeight: "700",
                         }}
                       >
-                        3.5k
+                        -
                       </Typography>
                       <Typography
                         sx={{
@@ -222,7 +222,7 @@ const CollectionProfile: FC<ICollectionProfileProps> = ({
                           fontWeight: "700",
                         }}
                       >
-                        40
+                        -
                       </Typography>
                       <Typography
                         sx={{
@@ -240,7 +240,7 @@ const CollectionProfile: FC<ICollectionProfileProps> = ({
                           fontWeight: "700",
                         }}
                       >
-                        421
+                        -
                       </Typography>
                       <Typography
                         sx={{

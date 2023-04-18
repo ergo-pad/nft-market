@@ -24,6 +24,8 @@ import { ApiContext, IApiContext } from "@contexts/ApiContext";
 
 export interface ISaleListProps {
   notFullWidth?: boolean;
+  collection?: string;
+  artistAddress?: string;
 }
 
 const searchAndFilterAndSortData = (filteredData: any[], search: string, searchKey: string, sortBy: string) => {
@@ -63,18 +65,16 @@ const searchAndFilterAndSortData = (filteredData: any[], search: string, searchK
   return newData;
 };
 
-const SaleList: FC<ISaleListProps> = ({ notFullWidth }) => {
+const SaleList: FC<ISaleListProps> = ({ notFullWidth, collection, artistAddress }) => {
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [rawData, setRawData] = useState<any[]>([])
   const [filteredData, setFilteredData] = useState<any[]>([])
   const [sortBy, setSortBy] = useState('')
   const [searchString, setSearchString] = useState<string>('')
-  const [displayedData, setDisplayedData] = useState<INftItem[]>([{link: '', name: '', tokenId: ''}]) // data after search, sort, and filter
+  const [displayedData, setDisplayedData] = useState<INftItem[]>([{ link: '', name: '', tokenId: '' }]) // data after search, sort, and filter
   const [localLoading, setLocalLoading] = useState(true)
   const [ready, setReady] = useState(false)
   const apiContext = useContext<IApiContext>(ApiContext);
-
-  console.log(displayedData)
 
   useEffect(() => {
     if (ready) {
@@ -91,35 +91,45 @@ const SaleList: FC<ISaleListProps> = ({ notFullWidth }) => {
   useEffect(() => {
     const fetchData = async () => {
       const saleList = await apiContext.api.get("/sale")
-      const currentSales = saleList.data
+
+      let currentSales = saleList.data
         .filter((item: any) => item?.status === 'WAITING' || item?.status === 'LIVE')
-        .map((item: any) => {
-          return {
-            imgUrl: '',
-            link: '/marketplace/sale/' + item.id,
-            name: item.name,
-            qtyRemaining: item.tokensTotal,
-            qtyMinted: item.startingTokensTotal,
-            price: 
-              item.packs[0]?.price?.tokenId === "0000000000000000000000000000000000000000000000000000000000000000" 
-                ? item.packs[0]?.price?.amount 
-                : 0, // temporary, until we are certain how to derive price from any sale. 
-            currency: 'Erg', // need to look up SigUSD option
-            saleType: 'mint',
-            collection: item.collection?.name,
-            collectionId: item.collection?.id,
-            artist: item.artist?.address,
-            artistName: item.artist?.name,
-            // explicit: false,
-            // type: '',
-          }
-        })
-      setDisplayedData(currentSales)
-      setRawData(currentSales)
-      setFilteredData(currentSales)
+
+      if (collection) {
+        currentSales = currentSales.filter((item: any) => item?.collection.id === collection)
+      }
+
+      if (artistAddress) {
+        currentSales = currentSales.filter((item: any) => item?.artist.address === artistAddress)
+      }
+
+      const displaySales = currentSales.map((item: any) => {
+        return {
+          imgUrl: '',
+          link: '/marketplace/sale/' + item.id,
+          name: item.name,
+          qtyRemaining: item.tokensTotal,
+          qtyMinted: item.startingTokensTotal,
+          price:
+            item.packs[0]?.price?.tokenId === "0000000000000000000000000000000000000000000000000000000000000000"
+              ? item.packs[0]?.price?.amount
+              : 0, // temporary, until we are certain how to derive price from any sale. 
+          currency: 'Erg', // need to look up SigUSD option
+          saleType: 'mint',
+          collection: item.collection?.name,
+          collectionId: item.collection?.id,
+          artist: item.artist?.address,
+          artistName: item.artist?.name,
+          // explicit: false,
+          // type: '',
+        }
+      })
+      setDisplayedData(displaySales)
+      setRawData(displaySales)
+      setFilteredData(displaySales)
+      setLocalLoading(false)
     }
     fetchData();
-    setLocalLoading(false)
     setReady(true)
   }, [])
 
