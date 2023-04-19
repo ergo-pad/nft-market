@@ -365,7 +365,7 @@ const Mint: NextPage = () => {
           price: [
             {
               tokenId: pack.currency === "SigUSD" ? SIGUSD_TOKEN_ID : null,
-              amount: Number(pack.price ?? 0),
+              amount: pack.currency === "Erg" ? Number(pack.price ?? 0) * 1000000000 : Number(pack.price ?? 0) * 100,
             },
           ],
           content: pack.nftPerPack.map((packEntry) => {
@@ -447,39 +447,40 @@ const Mint: NextPage = () => {
     tokens: ITokenDetailsData
   ) => {
     try {
+      const data = tokens.nfts.map((nft) => {
+        return {
+          collectionId: collectionId,
+          amount: Number(nft.qty),
+          name: nft.nftName,
+          image: nft.image,
+          description: nft.description ?? "",
+          traits: nft.traits && nft.traits[0].key !== undefined && nft.traits[0].key !== ""
+            ? nft.traits.map((trait) => {
+                return {
+                  name: trait.key,
+                  tpe: trait.type.toUpperCase(),
+                  valueString:
+                    typeof trait.value === "string" ? trait.value : null,
+                  valueInt:
+                    typeof trait.value === "number" ? trait.value : null,
+                };
+              })
+            : [],
+          rarity: nft.rarity ?? undefined,
+          explicit: nft.explicit ?? false,
+          royalty: nft.royalties && nft.royalties[0].address !== undefined && nft.royalties[0].address !== ""
+            ? nft.royalties.map((royalty) => {
+                return {
+                  address: royalty.address,
+                  royaltyPct: Number(royalty.pct),
+                };
+              })
+            : [],
+        };
+      })
       const res = await apiContext.api.post(
         "/nft",
-        tokens.nfts.map((nft) => {
-          return {
-            collectionId: collectionId,
-            amount: Number(nft.qty),
-            name: nft.nftName,
-            image: nft.image,
-            description: nft.description ?? "",
-            traits: nft.traits
-              ? nft.traits.map((trait) => {
-                  return {
-                    name: trait.key,
-                    tpe: trait.type.toUpperCase(),
-                    valueString:
-                      typeof trait.value === "string" ? trait.value : null,
-                    valueInt:
-                      typeof trait.value === "number" ? trait.value : null,
-                  };
-                })
-              : [],
-            rarity: nft.rarity ?? "",
-            explicit: nft.explicit,
-            royalty: nft.royalties
-              ? nft.royalties.map((royalty) => {
-                  return {
-                    address: royalty.address,
-                    royaltyPct: Number(royalty.pct),
-                  };
-                })
-              : [],
-          };
-        })
+        data
       );
       apiContext.api.ok("NFT Data Created");
       return res.data;

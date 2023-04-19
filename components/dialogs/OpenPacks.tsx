@@ -99,7 +99,6 @@ interface IToken {
 }
 
 const findObjectByTokenId = (array: any[], tokenId: string) => {
-  console.log(array)
   for (let i = 0; i < array.length; i++) {
     const obj = array[i];
     for (let j = 0; j < obj.packs.length; j++) {
