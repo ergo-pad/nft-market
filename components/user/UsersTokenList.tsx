@@ -76,8 +76,6 @@ const UsersTokenList: FC<IUsersTokenListProps> = ({ nftListArray, notFullWidth, 
   const [localLoading, setLocalLoading] = useState(true)
   const [ready, setReady] = useState(false)
 
-  console.log(displayedData)
-
   useEffect(() => {
     if (ready) {
       const sorted = searchAndFilterAndSortData(

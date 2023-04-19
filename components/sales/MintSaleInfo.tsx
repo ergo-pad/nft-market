@@ -11,6 +11,8 @@ import {
   Paper,
   List,
   ListItem,
+  ListItemIcon,
+  ListItemText,
   Collapse,
   Skeleton
 } from '@mui/material'
@@ -223,20 +225,23 @@ const MintSaleInfo: FC<{
     const fetchData = async () => {
       const currentSale: any = await apiContext.api.get(`/sale/${props.saleId}`)
       setApiGetSaleById(currentSale.data)
+      console.log(currentSale.data)
       setLoading(false)
     }
-    fetchData();
+
+    if (props.saleId) fetchData();
   }, [props.saleId])
 
   useEffect(() => {
     const price = apiGetSaleById.packs[0].price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04'
-      ? Number(apiGetSaleById.packs[0].price[0].amount)
+      ? Number((apiGetSaleById.packs[0].price[0].amount * 0.01).toFixed(2))
       : Number((apiGetSaleById.packs[0].price[0].amount * 0.000000001).toFixed(3))
     const currency = apiGetSaleById.packs[0].price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04'
       ? 'SigUSD' : 'Erg'
     if (apiGetSaleById !== undefined && apiGetSaleById.packs.length >= 3) {
       setSelected(apiGetSaleById.packs.filter((_item, i) => i % 3 === 0).map((item, i) => {
-          return i === 0 ? true : false }))
+        return i === 0 ? true : false
+      }))
       setSalesProps({
         tokenName: apiGetSaleById.packs[0].name,
         openNow: true,
@@ -260,7 +265,7 @@ const MintSaleInfo: FC<{
       if (item) {
         const packIndex = i * 3
         const price = apiGetSaleById.packs[packIndex].price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04'
-          ? Number(apiGetSaleById.packs[packIndex].price[0].amount)
+          ? Number((apiGetSaleById.packs[0].price[0].amount * 0.01).toFixed(2))
           : Number((apiGetSaleById.packs[packIndex].price[0].amount * 0.000000001).toFixed(3))
         const currency = apiGetSaleById.packs[packIndex].price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04'
           ? 'SigUSD' : 'Erg'
@@ -281,18 +286,6 @@ const MintSaleInfo: FC<{
     token: '',
     id: ''
   })
-
-  const fetchData = async (id: string) => {
-    setLoading(true)
-    const fetchedInfo = await getTokenData(id);
-    const formattedInfo = {
-      ...fetchedInfo,
-      r5: fetchedInfo.r5 ? parseDescription(fetchedInfo.r5) : {}
-    }
-    setTokenDetails(formattedInfo)
-    setLoading(false)
-    console.log(formattedInfo)
-  }
 
   // CHANGE THIS
   // check token info once the API knows if this is a sale or not
@@ -614,20 +607,40 @@ const MintSaleInfo: FC<{
                 return (
                   <Paper sx={{ mb: 2, p: 2, }} key={i}>
                     <Typography variant="h5">
-                      Pack Contents
+                      Pack Info
                     </Typography>
-                    {content.rarity.length === 1 ? (
-                      <ListItem>
-                        <Typography>
-                          {content.amount} Randomly Selected {plural('Token', content.amount)}
+                    <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                      <Grid item>
+                        <Typography sx={boldTextSx}>
+                          Pack Name:
                         </Typography>
-                      </ListItem>
-                    ) : (
-                      <>
-                        <ListItem>
-                          <Typography>
-                            {content.amount} {plural('Token', content.amount)} with Custom Probability
+                      </Grid>
+                      <Grid item>
+                        <Typography color="text.secondary" sx={textSx}>
+                          {apiGetSaleById.packs[0].name}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
+                      <Grid item>
+                        <Typography sx={boldTextSx}>
+                          Pack Contents:
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        {content.rarity.length === 1 &&
+                          <Typography color="text.secondary" sx={textSx}>
+                            {content.amount} Randomly Selected {plural('Token', content.amount)}
                           </Typography>
+                        }
+                      </Grid>
+                    </Grid>
+                    {content.rarity.length != 1 &&
+                      <List dense disablePadding>
+                        <ListItem>
+                          <ListItemText>
+                            {content.amount} {plural('Token', content.amount)} with Custom Probability
+                          </ListItemText>
                         </ListItem>
                         {content.rarity.map((item, i) => {
                           return (
@@ -636,8 +649,7 @@ const MintSaleInfo: FC<{
                             </ListItem>
                           )
                         })}
-                      </>
-                    )
+                      </List>
                     }
                   </Paper>
                 )

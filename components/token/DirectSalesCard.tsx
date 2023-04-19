@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useMemo, useContext } from 'react';
 import type { NextPage } from 'next'
 import {
   Grid,
@@ -15,6 +15,7 @@ import {
 } from '@mui/material'
 import NumberIncrement from '@components/forms/NumberIncrement';
 import ConfirmSale from '@components/dialogs/ConfirmPurchase';
+import { ApiContext, IApiContext } from '@contexts/ApiContext';
 
 /// API NEEDED ////////
 const ApiPriceConversion: { [key: string]: number } = {
@@ -38,14 +39,28 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const [totalPrice, setTotalPrice] = useState(0)
   const [purchaseCurrency, setPurchaseCurrency] = useState('Erg')
+  const [apiPriceConversion, setApiPriceConversion] = useState<{ [key: string]: number }>({
+    erg: 0
+  })
+  const apiContext = useContext<IApiContext>(ApiContext);
 
   useEffect(() => {
     setNumberSold(1)
   }, [props.price])
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const ergPrice = await apiContext.api.get(`/asset/price/ergo`, 'https://api.ergopad.io')
+      setApiPriceConversion({
+        erg: ergPrice.data.price
+      })
+    }
+    fetchData();
+  }, [])
+
   const apiFormSubmit = (isUsd: boolean) => {
     isUsd ? (
-      setTotalPrice(Number((numberSold * (ApiPriceConversion[props.currency.toLowerCase()] * props.price)).toFixed(2)))
+      setTotalPrice(Number((numberSold * (apiPriceConversion[props.currency.toLowerCase()] * props.price)).toFixed(2)))
     ) : (
       setTotalPrice(numberSold * props.price)
     )
@@ -89,16 +104,18 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                         lineHeight: 1.3
                       }}
                     >
-                      {props.price * numberSold + ' ' + props.currency}
+                      {(props.price * numberSold).toFixed(2) + ' ' + props.currency}
                     </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: '0.875rem'
-                      }}
-                    >
-                      ${(ApiPriceConversion['erg'] * props.price * numberSold).toFixed(2)} USD
-                    </Typography>
+                    {props.currency === 'Erg' &&
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          fontSize: '0.875rem'
+                        }}
+                      >
+                        ${(apiPriceConversion['erg'] * props.price * numberSold).toFixed(2)} USD
+                      </Typography>
+                    }
                   </Box>
                 </Grid>
                 <Grid item xs="auto" sx={{ textAlign: 'right' }}>
@@ -128,26 +145,36 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                 </FormGroup>
               )}
 
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Button
-                    onClick={() => apiFormSubmit(false)}
-                    fullWidth
-                    variant="outlined"
-                  >
-                    Buy with {props.currency}
-                  </Button>
-                </Grid>
+              <Button
+                onClick={() => apiFormSubmit(false)}
+                fullWidth
+                variant="contained"
+              >
+                Buy with {props.currency}
+              </Button>
+
+              {/* <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Button
                     onClick={() => apiFormSubmit(true)}
                     fullWidth
-                    variant="contained"
+                    variant="outlined"
                   >
                     Buy with SigUSD
                   </Button>
                 </Grid>
-              </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Button
+                    onClick={() => apiFormSubmit(false)}
+                    fullWidth
+
+                    variant="contained"
+                  >
+                    Buy with {props.currency}
+                  </Button>
+
+                </Grid>
+              </Grid> */}
             </>
           )}
         </CardContent>

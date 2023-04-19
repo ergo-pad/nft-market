@@ -91,7 +91,6 @@ const SaleList: FC<ISaleListProps> = ({ notFullWidth, collection, artistAddress 
   useEffect(() => {
     const fetchData = async () => {
       const saleList = await apiContext.api.get("/sale")
-
       let currentSales = saleList.data
         .filter((item: any) => item?.status === 'WAITING' || item?.status === 'LIVE')
 
@@ -105,16 +104,18 @@ const SaleList: FC<ISaleListProps> = ({ notFullWidth, collection, artistAddress 
 
       const displaySales = currentSales.map((item: any) => {
         return {
-          imgUrl: '',
+          imgUrl: item.packs[0].image,
           link: '/marketplace/sale/' + item.id,
           name: item.name,
           qtyRemaining: item.tokensTotal,
           qtyMinted: item.startingTokensTotal,
           price:
-            item.packs[0]?.price?.tokenId === "0000000000000000000000000000000000000000000000000000000000000000"
-              ? item.packs[0]?.price?.amount
-              : 0, // temporary, until we are certain how to derive price from any sale. 
-          currency: 'Erg', // need to look up SigUSD option
+            item.packs[0].price[0].tokenId === "0000000000000000000000000000000000000000000000000000000000000000"
+              ? Number((item.packs[0].price[0].amount * 0.000000001))
+              : Number((item.packs[0].price[0].amount * 0.01).toFixed(2)),
+          currency: item.packs[0].price[0].tokenId === "0000000000000000000000000000000000000000000000000000000000000000"
+            ? 'Erg'
+            : 'SigUSD',
           saleType: 'mint',
           collection: item.collection?.name,
           collectionId: item.collection?.id,

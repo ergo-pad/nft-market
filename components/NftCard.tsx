@@ -19,6 +19,7 @@ import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import HideImageIcon from '@mui/icons-material/HideImage';
 import axios from 'axios';
 import { getNautilusAddressMapper, ASSET_URL } from "@utilities/LogoMapper";
+import { slugify } from '@utilities/general';
 
 // import dynamic from 'next/dynamic'
 // const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
@@ -246,7 +247,7 @@ const NftCardCard: FC<INftCardCard> = ({
                   />
                 )}
               </Box>
-              {nftData.price && setSelected === undefined && (
+              {nftData.price !== 0 && setSelected === undefined && (
                 <Box
                   sx={{
                     position: 'absolute',
@@ -373,9 +374,9 @@ const NftCardCard: FC<INftCardCard> = ({
                     textOverflow: 'ellipsis'
                   }}
                 >
-                  {nftData.collectionLink ? (
+                  {nftData.collection && (
                     <Link
-                      href={nftData.collectionLink}
+                      href={'/collections/' + slugify(nftData.collection)}
                       sx={{
                         color: theme.palette.text.secondary,
                         textDecoration: 'none',
@@ -386,8 +387,6 @@ const NftCardCard: FC<INftCardCard> = ({
                     >
                       {nftData.collection}
                     </Link>
-                  ) : (
-                    nftData.collection
                   )}
                   {' '}
                   {showArtist && (
