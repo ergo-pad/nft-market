@@ -181,6 +181,8 @@ const MintSaleInfo: FC<{
     openNow: false,
     price: 0,
     currency: 'Erg',
+    saleId: '',
+    packId: ''
   })
   const [featuredImage, setFeaturedImage] = useState('')
   const [loading, setLoading] = useState(true)
@@ -219,6 +221,7 @@ const MintSaleInfo: FC<{
       ]
     }]
   })
+  const [openNow, setOpenNow] = useState<boolean>(false)
   const apiContext = useContext<IApiContext>(ApiContext);
 
   useEffect(() => {
@@ -246,7 +249,9 @@ const MintSaleInfo: FC<{
         tokenName: apiGetSaleById.packs[0].name,
         openNow: true,
         price: price,
-        currency: currency
+        currency: currency,
+        saleId: apiGetSaleById.id,
+        packId: openNow ? apiGetSaleById.packs[2].id : apiGetSaleById.packs[0].id
       })
       setFeaturedImage(apiGetSaleById.packs[0].image)
     }
@@ -255,10 +260,12 @@ const MintSaleInfo: FC<{
         tokenName: apiGetSaleById.packs[0].name,
         openNow: false,
         price: price,
-        currency: currency
+        currency: currency,
+        saleId: apiGetSaleById.id,
+        packId: openNow ? apiGetSaleById.packs[2].id : apiGetSaleById.packs[0].id
       })
     }
-  }, [apiGetSaleById])
+  }, [apiGetSaleById, openNow])
 
   useEffect(() => {
     selected.map((item, i) => {
@@ -274,12 +281,14 @@ const MintSaleInfo: FC<{
           openNow: true,
           price: price,
           currency: currency,
+          saleId: apiGetSaleById.id,
+          packId: openNow ? apiGetSaleById.packs[packIndex + 2].id : apiGetSaleById.packs[packIndex].id
         })
         setFeaturedImage(apiGetSaleById.packs[packIndex].image)
       }
       return item
     })
-  }, [selected.toString()])
+  }, [selected.toString(), openNow])
 
   const [tokenDetails, setTokenDetails] = useState<any>({
     name: '',
@@ -657,7 +666,7 @@ const MintSaleInfo: FC<{
             )}
 
           <Box sx={{ mb: 3 }}>
-            <DirectSalesCard {...salesProps} />
+            <DirectSalesCard {...salesProps} openNow={openNow} setOpenNow={setOpenNow} />
           </Box>
 
         </Grid>

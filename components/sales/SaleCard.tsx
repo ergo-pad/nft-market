@@ -192,7 +192,7 @@ const SaleCard: FC<ISaleCard> = ({
                   right: '16px',
                   height: '28px',
                   p: '2px 8px',
-                  background: theme.palette.primary.main,
+                  background: theme.palette.secondary.main,
                   color: theme.palette.background.default,
                   borderRadius: '50px',
                 }}

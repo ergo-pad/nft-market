@@ -124,10 +124,11 @@ const Header: FC<IHeaderProps> = ({ }) => {
         elevation={0}
         sx={{
           zIndex: "101",
-          borderBottom: theme.palette.mode == 'dark' ? "1px solid #1d242f" : "1px solid rgba(140,140,140,0.2)",
+          border: 'none',
+          borderBottom: `1px solid ${theme.palette.divider}`,
           backdropFilter: "blur(25px)",
           borderRadius: '0px',
-          background: theme.palette.mode == 'dark' ? "rgba(12,18,28,0.9)" : "rgba(245,245,245,0.9)",
+          background: theme.palette.background.paper,
         }}
       >
         <Container sx={{ px: "24px" }}>
@@ -144,20 +145,40 @@ const Header: FC<IHeaderProps> = ({ }) => {
               item
               alignItems="center"
               sx={{
-                height: { xs: "32px", md: "40px" },
-                width: { xs: "32px", md: "40px" },
+                // height: { xs: "32px", md: "40px" },
+                // width: { xs: "32px", md: "40px" },
               }}
             >
-              <Link href="/">
+              <Link
+                href="/"
+                sx={{
+                  display: 'block',
+                  '&:hover': {
+                    '& span': {
+                      color: theme.palette.primary.main
+                    }
+                  }
+                }}
+              >
                 <Logo
                   sx={{
-                    color: theme.palette.text.primary,
-                    fontSize: { xs: "32px", md: "40px" },
-                    "&:hover": {
-                      color: theme.palette.primary.main,
-                    },
+                    mt: '6px',
+                    display: 'inline-block'
                   }}
                 />
+                <Typography
+                  component="span"
+                  sx={{
+                    fontFamily: '"Koulen", sans-serif',
+                    color: theme.palette.text.primary,
+                    fontSize: '1.7rem',
+                    display: 'inline-block',
+                    verticalAlign: '25%',
+
+                  }}
+                >
+                  BLOCK ART
+                </Typography>
               </Link>
             </Grid>
 

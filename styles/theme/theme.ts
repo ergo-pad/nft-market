@@ -262,23 +262,23 @@ const mainTheme = [{
 let lightTheme = createTheme({
   palette: {
     background: {
-      default: "#FFFFFF",
-      paper: 'rgba(240,240,240,1)',
+      default: "rgba(250,250,255,1)",
+      paper: 'rgba(240,240,244,1)',
     },
     text: {
-      primary: '#000',
-      secondary: 'rgba(0,0,0,0.7)',
+      primary: 'rgba(23,21,21,1)',
+      secondary: 'rgba(51,51,51,1)',
     },
     primary: {
-      main: "#00868F",
+      main: "rgba(252,70,96,1)",
     },
     secondary: {
-      main: "#FF8219",
+      main: "#00868F",
     },
   },
   typography: {
     body2: {
-      color: 'rgba(0,0,0,0.87)',
+      color: 'rgba(51,51,51,1)',
     }
   },
   components: {
@@ -327,31 +327,31 @@ let darkTheme = createTheme({
   palette: {
     mode: "dark",
     background: {
-      default: "#0E141F",
-      paper: '#1c212b'
+      default: 'rgba(22,28,36,1)',
+      paper: 'rgba(38,42,52,1)'
       // color for text area #242932
     },
     text: {
-      primary: '#fff',
-      secondary: 'rgba(255,255,255,0.7)',
+      primary: 'rgba(244,244,244,1)',
+      secondary: 'rgba(228,228,228,1)',
     },
     primary: {
       main: "#9FD2DB",
     },
     secondary: {
-      main: "#FC9E4F",
+      main: "rgba(252,70,96,1)",
     },
   },
   typography: {
     body2: {
-      color: 'rgba(255,255,255,0.75)',
+      color: 'rgba(228,228,228,1)',
     }
   },
   components: {
     MuiPaper: {
       styleOverrides: {
         root: {
-          background: '#1c212b',
+          background: 'rgba(20,24,28,1)',
         },
       },
     },
@@ -359,7 +359,7 @@ let darkTheme = createTheme({
       styleOverrides: {
         root: {
           '&:hover': {
-            color: '#fff',
+            color: 'rgba(157,244,47,1)',
           }
         }
       }

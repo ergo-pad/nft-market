@@ -48,7 +48,7 @@ const nftPackObjectInit = {
   probabilities: [
     {
       rarityName: "",
-      probability: 1,
+      probability: 100,
     },
   ],
 };
@@ -96,7 +96,7 @@ const PackTokenItem: FC<IPackTokenItemProps> = ({
       rarityData.map((item, i) => {
         return {
           rarityName: item.rarity,
-          probability: 1,
+          probability: 100,
         };
       })
     );

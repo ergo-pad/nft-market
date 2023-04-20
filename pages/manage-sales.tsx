@@ -113,7 +113,7 @@ const ManageSales: NextPage = () => {
   const columns: GridColDef[] = [
     {
       field: "id",
-      headerName: "#",
+      headerName: "ID",
       width: 60,
     },
     {
@@ -121,13 +121,13 @@ const ManageSales: NextPage = () => {
       headerName: "Sale Name",
       renderCell: (params) => (
         <Box>
-          <Link href={"/marketplace/" + stringToUrl(params.value)}>
+          <Link href={"/marketplace/sale/" + stringToUrl(params.value)}>
             {params.value}
           </Link>
         </Box>
       ),
       flex: 1,
-      minWidth: 200,
+      minWidth: 170,
     },
     {
       field: "startDate",
@@ -259,7 +259,6 @@ const ManageSales: NextPage = () => {
                 },
               }}
               // rowHeight={64}
-              // pageSizeOptions={[25, 50, 100]}
               disableRowSelectionOnClick
               sx={{
                 border: "none",
