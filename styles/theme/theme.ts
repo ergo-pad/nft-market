@@ -359,7 +359,7 @@ let darkTheme = createTheme({
       styleOverrides: {
         root: {
           '&:hover': {
-            color: 'rgba(157,244,47,1)',
+            color: 'rgba(244,244,244,1)',
           }
         }
       }

@@ -29,6 +29,8 @@ interface ISalesInfoProps {
   clearForm: boolean;
   setClearForm: React.Dispatch<React.SetStateAction<boolean>>;
   rarityData: IRarityData[];
+  saleFormValidation: {name: boolean;}
+  setSaleFormValidation: React.Dispatch<React.SetStateAction<{name: boolean;}>>;
 }
 
 const SalesInfo: FC<ISalesInfoProps> = ({
@@ -37,6 +39,8 @@ const SalesInfo: FC<ISalesInfoProps> = ({
   clearForm,
   setClearForm,
   rarityData,
+  saleFormValidation,
+  setSaleFormValidation
 }) => {
   const [packTokenData, setPackTokenData] = useState([packTokenDataInit]);
   const [packToggle, setPackToggle] = useState(true);
@@ -141,6 +145,7 @@ const SalesInfo: FC<ISalesInfoProps> = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === 'saleName') setSaleFormValidation(prevState => {return { ...prevState, name: false }})
     setNameDesc((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -201,6 +206,8 @@ const SalesInfo: FC<ISalesInfoProps> = ({
               name="saleName"
               value={nameDesc.saleName}
               onChange={handleChange}
+              error={saleFormValidation.name}
+            helperText={saleFormValidation.name ? "A sale already exists with this name" : null}
             />
           </Grid>
           <Grid item container spacing={1}>

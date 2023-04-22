@@ -213,6 +213,7 @@ const Mint: NextPage = () => {
     }));
   }, [walletAddress]);
   const [collectionFormValidation, setCollectionFormValidation] = useState({ name: false })
+  const [saleFormValidation, setSaleFormValidation] = useState({ name: false })
 
   // CLEAR FORM STATES //
   const [clearArtistForm, setClearArtistForm] = useState(false);
@@ -314,7 +315,7 @@ const Mint: NextPage = () => {
         try {
           const slug = slugify(collectionData.collectionName)
           const res = await apiContext.api.get(`/collection/${slug}`);
-          return true
+          if (res.data) return true
         } catch (e: any) {
           if (e.response.data.includes('empty result'))
             return false
@@ -333,6 +334,37 @@ const Mint: NextPage = () => {
       }
       else {
         setCollectionFormValidation(prevState => {
+          return {
+            ...prevState,
+            name: false
+          }
+        })
+      }
+    }
+    if (activeStep === 3) {
+      const doesSaleNameExist = async () => {
+        try {
+          const slug = slugify(saleInfoData.saleName)
+          const res = await apiContext.api.get(`/sale/${slug}`);
+          if (res.data) return true
+        } catch (e: any) {
+          if (e.response.data.includes('empty result'))
+            return false
+        }
+      };
+      const bool = await doesSaleNameExist()
+      if (bool) {
+        setSaleFormValidation(prevState => {
+          return {
+            ...prevState,
+            name: true
+          }
+        })
+        apiContext.api.error('Please choose a unique sale name')
+        return false
+      }
+      else {
+        setSaleFormValidation(prevState => {
           return {
             ...prevState,
             name: false
@@ -727,6 +759,8 @@ const Mint: NextPage = () => {
                     clearForm={clearSaleInfoForm}
                     setClearForm={setClearSaleInfoForm}
                     rarityData={rarityData}
+                    saleFormValidation={saleFormValidation}
+                    setSaleFormValidation={setSaleFormValidation}
                   />
                 </Collapse>
                 <Box sx={{ pt: 2, textAlign: "center" }}>
@@ -774,6 +808,9 @@ const Mint: NextPage = () => {
                   }
                   {collectionFormValidation.name && <Typography sx={{ mt: '6px' }}>
                     You must choose a unique collection name
+                  </Typography>}
+                  {saleFormValidation.name && <Typography sx={{ mt: '6px' }}>
+                    You must choose a unique sale name
                   </Typography>}
                 </Box>
               </>
