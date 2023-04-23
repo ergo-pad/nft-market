@@ -168,7 +168,7 @@ export const packTokenDataInit: IPackData = {
 
 export const saleInfoDataInit: ISaleInfoData = {
   packs: [packTokenDataInit], // If user chooses not to have packs, price for sale will be {packs[0].price}
-  dateStart: new Date(new Date().getTime() + 8.64e7),
+  dateStart: new Date(new Date().getTime()),
   dateEnd: new Date(new Date().getTime() + 2.6298e9),
   hasPacks: false, // If false, packs[0].price is used for all NFT prices as mentioned above.
   saleName: "",
@@ -386,6 +386,7 @@ const Mint: NextPage = () => {
 
   // SUBMIT FORM //
   const submit = async () => {
+    console.log('submit')
     setLoading(true);
     try {
       const artistCreated = await createArtistData(artistData);
@@ -450,7 +451,7 @@ const Mint: NextPage = () => {
                   };
                 })
                 : [{
-                  rarity: "default",
+                  rarity: "",
                   odds: 100,
                 }],
             };
@@ -496,7 +497,7 @@ const Mint: NextPage = () => {
         mintingExpiry: data.mintingExpiry,
         rarities: tokens.rarities.map((rarity) => {
           return {
-            rarity: rarity.rarity ?? "default",
+            rarity: rarity.rarity ?? "",
             image: rarity.image ?? "",
             description: "", // todo: add description to IRarityData
           };
@@ -719,6 +720,9 @@ const Mint: NextPage = () => {
                 <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                   <Box sx={{ flex: "1 1 auto" }} />
                   <Button onClick={handleStepperReset}>Reset</Button>
+                  <Button onClick={() => submit()}>
+                    Submit
+                  </Button>
                 </Box>
               </>
             ) : (
@@ -812,6 +816,7 @@ const Mint: NextPage = () => {
                   {saleFormValidation.name && <Typography sx={{ mt: '6px' }}>
                     You must choose a unique sale name
                   </Typography>}
+                  
                 </Box>
               </>
             )}

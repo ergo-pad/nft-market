@@ -5,7 +5,6 @@ import {
   Container,
 } from '@mui/material'
 import MintSaleInfo from '@components/sales/MintSaleInfo';
-import { ISalesCardProps } from '@components/token/MarketSalesCard';
 
 const Sale: NextPage = () => {
   const router = useRouter()
