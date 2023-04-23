@@ -62,8 +62,9 @@ function MyApp({ Component, pageProps }: AppProps) {
               }}
             >
               <UserContext.Provider value={{ userInfo, setUserInfo }}>
-                <ApiContext.Provider value={{api: new AppApi(setAlert)}}>
+                <ApiContext.Provider value={{ api: new AppApi(setAlert) }}>
                   <CssBaseline enableColorScheme />
+
                   <AnimatePresence exitBeforeEnter>
                     <Layout>
                       <Component {...pageProps} />

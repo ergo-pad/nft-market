@@ -20,6 +20,7 @@ import SocialIcons from "@components/svgs/SocialIcons";
 
 export interface ICollectionProfileProps {
   address?: string;
+  id: string;
   collectionName?: string;
   collectionLogo?: string;
   bannerUrl?: string;

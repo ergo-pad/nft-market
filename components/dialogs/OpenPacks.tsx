@@ -22,6 +22,7 @@ import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import { getErgoWalletContext } from "@components/wallet/AddWallet";
 import { WalletContext } from '@contexts/WalletContext';
+import { IOrderRequests, IOrder } from '@components/dialogs/ConfirmPurchase';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -76,21 +77,6 @@ interface IOpenPacksProps {
     imgUrl: string;
     tokenId: string;
   }[]
-}
-
-interface IOrderRequests {
-  saleId: string;
-  packRequests: {
-    packId: string;
-    count: number;
-  }[]
-}
-
-interface IOrder {
-  targetAddress: string;
-  userWallet: string[];
-  txType: 'EIP-12';
-  requests: IOrderRequests[]
 }
 
 interface IToken {
@@ -373,42 +359,3 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
 }
 
 export default OpenPacks;
-
-interface IPrice {
-  id: string;
-  tokenId: string;
-  amount: number;
-  packId: string;
-}
-
-interface IRarity {
-  odds: number;
-  rarity: string;
-}
-
-interface IContent {
-  id: string;
-  rarity: IRarity[];
-  amount: number;
-  packId: string;
-}
-
-interface IPack {
-  id: string;
-  name: string;
-  image: string;
-  price: IPrice[];
-  content: IContent[];
-}
-
-interface ISale {
-  id: string;
-  name: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  status: string;
-  sellerWallet: string;
-  saleWallet: string;
-  packs: IPack[];
-}

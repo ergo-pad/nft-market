@@ -45,6 +45,7 @@ interface IPack {
   image: string;
   price: IPrice[];
   content: IContent[];
+  soldOut: boolean;
 }
 
 interface IPrice {
@@ -181,6 +182,9 @@ const MintSaleInfo: FC<{
     openNow: false,
     price: 0,
     currency: 'Erg',
+    saleId: '',
+    packId: '',
+    soldOut: false
   })
   const [featuredImage, setFeaturedImage] = useState('')
   const [loading, setLoading] = useState(true)
@@ -196,6 +200,7 @@ const MintSaleInfo: FC<{
       id: "",
       name: "",
       image: "",
+      soldOut: false,
       price: [
         {
           id: "",
@@ -219,6 +224,7 @@ const MintSaleInfo: FC<{
       ]
     }]
   })
+  const [openNow, setOpenNow] = useState<boolean>(false)
   const apiContext = useContext<IApiContext>(ApiContext);
 
   useEffect(() => {
@@ -246,7 +252,10 @@ const MintSaleInfo: FC<{
         tokenName: apiGetSaleById.packs[0].name,
         openNow: true,
         price: price,
-        currency: currency
+        currency: currency,
+        saleId: apiGetSaleById.id,
+        packId: openNow ? apiGetSaleById.packs[2].id : apiGetSaleById.packs[0].id,
+        soldOut: openNow ? apiGetSaleById.packs[2].soldOut : apiGetSaleById.packs[0].soldOut
       })
       setFeaturedImage(apiGetSaleById.packs[0].image)
     }
@@ -255,7 +264,10 @@ const MintSaleInfo: FC<{
         tokenName: apiGetSaleById.packs[0].name,
         openNow: false,
         price: price,
-        currency: currency
+        currency: currency,
+        saleId: apiGetSaleById.id,
+        packId: openNow ? apiGetSaleById.packs[2].id : apiGetSaleById.packs[0].id,
+        soldOut: openNow ? apiGetSaleById.packs[2].soldOut : apiGetSaleById.packs[0].soldOut
       })
     }
   }, [apiGetSaleById])
@@ -274,12 +286,15 @@ const MintSaleInfo: FC<{
           openNow: true,
           price: price,
           currency: currency,
+          saleId: apiGetSaleById.id,
+          packId: openNow ? apiGetSaleById.packs[packIndex + 2].id : apiGetSaleById.packs[packIndex].id,
+          soldOut: openNow ? apiGetSaleById.packs[packIndex + 2].soldOut : apiGetSaleById.packs[packIndex].soldOut
         })
         setFeaturedImage(apiGetSaleById.packs[packIndex].image)
       }
       return item
     })
-  }, [selected.toString()])
+  }, [selected.toString(), openNow])
 
   const [tokenDetails, setTokenDetails] = useState<any>({
     name: '',
@@ -348,6 +363,7 @@ const MintSaleInfo: FC<{
                         borderRadius: '8px',
                       }}
                       alt="cube"
+                      crossOrigin="anonymous"
                     />
                   </>
                 ) : tokenDetails.r9 && tokenDetails.type === 'Image NFT' ?
@@ -359,6 +375,7 @@ const MintSaleInfo: FC<{
                       borderRadius: '8px',
                     }}
                     alt="cube"
+                    crossOrigin="anonymous"
                   />
                   :
                   <Box
@@ -430,14 +447,14 @@ const MintSaleInfo: FC<{
                 </Grid>
               )}
               {apiGetSaleById.artist && (
-                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-                  <Grid item>
+                <Grid container justifyContent="space-between" sx={{ mb: 1, }}>
+                  <Grid item xs="auto" sx={{ pr: 3 }}>
                     <Typography sx={boldTextSx}>
                       Artist:
                     </Typography>
                   </Grid>
-                  <Grid item>
-                    <Typography color="text.secondary" sx={textSx}>
+                  <Grid item zeroMinWidth xs>
+                    <Typography color="text.secondary" sx={{...textSx, textAlign: 'right'}} noWrap>
                       <Link href={'/users/' + apiGetSaleById.artist.address}>
                         {apiGetSaleById.artist.address}
                       </Link>
@@ -555,7 +572,7 @@ const MintSaleInfo: FC<{
                   Pack Contents
                 </Typography>
                 <List dense sx={{ transition: 'height 0.2s ease-out', height: '100%' }}>
-                  {apiGetSaleById.packs.filter((_item, i) => i % 3 === 0).map((pack, index) => {
+                  {apiGetSaleById.packs.filter((_item, i) => i % 3 === 1).map((pack, index) => {
                     return (
                       <Collapse key={index} in={selected[index]}>
                         {pack.content.map((content, i) => {
@@ -598,9 +615,9 @@ const MintSaleInfo: FC<{
             </>
           )}
           {apiGetSaleById !== undefined &&
-            apiGetSaleById.packs.length <= 3 &&
+            apiGetSaleById.packs.length === 3 &&
             (
-              apiGetSaleById.packs[0].content.map((content, i) => {
+              apiGetSaleById.packs[1].content.map((content, i) => {
                 const totalOdds = content.rarity.reduce(function (tot, arr) {
                   return tot + arr.odds;
                 }, 0);
@@ -657,7 +674,7 @@ const MintSaleInfo: FC<{
             )}
 
           <Box sx={{ mb: 3 }}>
-            <DirectSalesCard {...salesProps} />
+            <DirectSalesCard {...salesProps} openNow={openNow} setOpenNow={setOpenNow} />
           </Box>
 
         </Grid>

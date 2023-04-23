@@ -14,7 +14,7 @@ import {
   Button
 } from '@mui/material'
 import NumberIncrement from '@components/forms/NumberIncrement';
-import ConfirmSale from '@components/dialogs/ConfirmPurchase';
+import ConfirmPurchase from '@components/dialogs/ConfirmPurchase';
 import { ApiContext, IApiContext } from '@contexts/ApiContext';
 
 /// API NEEDED ////////
@@ -26,15 +26,29 @@ const ApiPriceConversion: { [key: string]: number } = {
 
 export interface IDirectSalesCardProps {
   tokenName: string;
-  openNow?: boolean;
+  openNow?: boolean | undefined;
+  setOpenNow?: React.Dispatch<React.SetStateAction<boolean>>;
   price: number;
   currency: string;
+  saleId: string;
+  packId: string;
+  soldOut: boolean;
 }
 
 const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
+  const {
+    tokenName,
+    openNow,
+    setOpenNow,
+    price,
+    currency,
+    saleId,
+    packId,
+    soldOut
+  } = props
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
-  const [openNow, setOpenNow] = useState<boolean | undefined>(props.openNow ? false : undefined)
+  // const [openNow, setOpenNow] = useState<boolean | undefined>(props.openNow ? false : undefined)
   const [numberSold, setNumberSold] = useState<number>(1)
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const [totalPrice, setTotalPrice] = useState(0)
@@ -46,7 +60,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
 
   useEffect(() => {
     setNumberSold(1)
-  }, [props.price])
+  }, [price])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,11 +74,11 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
 
   const apiFormSubmit = (isUsd: boolean) => {
     isUsd ? (
-      setTotalPrice(Number((numberSold * (apiPriceConversion[props.currency.toLowerCase()] * props.price)).toFixed(2)))
+      setTotalPrice(Number((numberSold * (apiPriceConversion[currency.toLowerCase()] * price)).toFixed(2)))
     ) : (
-      setTotalPrice(numberSold * props.price)
+      setTotalPrice(numberSold * price)
     )
-    setPurchaseCurrency(isUsd ? 'SigUSD' : props.currency)
+    setPurchaseCurrency(isUsd ? 'SigUSD' : currency)
     setConfirmationOpen(true)
   }
 
@@ -74,7 +88,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
         <CardContent>
           {/* <Card sx={{ background: 'none', border: 'none', p: 0 }}>
         <CardContent sx={{ p: 0 }}> */}
-          {props.price === 0 ? (
+          {price === 0 ? (
             <Typography>
               Not currently for sale
             </Typography>
@@ -104,16 +118,16 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                         lineHeight: 1.3
                       }}
                     >
-                      {(props.price * numberSold).toFixed(2) + ' ' + props.currency}
+                      {(price * numberSold).toFixed(2) + ' ' + currency}
                     </Typography>
-                    {props.currency === 'Erg' &&
+                    {currency === 'Erg' &&
                       <Typography
                         sx={{
                           color: theme.palette.text.secondary,
                           fontSize: '0.875rem'
                         }}
                       >
-                        ${(apiPriceConversion['erg'] * props.price * numberSold).toFixed(2)} USD
+                        ${(apiPriceConversion['erg'] * price * numberSold).toFixed(2)} USD
                       </Typography>
                     }
                   </Box>
@@ -133,12 +147,12 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                   </Box>
                 </Grid>
               </Grid>
-              {props.openNow && (
+              {openNow !== undefined && setOpenNow !== undefined && (
                 <FormGroup sx={{ mb: '12px' }}>
                   <FormControlLabel control={
                     <Checkbox
                       checked={openNow}
-                      onChange={() => setOpenNow(!openNow)}
+                      onChange={() => setOpenNow(prevState => !prevState)}
                       inputProps={{ 'aria-label': "Open right away (I don't need the pack tokens)" }}
                     />
                   } label="Open right away (I don't need the pack tokens)" />
@@ -149,9 +163,15 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                 onClick={() => apiFormSubmit(false)}
                 fullWidth
                 variant="contained"
+                disabled={soldOut}
               >
-                Buy with {props.currency}
+                Buy with {currency}
               </Button>
+              {soldOut && <Box>
+                <Typography variant="body2" sx={{ mt: 1, mb: 0 }}>
+                  These packs are sold out. 
+                </Typography>
+                </Box>}
 
               {/* <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -170,7 +190,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
 
                     variant="contained"
                   >
-                    Buy with {props.currency}
+                    Buy with {currency}
                   </Button>
 
                 </Grid>
@@ -179,14 +199,16 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
           )}
         </CardContent>
       </Card>
-      <ConfirmSale
+      <ConfirmPurchase
         open={confirmationOpen}
         setOpen={setConfirmationOpen}
-        tokenName={props.tokenName}
+        tokenName={tokenName}
         qty={numberSold}
         openNow={openNow}
         price={totalPrice}
         currency={purchaseCurrency}
+        saleId={saleId}
+        packId={packId}
       />
     </>
   )

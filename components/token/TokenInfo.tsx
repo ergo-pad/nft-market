@@ -93,7 +93,7 @@ const TokenInfo: FC<{
     setLoading(true)
     const fetchedInfo = await getAssetInfo(id);
     const data = fetchedInfo.data
-    console.log(data)
+    console.log(fetchedInfo)
     const metaData = parseDescription(data.description)
     console.log(metaData)
     const filteredMetaData: any = {};
@@ -105,12 +105,12 @@ const TokenInfo: FC<{
     setTokenDetails({
       tokenId: props.tokenId,
       name: data.name,
-      imgUrl: data.extraMetaData.link && resolveIpfs(data.extraMetaData.link),
+      imgUrl: data.extraMetaData?.link && resolveIpfs(data.extraMetaData.link),
       metaData: filteredMetaData,
       type: data.nftType,
       description: metaData.description ? metaData.description : metaData.Description
     })
-    if (data.extraMetaData.standard === 2) {
+    if (data.extraMetaData?.standard === 2) {
       setCollection({
         name: data.extraMetaData.standard2Data?.collection?.name,
         link: '/collections/' + data.extraMetaData.standard2Data?.collection?.name,
@@ -130,7 +130,7 @@ const TokenInfo: FC<{
       if (explicitValue) {
         const value = explicitValue.value;
         if (value === "\x01") setExplicit(true)
-      } 
+      }
       console.log(flatTraits)
       setV2MetaData({
         ...flatTraits
@@ -231,6 +231,7 @@ const TokenInfo: FC<{
                       borderRadius: '8px',
                     }}
                     alt="cube"
+                    crossOrigin="anonymous"
                   />
                   :
                   <Box
@@ -300,13 +301,13 @@ const TokenInfo: FC<{
                 </Grid>
               </Grid>}
               {artist && <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-                <Grid item>
+                <Grid item xs="auto" sx={{ pr: 3 }}>
                   <Typography sx={boldTextSx}>
                     Artist:
                   </Typography>
                 </Grid>
-                <Grid item>
-                  <Typography color="text.secondary" sx={textSx}>
+                <Grid item zeroMinWidth xs>
+                  <Typography color="text.secondary" sx={{ ...textSx, textAlign: 'right' }} noWrap>
                     <Link href={artist.link}>
                       {artist.name}
                     </Link>

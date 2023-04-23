@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useContext, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -25,14 +25,16 @@ import {
 } from '@mui/material';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import { ApiContext, IApiContext } from "@contexts/ApiContext";
+import { getErgoWalletContext } from "@components/wallet/AddWallet";
+import { WalletContext } from '@contexts/WalletContext';
+import Link from '@components/Link';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
-    maxWidth: '440px',
-    minWidth: '350px',
     border: 'none',
-    margin: 'auto'
+    display: 'block',
   },
   '& .MuiDialogActions-root': {
     padding: theme.spacing(2),
@@ -69,21 +71,45 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
   );
 }
 
+export interface IOrderRequests {
+  saleId: string;
+  packRequests: {
+    packId: string;
+    count: number;
+  }[]
+}
+
+export interface IOrder {
+  targetAddress: string;
+  userWallet: string[];
+  txType: 'EIP-12';
+  requests: IOrderRequests[]
+}
+
 interface IConfirmPurchaseProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   tokenName: string;
-  qty?: number;
+  qty: number;
   openNow?: boolean;
   price: number;
   currency: string;
   isBid?: boolean;
+  saleId: string;
+  packId: string;
 }
 
-const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, tokenName, qty, openNow, price, currency, isBid }) => {
+const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, saleId, packId, tokenName, qty, openNow, price, currency, isBid }) => {
   const [submitting, setSubmitting] = useState<"submitting" | "success" | "failed" | undefined>(undefined)
   const [bidPrice, setBidPrice] = useState(price + (price * 0.1))
   const [error, setError] = useState(false)
+  const {
+    walletAddress,
+    setAddWalletModalOpen,
+    dAppWallet
+  } = useContext(WalletContext);
+  const apiContext = useContext<IApiContext>(ApiContext);
+  const [successTx, setSuccessTx] = useState('')
 
   const handleBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBidPrice(Number(e.target.value))
@@ -91,14 +117,66 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, tokenName, 
     else setError(false)
   }
 
+  const buildOrder = (): IOrder => {
+    let walletArray = []
+    if (dAppWallet.connected === true) {
+      walletArray = dAppWallet.addresses
+    }
+    else walletArray = [walletAddress]
+    return {
+      targetAddress: walletArray[0],
+      userWallet: walletArray,
+      txType: "EIP-12",
+      requests: [{
+        saleId: saleId,
+        packRequests: [
+          {
+            packId: packId,
+            count: qty
+          }]
+      }]
+    }
+  }
+
+  const getPurchaseTx = async (order: IOrder) => {
+    try {
+      const res = await apiContext.api.post(`/order`, order);
+      apiContext.api.ok("Open order sent");
+      return res.data;
+    } catch (e: any) {
+      apiContext.api.error(e);
+    }
+  };
+
+  const submit = async () => {
+    setSubmitting('submitting');
+    try {
+      const order = buildOrder()
+      console.log(order)
+      if (order.requests.length > 0) {
+        const tx = await getPurchaseTx(order);
+        const context = await getErgoWalletContext();
+        const signedtx = await context.sign_tx(tx);
+        const ok = await context.submit_tx(signedtx);
+        apiContext.api.ok(`Submitted Transaction: ${ok}`);
+        setSuccessTx(ok)
+        setSubmitting('success')
+      }
+      else {
+        apiContext.api.error('Not built correctly');
+        setSubmitting('failed')
+      }
+    } catch (e: any) {
+      apiContext.api.error(e);
+      setSubmitting('failed')
+      console.error(e);
+    }
+  }
+
   const handleClose = () => {
     setSubmitting(undefined)
     setOpen(false);
   };
-
-  const submit = () => {
-    setSubmitting("submitting")
-  }
 
   const switchTitle = (param: string | undefined) => {
     switch (param) {
@@ -131,12 +209,6 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, tokenName, 
             >
               Awaiting your confirmation of the transaction in the dApp connector.
             </Typography>
-            <Button onClick={() => setSubmitting("success")}>
-              Test Success
-            </Button>
-            <Button onClick={() => setSubmitting("failed")}>
-              Test Failed
-            </Button>
           </Box>
         )
       case "success":
@@ -155,6 +227,18 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, tokenName, 
             >
               Transaction succeeded.
             </Typography>
+            <Typography>
+            View on explorer:
+            </Typography>
+            <Box sx={{
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+            }}>
+              <Link href={'https://explorer.ergoplatform.com/en/transactions/' + successTx}>
+              {successTx}
+            </Link>
+            </Box>
           </Box>
         )
       case "failed":
@@ -252,6 +336,7 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, tokenName, 
         aria-labelledby="customized-dialog-title"
         open={open}
         fullScreen={extraSmall}
+        maxWidth={'xs'}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
           {switchTitle(submitting)}

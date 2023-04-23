@@ -20,6 +20,8 @@ interface ICollectionFormProps {
   setCollectionData: React.Dispatch<React.SetStateAction<ICollectionData>>;
   clearForm: boolean;
   setClearForm: React.Dispatch<React.SetStateAction<boolean>>;
+  collectionFormValidation: {name: boolean;}
+  setCollectionFormValidation: React.Dispatch<React.SetStateAction<{name: boolean;}>>;
 }
 
 const CollectionForm: FC<ICollectionFormProps> = ({
@@ -27,6 +29,8 @@ const CollectionForm: FC<ICollectionFormProps> = ({
   setCollectionData,
   clearForm,
   setClearForm,
+  collectionFormValidation,
+  setCollectionFormValidation
 }) => {
   const theme = useTheme();
   const [collectionFeaturedImg, setCollectionFeaturedImg] = useState<
@@ -51,6 +55,7 @@ const CollectionForm: FC<ICollectionFormProps> = ({
   const [mintExpiry, setMintExpiry] = useState<Dayjs | null>(dayjs());
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === 'collectionName') setCollectionFormValidation(prevState => {return { ...prevState, name: false }})
     setCollectionData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   useEffect(() => {
@@ -103,6 +108,8 @@ const CollectionForm: FC<ICollectionFormProps> = ({
             name="collectionName"
             value={collectionData.collectionName || ""}
             onChange={handleChange}
+            error={collectionFormValidation.name}
+            helperText={collectionFormValidation.name ? "A collection already exists with this name" : null}
           />
         </Grid>
         <Grid item xs={12} md={6}>

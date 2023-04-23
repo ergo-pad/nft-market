@@ -37,6 +37,7 @@ import SaleList from "@components/sales/SaleList";
 // INIT
 const collection: ICollectionProfileProps = {
   address: "",
+  id: "",
   collectionName: "",
   collectionLogo: "",
   bannerUrl: undefined,
@@ -156,13 +157,15 @@ const Collection: NextPage = () => {
   useEffect(() => {
     const getCollectionProfile = async () => {
       try {
-        const res = await apiContext.api.get(`/collection`);
-        const collection = res.data.find((obj: any) => {
-          return obj.id === id?.toString()
-        })
+        const res = await apiContext.api.get(`/collection/${id}`);
+        // const collection = res.data.find((obj: any) => {
+        //   return obj.id === id?.toString()
+        // })
+        const collection = res.data
         console.log(res.data)
         setCollectionProfile({
           address: "missing-artist-address",
+          id: collection.id,
           collectionName: collection.name,
           collectionLogo: collection.collectionLogoUrl,
           bannerUrl: collection.bannerImageUrl,
@@ -188,7 +191,8 @@ const Collection: NextPage = () => {
           }
         }))
       } catch (e: any) {
-        apiContext.api.error(e);
+        if (e.response.data.includes('empty result')) console.log('No collection by that name or ID')
+        else apiContext.api.error(e.response.data);
       }
     };
     if (id) getCollectionProfile();
@@ -196,16 +200,8 @@ const Collection: NextPage = () => {
 
   return (
     <>
-      {/* Could refactor to have one object passed to CollectionProfile */}
       <CollectionProfile
-        address={collectionProfile.address}
-        collectionName={collectionProfile.collectionName}
-        collectionLogo={collectionProfile.collectionLogo}
-        bannerUrl={collectionProfile.bannerUrl}
-        description={collectionProfile.description}
-        socialLinks={collectionProfile.socialLinks ? collection.socialLinks : []}
-        category={collectionProfile.category}
-        website={collectionProfile.website}
+        {...collectionProfile}
       >
         <TabContext value={tabValue}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -228,9 +224,9 @@ const Collection: NextPage = () => {
             unmountOnExit
           >
             <TabPanel value="sales" sx={customTabPanelSx}>
-              {id &&
+              {collectionProfile.id &&
                 <SaleList
-                  collection={id.toString()}
+                  collection={collectionProfile.id}
                   notFullWidth
                 />
               }
@@ -260,17 +256,7 @@ const Collection: NextPage = () => {
               {activities.map((item, i) => {
                 return (
                   <CollectionActivity
-                    tokenImageUrl={item.tokenImageUrl}
-                    tokenName={item.tokenName}
-                    tokenUrl={item.tokenUrl}
-                    collectionName={item.collectionName}
-                    collectionUrl={item.collectionUrl}
-                    initiatorAvatarUrl={item.initiatorAvatarUrl}
-                    initiatorUsername={item.initiatorUsername}
-                    initiatorAddress={item.initiatorAddress} // for URL 
-                    action={item.action}
-                    date={item.date}
-                    transactionUrl={item.transactionUrl}
+                    {...item}
                     key={i}
                     index={i}
                   />

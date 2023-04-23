@@ -12,7 +12,7 @@ import {
 } from '@mui/material'
 import ButtonLink from '@components/ButtonLink'
 import dynamic from 'next/dynamic'
-import ConfirmSale from '@components/dialogs/ConfirmPurchase';
+// import ConfirmPurchase from '@components/dialogs/ConfirmPurchase';
 
 const TimeRemaining = dynamic(() => import('@components/TimeRemaining'), {
   ssr: false,
@@ -258,7 +258,7 @@ const MarketSalesCard: FC<ISalesCardProps> = (props) => {
           )}
         </CardContent>
       </Card>
-      <ConfirmSale
+      {/* <ConfirmPurchase
         open={confirmationOpen}
         setOpen={setConfirmationOpen}
         tokenName={props.tokenName}
@@ -267,7 +267,7 @@ const MarketSalesCard: FC<ISalesCardProps> = (props) => {
         // openNow={openNow}
         price={totalPrice ? totalPrice : 0}
         currency={purchaseCurrency}
-      />
+      /> */}
     </>
   )
 };
