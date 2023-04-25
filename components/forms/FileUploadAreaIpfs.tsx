@@ -15,7 +15,7 @@ import {
   ListItemText,
   IconButton,
   Avatar,
-  CircularProgress
+  LinearProgress
 } from "@mui/material";
 import Image from "next/image";
 import { bytesToSize, aspectRatioResize } from "@utilities/general";
@@ -23,8 +23,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { storeNFT } from "@utils/nft-storage";
 import axios from "axios";
 import { resolveIpfs } from "@utils/assets";
+import CircularProgress, {
+  CircularProgressProps,
+} from '@mui/material/CircularProgress';
+import { ipfsUpload } from "@utils/nft-storage";
+import FileProgress from "./FileProgress";
 
-interface IFileData {
+export interface IFileData {
   currentFile: File;
   previewImage: string;
   progress: number;
@@ -85,6 +90,12 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   const theme = useTheme();
   const [aspect, setAspect] = useState({});
   const [fileData, setFileData] = useState(fileInit);
+  const [progress, setProgress] = useState<any[]>([])
+  const [upload, setUpload] = useState(false)
+
+  useEffect(() => {
+    if (fileUrls.length === fileData.length) setUpload(false)
+  }, [fileUrls.toString()])
 
   useEffect(() => {
     if (expectedImgHeight && expectedImgWidth) {
@@ -95,7 +106,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!multiple && fileData[0].previewImage) {
+    if (!multiple && fileData[0]?.previewImage) {
       if (expectedImgHeight && expectedImgWidth) {
         setAspect(
           aspectRatioResize(expectedImgWidth, expectedImgHeight, 800, 350)
@@ -177,6 +188,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
           }
         } else {
           if (!checkExists(file.name)) {
+            setProgress([...fileData.map(() => { return 0 }), 0])
             setFileData((files) => [
               ...files,
               {
@@ -195,7 +207,8 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   };
 
   const deleteFile = (fileNumber: number) => {
-    setFileData(fileData.filter((data, idx) => idx !== fileNumber));
+    if (fileData.length > 1) setFileData(fileData.filter((data, idx) => idx !== fileNumber));
+    else setFileData([fileInitObject]);
   };
 
   const randomNumber = () => {
@@ -247,7 +260,8 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
       console.log("Please, select the file(s) you want to upload");
       return;
     }
-    ipfsUpload();
+    if (!multiple) ipfsUpload();
+    else setUpload(true)
   };
 
   // auto upload if fileData changes and autoUpload is true
@@ -263,8 +277,8 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
         sx
           ? sx
           : {
-              height: "100%",
-            }
+            height: "100%",
+          }
       }
     >
       <Box
@@ -294,7 +308,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
                 <Typography>{title}</Typography>
               </Grid>
               <Grid item>
-              {isLoading && <CircularProgress />}
+                {isLoading && <CircularProgress />}
                 <Button
                   size="small"
                   onClick={() => handleUpload()}
@@ -325,7 +339,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
           // onDragOver={e => handleDragOver(e)}
           onDragEnter={(e) => handleDragEnter(e)}
           onDragLeave={(e) => handleDragLeave(e)}
-          // onDrop={e => handleDrop(e)}
+        // onDrop={e => handleDrop(e)}
         >
           <Input
             ref={inputFileRef}
@@ -409,7 +423,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
                   }}
                 >
                   {fileData?.[0]?.previewImage != "" &&
-                  fileData?.[0]?.currentFile?.name != undefined ? (
+                    fileData?.[0]?.currentFile?.name != undefined ? (
                     <>
                       {type === "avatar" ? (
                         <Box sx={{ mx: "auto" }}>
@@ -520,31 +534,14 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
           <List>
             {fileData.map((file: IFileData, i: number) => {
               return (
-                <ListItem
+                <FileProgress
                   key={i}
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => deleteFile(i)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemAvatar>
-                    <Avatar src={fileData[i].previewImage} variant="rounded" />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={file.currentFile.name}
-                    secondary={bytesToSize(fileData[i].currentFile.size)}
-                    sx={{
-                      "& .MuiTypography-body2": {
-                        mb: 0,
-                      },
-                    }}
-                  />
-                </ListItem>
+                  index={i}
+                  fileData={fileData[i]}
+                  upload={upload}
+                  setResponse={setFileUrls}
+                  deleteFile={deleteFile}
+                />
               );
             })}
           </List>
@@ -583,3 +580,31 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
 };
 
 export default FileUploadAreaIpfs;
+
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number },
+) {
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          color="text.secondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
