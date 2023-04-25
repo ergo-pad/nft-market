@@ -127,6 +127,16 @@ const NftSection: FC<INftSectionProps> = ({
     });
   }, [nftImages]);
 
+  useEffect(() => {
+    if (clearTriggerNftImages === true) {
+      setNftImages([]);
+      setNftData([]);
+      setUploadedUrls(prevState => {return {}})
+      // setClearTriggerNftImages(false); 
+      // don't do that here, it's done in the FileUploadArea which is a generally used component. 
+    }
+  }, [clearTriggerNftImages]);
+
   return (
     <Box>
       <Typography variant="h5">Provide CSV for Metadata</Typography>
