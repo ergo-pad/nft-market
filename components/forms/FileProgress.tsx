@@ -35,7 +35,6 @@ const FileProgress: FC<IFileProgressProps> = ({ fileData, upload, index, deleteF
       })
       setUploaded(true)
     }
-    console.log(result);
   };
 
   useEffect(() => {

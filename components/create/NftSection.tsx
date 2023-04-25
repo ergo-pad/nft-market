@@ -129,7 +129,6 @@ const NftSection: FC<INftSectionProps> = ({
 
   useEffect(() => {
     if (clearTriggerNftImages === true) {
-      console.log('clear')
       setNftImages([]);
       setNftData([]);
       setUploadedUrls(prevState => {return {}})
