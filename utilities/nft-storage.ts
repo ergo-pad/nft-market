@@ -43,7 +43,6 @@ export const ipfsUpload = async (fileData: IFileData, onProgress: (progressEvent
     const ipfs = res.data.url.replace("https://cloudflare-ipfs.com/ipfs/", "ipfs://");
     onProgress({ ...newProgressEvent, loaded: 100, total: 100 });
 
-    // Wait for the response before setting progress to 100%
     return { url, ipfs }
   } catch (e) {
     console.log(e);

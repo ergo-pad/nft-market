@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import {
   Grid,
   useTheme,
@@ -17,21 +17,44 @@ const RoyaltyItem: FC<{
 }> = ({ index, id, royaltyData, setRoyaltyData }) => {
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
+  const [localRoyaltyData, setLocalRoyaltyData] = useState({
+    address: '',
+    pct: 0
+  })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRoyaltyData((prevArray) => {
-      const newArray = prevArray.map((item, i) => {
-        if (i === index) {
-          return {
-            ...item,
-            [e.target.name]: e.target.value
-          }
-        }
-        return item
-      })
-      return newArray
+    setLocalRoyaltyData(prev => {
+      return {
+        ...prev,
+        [e.target.name]: e.target.value
+      }
     })
   }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setRoyaltyData((prevArray) => {
+        const newArray = prevArray.map((item, i) => {
+          if (index === i) {
+            return {
+              ...item,
+              ...localRoyaltyData
+            }
+          }
+          return item
+        })
+        return newArray
+      })
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }, [localRoyaltyData])
+
+  useEffect(() => {
+    setLocalRoyaltyData({
+      address: royaltyData[index].address,
+      pct: royaltyData[index].pct,
+    })
+  }, [])
 
   const removeItem = (idx: number) => {
     setRoyaltyData(c => c.filter((_current, i) => i !== idx))
@@ -54,13 +77,12 @@ const RoyaltyItem: FC<{
               id="royalty-address"
               label="Address"
               name="address"
-              value={royaltyData[index].address}
+              value={localRoyaltyData.address}
               onChange={handleChange}
             />
           </Grid>
           <Grid item xs="auto" sx={{ display: upSm || index === 0 ? 'none' : 'flex' }}>
             <IconButton
-
               onClick={() => removeItem(index)}
             >
               <Icon>
@@ -84,7 +106,7 @@ const RoyaltyItem: FC<{
               label="Percent of Sales Price"
               name="pct"
               type="number"
-              value={royaltyData[index].pct}
+              value={localRoyaltyData.pct}
               onChange={handleChange}
             />
           </Grid>

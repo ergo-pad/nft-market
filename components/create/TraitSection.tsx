@@ -68,7 +68,6 @@ const TraitSection: FC<ITraitSectionProps> = ({ data, setData }) => {
               data={data}
               setData={setData}
               i={i}
-              // images={images}
             />
           </Collapse>
         ))}

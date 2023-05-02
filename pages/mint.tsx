@@ -471,6 +471,7 @@ const Mint: NextPage = () => {
         tokens: [],
         sourceAddresses: [address],
       }
+      console.log('Sale data: ')
       console.log(saleData)
       const res = await apiContext.api.post("/sale", saleData);
       apiContext.api.ok("Sale Data Created");
@@ -513,6 +514,7 @@ const Mint: NextPage = () => {
         }),
         saleId: saleId,
       }
+      console.log('collection data:')
       console.log(collectionData)
       const res = await apiContext.api.post("/collection", collectionData);
       apiContext.api.ok("Collection Data Created");
@@ -557,6 +559,7 @@ const Mint: NextPage = () => {
             : [],
         };
       })
+      console.log('nft data: ')
       console.log(data)
       const res = await apiContext.api.post(
         "/nft",
@@ -727,7 +730,7 @@ const Mint: NextPage = () => {
               </>
             ) : (
               <>
-                <Collapse in={activeStep === 0}>
+                <Collapse in={activeStep === 0} mountOnEnter unmountOnExit>
                   <Typography variant="h4">Artist Info</Typography>
                   <ArtistForm
                     artistData={artistData}
@@ -736,7 +739,7 @@ const Mint: NextPage = () => {
                     setClearForm={setClearArtistForm}
                   />
                 </Collapse>
-                <Collapse in={activeStep === 1}>
+                <Collapse in={activeStep === 1} mountOnEnter unmountOnExit>
                   <CollectionForm
                     collectionData={collectionData}
                     setCollectionData={setCollectionData}
@@ -746,7 +749,7 @@ const Mint: NextPage = () => {
                     setCollectionFormValidation={setCollectionFormValidation}
                   />
                 </Collapse>
-                <Collapse in={activeStep === 2}>
+                <Collapse in={activeStep === 2} mountOnEnter unmountOnExit>
                   <TokenDetailsForm
                     tokenDetailsData={tokenDetailsData}
                     setTokenDetailsData={setTokenDetailsData}
@@ -756,7 +759,7 @@ const Mint: NextPage = () => {
                     setRarityData={setRarityData}
                   />
                 </Collapse>
-                <Collapse in={activeStep === 3}>
+                <Collapse in={activeStep === 3} mountOnEnter unmountOnExit>
                   <SaleInfoForm
                     saleInfoData={saleInfoData}
                     setSaleInfoData={setSaleInfoData}

@@ -28,12 +28,15 @@ import CircularProgress, {
 } from '@mui/material/CircularProgress';
 import { ipfsUpload } from "@utils/nft-storage";
 import FileProgress from "./FileProgress";
+import { randomUUID } from "crypto";
+import { v4 as uuidv4 } from 'uuid';
 
 export interface IFileData {
   currentFile: File;
   previewImage: string;
   progress: number;
   message: string;
+  id?: string;
 }
 
 const fileInitObject: IFileData = {
@@ -41,6 +44,7 @@ const fileInitObject: IFileData = {
   previewImage: "",
   progress: 0,
   message: "",
+  id: uuidv4()
 };
 
 const fileInit = [fileInitObject];
@@ -171,6 +175,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
               previewImage: URL.createObjectURL(file),
               progress: 0,
               message: "",
+              id: uuidv4()
             },
           ]);
           if (
@@ -196,6 +201,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
                 previewImage: URL.createObjectURL(file),
                 progress: 0,
                 message: "",
+                id: uuidv4()
               },
             ]);
           }
@@ -209,6 +215,16 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   const deleteFile = (fileNumber: number) => {
     if (fileData.length > 1) setFileData(fileData.filter((data, idx) => idx !== fileNumber));
     else setFileData([fileInitObject]);
+  };
+
+  const deleteFileById = (fileId: string) => {
+    setFileData(prevFileData => {
+      if (prevFileData.length > 1) {
+        return prevFileData.filter(data => data.id !== fileId);
+      } else {
+        return [fileInitObject];
+      }
+    })
   };
 
   const randomNumber = () => {
@@ -254,6 +270,8 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
     setIsLoading(false);
   };
 
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+
   const handleUpload = async () => {
     /* If file is not selected, then show alert message */
     if (fileData[0].currentFile.name == undefined) {
@@ -261,7 +279,21 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
       return;
     }
     if (!multiple) ipfsUpload();
-    else setUpload(true)
+    else {
+      setFileData((prevData) => {
+        let count = 1
+        return prevData.map((file) => {
+          if (file.message !== 'uploaded') {
+            const message = `uploading ${Math.ceil(count / 20)}`;
+            count++
+            return { ...file, message: message }
+          }
+          else return file
+        }
+        )
+      }
+      );
+    }
   };
 
   // auto upload if fileData changes and autoUpload is true
@@ -297,32 +329,37 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
           height: "100%",
         }}
       >
-        {title && (
-          <InputLabel
-            htmlFor="fileInputUncontrolled"
-            sx={{ mb: "12px", position: "relative", overflow: "visible" }}
-            onClick={(e) => e.preventDefault()}
-          >
-            <Grid container justifyContent="space-between">
-              <Grid item>
-                <Typography>{title}</Typography>
-              </Grid>
-              <Grid item>
-                {isLoading && <CircularProgress />}
-                <Button
-                  size="small"
-                  onClick={() => handleUpload()}
-                  disabled={isLoading}
-                >
-                  Upload
-                </Button>
-                <Button size="small" onClick={clearFiles}>
-                  Clear Data
-                </Button>
-              </Grid>
+        <InputLabel
+          htmlFor="fileInputUncontrolled"
+          sx={{ mb: "12px", position: "relative", overflow: "visible" }}
+          onClick={(e) => e.preventDefault()}
+        >
+          <Grid container justifyContent="space-between">
+            <Grid item xs>
+              <Typography>{title}</Typography>
             </Grid>
-          </InputLabel>
-        )}
+            {multiple &&
+              <Grid item xs="auto">
+                <Typography>
+                  {fileData.length} files.
+                </Typography>
+              </Grid>
+            }
+            <Grid item xs="auto">
+              {isLoading && <CircularProgress />}
+              <Button
+                size="small"
+                onClick={() => handleUpload()}
+                disabled={isLoading}
+              >
+                Upload
+              </Button>
+              <Button size="small" onClick={clearFiles}>
+                Clear Data
+              </Button>
+            </Grid>
+          </Grid>
+        </InputLabel>
         <FormControl
           sx={{
             borderRadius: "6px",
@@ -535,76 +572,40 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
             {fileData.map((file: IFileData, i: number) => {
               return (
                 <FileProgress
-                  key={i}
-                  index={i}
-                  fileData={fileData[i]}
-                  upload={upload}
+                  key={file.id}
+                  thisFileData={file}
+                  setFileData={setFileData}
                   setResponse={setFileUrls}
-                  deleteFile={deleteFile}
+                  deleteFile={deleteFileById}
                 />
               );
             })}
           </List>
         )}
-        {(fileUrls[0]?.url || fileUrls[0]?.ipfs) && !multiple && (
+        {!multiple && fileUrls[0]?.ipfs && (
           <Box sx={{ mt: 1 }}>
-            Current Image&#40;s&#41;:
+            Current Image:
             {fileUrls.map((item, i) => {
-              if (item.url) {
-                const lastPeriodIndex = item.url.lastIndexOf(".")
-                const secondLastPeriodIndex = item.url.lastIndexOf(".", lastPeriodIndex - 1);
-                const extractedString = item.url.substring(secondLastPeriodIndex + 1);
-                return (
-                  <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center', mb: 1 }} key={i}>
-                    <Avatar src={item.url} variant="rounded" sx={{ mr: 1 }} />
-                    <Typography sx={{ flex: 1 }}>{extractedString}</Typography>
-                  </Box>
-                )
-              }
-              if (item.ipfs) {
-                const url = resolveIpfs(item.ipfs)
-                return (
-                  <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center', mb: 1 }} key={i}>
-                    <Avatar src={url} variant="rounded" sx={{ mr: 1 }} />
-                    <Typography sx={{ flex: 1 }}>{url}</Typography>
-                  </Box>
-                )
-              }
-              return null
+              const url = resolveIpfs(item.ipfs)
+              return (
+                <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center' }} key={i}>
+                  <Avatar src={url} variant="rounded" sx={{ mr: 1 }} />
+                  <Typography sx={{ flex: 1 }}>{item.ipfs}</Typography>
+                </Box>
+              )
             })}
           </Box>
         )}
       </Box>
+      <Button
+        onClick={() => {
+          console.log(fileData);
+        }}
+      >
+        Console Log file data
+      </Button>
     </Box>
   );
 };
 
 export default FileUploadAreaIpfs;
-
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number },
-) {
-  return (
-    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: 'absolute',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography
-          variant="caption"
-          component="div"
-          color="text.secondary"
-        >{`${Math.round(props.value)}%`}</Typography>
-      </Box>
-    </Box>
-  );
-}

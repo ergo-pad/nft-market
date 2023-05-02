@@ -18,6 +18,7 @@ import NftItem from "@components/create/NftItem";
 import RoyaltySection from "@components/create/RoyaltySection";
 import { ITokenDetailsData } from '@pages/mint';
 import { resolveIpfs } from "@utils/assetsNew";
+import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel } from '@mui/x-data-grid';
 
 interface INftSectionProps {
   rarityData: IRarityData[];
@@ -55,11 +56,7 @@ const NftSection: FC<INftSectionProps> = ({
   });
   const [nftImages, setNftImages] = useState<IFileUrl[]>([]);
   const [uploadedUrls, setUploadedUrls] = useState<{ [key: string]: string }>({});
-  const [backdrop, setBackdrop] = useState({
-    visible: false,
-    message: ''
-  })
-  const [nftSkeleton, setNftSkeleton] = useState(false)
+  const [backdrop, setBackdrop] = useState(false)
   const [royaltyData, setRoyaltyData] = useState<IRoyaltyItem[]>([
     {
       address: "",
@@ -70,6 +67,7 @@ const NftSection: FC<INftSectionProps> = ({
   const [openAllRoyaltiesWarningDialog, setOpenAllRoyaltiesWarningDialog] =
     useState(false);
   const { CSVDownloader, Type } = useCSVDownloader();
+  const [header, setHeader] = useState<GridColDef[]>([])
 
   const toggleFungible = () => {
     setFungible(!fungible);
@@ -97,7 +95,7 @@ const NftSection: FC<INftSectionProps> = ({
   };
 
   const updateAllRoyalties = () => {
-    setDebounceNftData((prev) =>
+    setNftData((prev) =>
       prev.map((item, i) => {
         return {
           ...item,
@@ -111,11 +109,11 @@ const NftSection: FC<INftSectionProps> = ({
 
   useEffect(() => {
     nftImages.map((item) => {
-      const filter = debounceNftData.filter((nft) => nft.image === item.ipfs);
+      const filter = nftData.filter((nft) => nft.image === item.ipfs);
       if (filter.length > 0) return;
       else { // if image not already displayed, add a new one. 
         const uuid = uuidv4();
-        setDebounceNftData((prev) => [
+        setNftData((prev) => [
           ...prev,
           {
             id: uuid,
@@ -123,14 +121,14 @@ const NftSection: FC<INftSectionProps> = ({
             image: item.ipfs,
             qty: 1,
             description: "",
-            traits: traitData.map((item) => {
-              return {
-                key: item.traitName, // the name of the trait type (eg: sex, speed, age)
+            traits: [
+              {
+                key: "", // the name of the trait type (eg: sex, speed, age)
                 value: "", // the trait that this specific NFT has
-                type: item.type,
-                id: item.id,
-              }
-            }),
+                type: "Property",
+                id: uuidv4(),
+              },
+            ],
             rarity: "",
             explicit: false, // default is false
             royalties: royaltyData,
@@ -147,7 +145,6 @@ const NftSection: FC<INftSectionProps> = ({
     if (clearTriggerNftImages === true) {
       setNftImages([]);
       setNftData([]);
-      setDebounceNftData([])
       setUploadedUrls(prevState => { return {} })
       // setClearTriggerNftImages(false); 
       // don't do that here, it's done in the FileUploadArea which is a component used elsewhere. 
@@ -161,7 +158,6 @@ const NftSection: FC<INftSectionProps> = ({
 
   const [render, setRender] = useState(false)
   const [newNftData, setNewNftData] = useState<INftData[]>([])
-  const [debounceNftData, setDebounceNftData] = useState<INftData[]>([])
 
   const parseData = (data: ITokenDetailsData, royaltyData: IRoyaltyItem[]) => {
     const traitsFields = data.availableTraits.map((item, i) => {
@@ -235,16 +231,11 @@ const NftSection: FC<INftSectionProps> = ({
           if (header.startsWith('traits.')) {
             const traitKey = header.split(".")[2]
             const traitType = header.split(".")[3]
-            let newTraitType: "Property" | "Level" | "Stat" = "Property"; // set a default value
-            const possibleTypes = ["Property", "Level", "Stat"];
-            if (possibleTypes.includes(traitType)) {
-              newTraitType = traitType as "Property" | "Level" | "Stat"; // assign the type based on the condition
-            }
             nftObject.traits = nftObject.traits || [];
             nftObject.traits.push({
               key: traitKey,
               value: line[index],
-              type: newTraitType,
+              type: traitType,
               id: uuidv4(),
             });
           } else if (header.startsWith('royalties.')) {
@@ -281,10 +272,7 @@ const NftSection: FC<INftSectionProps> = ({
     const header = parseData(tokenDetailsData, royaltyData)
     const importedNftData = handleCSV(results.data, header.fields)
     if (importedNftData) {
-      setBackdrop({
-        visible: true,
-        message: "Updating NFT list, this can take some time. Please don't close the window, the screen will clear when the browser is done processing."
-      })
+      setBackdrop(true)
       const rarities = importedNftData.reduce((acc, obj) => {
         if (!acc.includes(obj.rarity)) {
           acc.push(obj.rarity);
@@ -299,12 +287,8 @@ const NftSection: FC<INftSectionProps> = ({
       const availableTraits: ITraitsData[] = results.data[0].flatMap((item: string, i: number) => {
         if (item.startsWith('traits.')) {
           const traitKey = item.split(".")[2]
-          const itemSplit = item.split(".");
-          let traitType: "Property" | "Level" | "Stat" = "Property"; // set a default value
-          const possibleTypes = ["Property", "Level", "Stat"];
-          if (possibleTypes.includes(itemSplit[3])) {
-            traitType = itemSplit[3] as "Property" | "Level" | "Stat"; // assign the type based on the condition
-          }
+          // @ts-ignore
+          const traitType: "Property" | "Level" | "Stat" = ["Level", "Stat"].includes(item.split(".")[3]) ? item.split(".")[3] : "Property"
           return {
             traitName: traitKey,
             type: traitType,
@@ -320,19 +304,12 @@ const NftSection: FC<INftSectionProps> = ({
       setTraitData(availableTraits)
       royalties !== undefined && royalties.length > 0 && setRoyaltyData(royalties)
       setNewNftData(importedNftData)
-      const newNftImages = importedNftData.map((item) => {
+      setNftImages(importedNftData.map((item) => {
         return {
           ipfs: item.image,
           url: resolveIpfs(item.image)
         }
-      })
-      if (!(JSON.stringify(newNftImages) === JSON.stringify(nftImages))) setNftImages(
-        importedNftData.map((item) => {
-          return {
-            ipfs: item.image,
-            url: resolveIpfs(item.image)
-          }
-        }))
+      }))
       setRender(true)
     }
   }
@@ -340,59 +317,21 @@ const NftSection: FC<INftSectionProps> = ({
   useEffect(() => {
     if (csvUpload.data.length > 0) {
       onCsvUpload(csvUpload)
-      setCsvUpload({
-        data: [],
-        errors: [],
-        meta: []
-      })
     }
   }, [csvUpload])
 
   useEffect(() => {
-    const newUploadedUrls = newNftData.reduce((acc: { [key: string]: any }, item) => {
+    setUploadedUrls(newNftData.reduce((acc: { [key: string]: any }, item) => {
       acc[item.id] = resolveIpfs(item.image);
       return acc;
-    }, {})
-    if (!(JSON.stringify(uploadedUrls) === JSON.stringify(newUploadedUrls))) setUploadedUrls(
-      newNftData.reduce((acc: { [key: string]: any }, item) => {
-        acc[item.id] = resolveIpfs(item.image);
-        return acc;
-      }, {}));
+    }, {}));
     const timer = setTimeout(() => {
-      if (!(JSON.stringify(debounceNftData) === JSON.stringify(newNftData))) {
-        setNftData(newNftData)
-        setDebounceNftData(newNftData)
-      }
-
+      setNftData(newNftData)
       setRender(false)
-      window.requestIdleCallback(() => {
-        setBackdrop({
-          visible: false,
-          message: ''
-        })
-      });
+      setBackdrop(false)
     }, 5000);
     return () => clearTimeout(timer);
   }, [render])
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!(JSON.stringify(nftData) === JSON.stringify(debounceNftData))) setNftData(debounceNftData)
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, [debounceNftData])
-
-  useEffect(() => {
-    setDebounceNftData(nftData)
-  }, [])
-
-  useEffect(() => {
-    if (nftSkeleton === true) {
-      window.requestIdleCallback(() => {
-        setNftSkeleton(false)
-      });
-    }
-  }, [nftSkeleton])
 
   return (
     <Box>
@@ -401,28 +340,23 @@ const NftSection: FC<INftSectionProps> = ({
           position: 'fixed',
           top: 0,
           left: 0,
-          opacity: backdrop.visible ? '1' : '0',
+          opacity: backdrop ? '1' : '0',
           width: '100vw',
           height: '100vh',
           background: 'rgba(24,28,33,1)',
           zIndex: 999,
           color: '#fff',
           transition: 'opacity 500ms',
-          pointerEvents: backdrop.visible ? 'auto' : 'none'
+          pointerEvents: backdrop ? 'auto' : 'none'
         }}
       >
-        <Box sx={{
+        <CircularProgress color="inherit" sx={{
           position: "absolute",
           top: "50%",
           left: "50%",
-          transform: "translate(-50%, -50%)",
-          textAlign: "center"
-        }}>
-          <CircularProgress color="inherit" sx={{ mb: 2 }} />
-          <Typography>
-            {backdrop.message}
-          </Typography>
-        </Box>
+          transform: "translate(-50%, -50%)"
+        }} />
+        Updating NFT list, please be patient. 
       </Box>
       <Typography variant="h5">Provide CSV for Metadata</Typography>
       <Typography variant="body2" sx={{ lineHeight: 1.3 }}>
@@ -437,7 +371,7 @@ const NftSection: FC<INftSectionProps> = ({
       >
         <CSVReader
           onUploadAccepted={(results: any) => {
-            if (!(JSON.stringify(csvUpload) === JSON.stringify(results))) setCsvUpload(results);
+            setCsvUpload(results);
           }}
         >
           {({
@@ -612,26 +546,54 @@ const NftSection: FC<INftSectionProps> = ({
       </Box>
 
       <Typography variant="h5">NFT Details</Typography>
-      {debounceNftData.length > 0 && nftData.map((item, i) => {
-        return (
-          <NftItem
-            rarityData={rarityData}
-            traitData={traitData}
-            setUnbouncedData={setNftData}
-            nftData={debounceNftData}
-            setNftData={setDebounceNftData}
-            nftImageUrls={uploadedUrls}
-            setNftImageUrls={setUploadedUrls}
-            index={i}
-            key={i}
-            id={item.id}
-            royaltyData={royaltyData}
-            fungible={fungible}
-            skeleton={nftSkeleton}
-            setSkeleton={setNftSkeleton}
-          />
-        );
-      })}
+      {/* <DataGrid
+          rows={currentRows}
+          columns={columns}
+          autoHeight
+          initialState={{
+            // pagination: {
+            //   paginationModel: {
+            //     pageSize: 25,
+            //   },
+            // },
+          }}
+          rowHeight={64}
+          getRowId={(row) => row.rank}
+          // pageSizeOptions={[25, 50, 100]}
+          // disableRowSelectionOnClick
+          sx={{
+            border: 'none',
+            mb: 0,
+            '& .MuiDataGrid-row': {
+              '&:hover': {
+                background: theme.palette.divider,
+                // cursor: 'pointer',
+              }
+            },
+            '& .MuiDataGrid-cell': {
+              '&:focus': {
+                outline: 'none',
+              },
+              '&:first-of-type': {
+                pl: 2,
+              },
+              '&:last-child': {
+                pr: 2,
+              },
+            },
+            '& .MuiDataGrid-columnHeader': {
+              '&:focus': {
+                outline: 'none',
+              },
+              '&:first-of-type': {
+                pl: 2,
+              },
+              '&:last-child': {
+                pr: 2,
+              },
+            }
+          }}
+        /> */}
       <Button
         onClick={() => {
           console.log(nftImages);

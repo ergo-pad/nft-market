@@ -102,8 +102,8 @@ const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetail
     setClearTriggerNftImages(true) // this is a trigger to update child state
     setRarityData(tokenDetailsDataInit.rarities) // this is a local state
     setTraitData(tokenDetailsDataInit.availableTraits) // this is a local state
-    // setPackTokenData([packTokenDataInit])
     setTokenDetailsData(tokenDetailsDataInit) // this belongs to parent
+    setNftData([])
     setClearForm(false)
   }, [clearForm])
 
@@ -123,13 +123,16 @@ const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetail
         />
         <NftSection
           rarityData={rarityData}
+          setRarityData={setRarityData}
           traitData={traitData}
+          setTraitData={setTraitData}
           nftData={nftData}
           setNftData={setNftData}
           clearTriggerNftImages={clearTriggerNftImages}
           setClearTriggerNftImages={setClearTriggerNftImages}
           fungible={fungible}
           setFungible={setFungible}
+          tokenDetailsData={tokenDetailsData}
         />
       </Box>
 
