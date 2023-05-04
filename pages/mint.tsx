@@ -212,8 +212,10 @@ const Mint: NextPage = () => {
       address: walletAddress,
     }));
   }, [walletAddress]);
-  const [collectionFormValidation, setCollectionFormValidation] = useState({ name: false })
-  const [saleFormValidation, setSaleFormValidation] = useState({ name: false })
+  const [collectionFormValidation, setCollectionFormValidation] = useState({
+    name: false,
+  });
+  const [saleFormValidation, setSaleFormValidation] = useState({ name: false });
 
   // CLEAR FORM STATES //
   const [clearArtistForm, setClearArtistForm] = useState(false);
@@ -230,8 +232,12 @@ const Mint: NextPage = () => {
 
   // STEPPER LOGIC //
   useEffect(() => {
-    if (stepperCompleted[activeStep] === true) { setStepperCompleted(prevState => {return { ...prevState, [activeStep]: false}})}
-  }, [activeStep])
+    if (stepperCompleted[activeStep] === true) {
+      setStepperCompleted((prevState) => {
+        return { ...prevState, [activeStep]: false };
+      });
+    }
+  }, [activeStep]);
   const [stepperCompleted, setStepperCompleted] = React.useState<{
     [k: number]: boolean;
   }>({});
@@ -251,8 +257,8 @@ const Mint: NextPage = () => {
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
         ? // It's the last step, but not all steps have been completed,
-        // find the first step that has been completed
-        steps.findIndex((step, i) => !(i in stepperCompleted))
+          // find the first step that has been completed
+          steps.findIndex((step, i) => !(i in stepperCompleted))
         : activeStep + 1;
     setActiveStep(newActiveStep);
   };
@@ -267,7 +273,6 @@ const Mint: NextPage = () => {
       localStorage.setItem("creation-artist-form", JSON.stringify(artistData));
     }
     if (activeStep === 1) {
-
       localStorage.setItem(
         "creation-collection-form",
         JSON.stringify(collectionData)
@@ -308,68 +313,64 @@ const Mint: NextPage = () => {
     }
   };
   const handleStepperComplete = async () => {
-    // made it an object so we can add more validation later, 
+    // made it an object so we can add more validation later,
     // but for now we know we're just checking name uniqueness for a collection here
     if (activeStep === 1) {
       const doesCollectionNameExist = async () => {
         try {
-          const slug = slugify(collectionData.collectionName)
+          const slug = slugify(collectionData.collectionName);
           const res = await apiContext.api.get(`/collection/${slug}`);
-          if (res.data) return true
+          if (res.data) return true;
         } catch (e: any) {
-          if (e.response.data.includes('empty result'))
-            return false
+          if (e.response.data.includes("empty result")) return false;
         }
       };
-      const bool = await doesCollectionNameExist()
+      const bool = await doesCollectionNameExist();
       if (bool) {
-        setCollectionFormValidation(prevState => {
+        setCollectionFormValidation((prevState) => {
           return {
             ...prevState,
-            name: true
-          }
-        })
-        apiContext.api.error('Please choose a unique collection name')
-        return false
-      }
-      else {
-        setCollectionFormValidation(prevState => {
+            name: true,
+          };
+        });
+        apiContext.api.error("Please choose a unique collection name");
+        return false;
+      } else {
+        setCollectionFormValidation((prevState) => {
           return {
             ...prevState,
-            name: false
-          }
-        })
+            name: false,
+          };
+        });
       }
     }
     if (activeStep === 3) {
       const doesSaleNameExist = async () => {
         try {
-          const slug = slugify(saleInfoData.saleName)
+          const slug = slugify(saleInfoData.saleName);
           const res = await apiContext.api.get(`/sale/${slug}`);
-          if (res.data) return true
+          if (res.data) return true;
         } catch (e: any) {
-          if (e.response.data.includes('empty result'))
-            return false
+          if (e.response.data.includes("empty result")) return false;
         }
       };
-      const bool = await doesSaleNameExist()
+      const bool = await doesSaleNameExist();
       if (bool) {
-        setSaleFormValidation(prevState => {
+        setSaleFormValidation((prevState) => {
           return {
             ...prevState,
-            name: true
-          }
-        })
-        apiContext.api.error('Please choose a unique sale name')
-        return false
-      }
-      else {
-        setSaleFormValidation(prevState => {
+            name: true,
+          };
+        });
+        apiContext.api.error("Please choose a unique sale name");
+        return false;
+      } else {
+        setSaleFormValidation((prevState) => {
           return {
             ...prevState,
-            name: false
-          }
-        })
+            name: false,
+          };
+        });
       }
     }
     handleSaveStep();
@@ -386,7 +387,6 @@ const Mint: NextPage = () => {
 
   // SUBMIT FORM //
   const submit = async () => {
-    console.log('submit')
     setLoading(true);
     try {
       const artistCreated = await createArtistData(artistData);
@@ -419,15 +419,25 @@ const Mint: NextPage = () => {
     }
     setLoading(false);
   };
+
   const createArtistData = async (data: IArtistData) => {
     try {
-      const res = await apiContext.api.post("/artist", data);
+      const verificationToken = await getAuthToken(data.address);
+      const updateUserData = {
+        ...data,
+        pfpUrl: data.avatarUrl,
+        socials: data.social ?? [],
+        verificationToken: verificationToken,
+        id: crypto.randomUUID(),
+      };
+      const res = await apiContext.api.post("/user", updateUserData);
       apiContext.api.ok("Artist Data Created");
       return res.data;
     } catch (e: any) {
       apiContext.api.error(e);
     }
   };
+
   const createSaleData = async (data: ISaleInfoData, address: string) => {
     try {
       const backendPacks = data.packs.map((pack) => {
@@ -437,7 +447,10 @@ const Mint: NextPage = () => {
           price: [
             {
               tokenId: pack.currency === "SigUSD" ? SIGUSD_TOKEN_ID : null,
-              amount: pack.currency === "Erg" ? Number(pack.price ?? 0) * 1000000000 : Number(pack.price ?? 0) * 100,
+              amount:
+                pack.currency === "Erg"
+                  ? Number(pack.price ?? 0) * 1000000000
+                  : Number(pack.price ?? 0) * 100,
             },
           ],
           content: pack.nftPerPack.map((packEntry) => {
@@ -445,15 +458,17 @@ const Mint: NextPage = () => {
               amount: Number(packEntry.count ?? 0),
               rarity: packEntry.probabilities
                 ? packEntry.probabilities.map((rarity) => {
-                  return {
-                    rarity: rarity.rarityName,
-                    odds: Number(rarity.probability),
-                  };
-                })
-                : [{
-                  rarity: "",
-                  odds: 100,
-                }],
+                    return {
+                      rarity: rarity.rarityName,
+                      odds: Number(rarity.probability),
+                    };
+                  })
+                : [
+                    {
+                      rarity: "",
+                      odds: 100,
+                    },
+                  ],
             };
           }),
           tpe: "COMBINED", // what are other fields ??
@@ -470,8 +485,7 @@ const Mint: NextPage = () => {
         packs: backendPacks,
         tokens: [],
         sourceAddresses: [address],
-      }
-      console.log(saleData)
+      };
       const res = await apiContext.api.post("/sale", saleData);
       apiContext.api.ok("Sale Data Created");
       return res.data;
@@ -479,6 +493,7 @@ const Mint: NextPage = () => {
       apiContext.api.error(e);
     }
   };
+
   const createCollectionData = async (
     data: ICollectionData,
     tokens: ITokenDetailsData,
@@ -512,8 +527,7 @@ const Mint: NextPage = () => {
           };
         }),
         saleId: saleId,
-      }
-      console.log(collectionData)
+      };
       const res = await apiContext.api.post("/collection", collectionData);
       apiContext.api.ok("Collection Data Created");
       return res.data;
@@ -521,6 +535,7 @@ const Mint: NextPage = () => {
       apiContext.api.error(e);
     }
   };
+
   const createNftData = async (
     collectionId: string,
     tokens: ITokenDetailsData
@@ -533,50 +548,69 @@ const Mint: NextPage = () => {
           name: nft.nftName,
           image: nft.image,
           description: nft.description ?? "",
-          traits: nft.traits && nft.traits[0].key !== undefined && nft.traits[0].key !== ""
-            ? nft.traits.map((trait) => {
-              return {
-                name: trait.key,
-                tpe: trait.type.toUpperCase(),
-                valueString:
-                  typeof trait.value === "string" ? trait.value : null,
-                valueInt:
-                  typeof trait.value === "number" ? trait.value : null,
-              };
-            })
-            : [],
+          traits:
+            nft.traits &&
+            nft.traits[0].key !== undefined &&
+            nft.traits[0].key !== ""
+              ? nft.traits.map((trait) => {
+                  return {
+                    name: trait.key,
+                    tpe: trait.type.toUpperCase(),
+                    valueString:
+                      typeof trait.value === "string" ? trait.value : null,
+                    valueInt:
+                      typeof trait.value === "number" ? trait.value : null,
+                  };
+                })
+              : [],
           rarity: nft.rarity ?? "",
           explicit: nft.explicit,
-          royalty: nft.royalties && nft.royalties[0].address !== undefined && nft.royalties[0].address !== ""
-            ? nft.royalties.map((royalty) => {
-              return {
-                address: royalty.address,
-                royaltyPct: Number(royalty.pct),
-              };
-            })
-            : [],
+          royalty:
+            nft.royalties &&
+            nft.royalties[0].address !== undefined &&
+            nft.royalties[0].address !== ""
+              ? nft.royalties.map((royalty) => {
+                  return {
+                    address: royalty.address,
+                    royaltyPct: Number(royalty.pct),
+                  };
+                })
+              : [],
         };
-      })
-      console.log(data)
-      const res = await apiContext.api.post(
-        "/nft",
-        data
-      );
+      });
+      console.log(data);
+      const res = await apiContext.api.post("/nft", data);
       apiContext.api.ok("NFT Data Created");
       return res.data;
     } catch (e: any) {
       apiContext.api.error(e);
     }
   };
+
   const getMintTx = async (collectionId: string) => {
     try {
       const res = await apiContext.api.get(`/collection/${collectionId}/mint`);
-      console.log(res.data)
       apiContext.api.ok("Mint Transaction Created");
       return res.data;
     } catch (e: any) {
       apiContext.api.error(e);
     }
+  };
+
+  const getAuthToken = async (address: string) => {
+    const authResp = await apiContext.api.post("/auth", {
+      address: address,
+    });
+    const auth = authResp.data;
+    const context = await getErgoWalletContext();
+    const response = await context.auth(address, auth.signingMessage);
+    response.proof = Buffer.from(response.proof, "hex").toString("base64");
+    const verifyResp = await apiContext.api.post(
+      auth.verificationUrl,
+      response
+    );
+    const verify = verifyResp.data;
+    return verify.verificationToken;
   };
   // END SUBMIT FORM //
 
@@ -612,9 +646,9 @@ const Mint: NextPage = () => {
                 onClick={handleStep(i)}
                 sx={{
                   "& .MuiStepLabel-root .MuiStepLabel-labelContainer .MuiStepLabel-label":
-                  {
-                    mb: 0,
-                  },
+                    {
+                      mb: 0,
+                    },
                 }}
               >
                 <Collapse
@@ -663,9 +697,9 @@ const Mint: NextPage = () => {
                       completed={stepperCompleted[index]}
                       sx={{
                         "& .MuiStepLabel-root .MuiStepLabel-labelContainer .MuiStepLabel-label":
-                        {
-                          mb: 0,
-                        },
+                          {
+                            mb: 0,
+                          },
                       }}
                     >
                       <StepButton color="inherit" onClick={handleStep(index)}>
@@ -682,8 +716,9 @@ const Mint: NextPage = () => {
               <>
                 <Typography variant="h4">Summary</Typography>
                 <Typography sx={{ mt: 2, mb: 2 }}>
-                  All steps completed - We are creating the required stuff
-                  in the background now. You can track the status on your <Link href="/manage-sales">Sales Management page</Link>.
+                  All steps completed - We are creating the required stuff in
+                  the background now. You can track the status on your{" "}
+                  <Link href="/manage-sales">Sales Management page</Link>.
                 </Typography>
                 <Divider sx={{ mb: 1 }} />
                 {loading ? (
@@ -706,7 +741,15 @@ const Mint: NextPage = () => {
                     )}
                     {resultData.transactionId && (
                       <Typography variant="h6" sx={{ my: 1 }}>
-                        Transaction Id: <Link href={'https://explorer.ergoplatform.com/en/transactions/' + resultData.transactionId}>{resultData.transactionId}</Link>
+                        Transaction Id:{" "}
+                        <Link
+                          href={
+                            "https://explorer.ergoplatform.com/en/transactions/" +
+                            resultData.transactionId
+                          }
+                        >
+                          {resultData.transactionId}
+                        </Link>
                       </Typography>
                     )}
                     {resultData.status && (
@@ -720,9 +763,7 @@ const Mint: NextPage = () => {
                 <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                   <Box sx={{ flex: "1 1 auto" }} />
                   <Button onClick={handleStepperReset}>Reset</Button>
-                  <Button onClick={() => submit()}>
-                    Submit
-                  </Button>
+                  <Button onClick={() => submit()}>Submit</Button>
                 </Box>
               </>
             ) : (
@@ -808,15 +849,17 @@ const Mint: NextPage = () => {
                           ? "Finish"
                           : "Save Step"}
                       </Button>
-                    ))
-                  }
-                  {collectionFormValidation.name && <Typography sx={{ mt: '6px' }}>
-                    You must choose a unique collection name
-                  </Typography>}
-                  {saleFormValidation.name && <Typography sx={{ mt: '6px' }}>
-                    You must choose a unique sale name
-                  </Typography>}
-                  
+                    ))}
+                  {collectionFormValidation.name && (
+                    <Typography sx={{ mt: "6px" }}>
+                      You must choose a unique collection name
+                    </Typography>
+                  )}
+                  {saleFormValidation.name && (
+                    <Typography sx={{ mt: "6px" }}>
+                      You must choose a unique sale name
+                    </Typography>
+                  )}
                 </Box>
               </>
             )}
