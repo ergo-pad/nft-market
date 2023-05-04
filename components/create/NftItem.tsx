@@ -15,7 +15,8 @@ import {
   FormControl,
   FormControlLabel,
   Checkbox,
-  Collapse
+  Collapse,
+  Skeleton
 } from '@mui/material'
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Image from 'next/image';
@@ -29,12 +30,15 @@ interface INftItemProps {
   traitData: ITraitsData[];
   nftData: INftData[];
   setNftData: React.Dispatch<React.SetStateAction<INftData[]>>;
+  setUnbouncedData: React.Dispatch<React.SetStateAction<INftData[]>>;
   nftImageUrls: { [key: string]: string };
   setNftImageUrls: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
   index: number;
   id: string;
   royaltyData: IRoyaltyItem[];
   fungible: boolean;
+  skeleton: boolean;
+  setSkeleton: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const NftItem: FC<INftItemProps> = (
@@ -43,18 +47,23 @@ const NftItem: FC<INftItemProps> = (
     traitData,
     nftData,
     setNftData,
+    setUnbouncedData,
     nftImageUrls,
     setNftImageUrls,
     index,
     id,
     royaltyData,
-    fungible
+    fungible,
+    skeleton,
+    setSkeleton
   }
 ) => {
   const theme = useTheme()
   const [checkMax, setCheckMax] = useState<{ [key: string]: boolean }>({})
   const [thisNft, setThisNft] = useState<INftData>(nftData[index])
   const [royaltyToggle, setRoyaltyToggle] = useState(false)
+  const [raritySelect, setRaritySelect] = useState('')
+
   const handleRoyaltyToggle = () => {
     setThisNft(prev => ({
       ...prev,
@@ -70,7 +79,53 @@ const NftItem: FC<INftItemProps> = (
   }])
 
   useEffect(() => {
-    if (royaltyToggle === true) {
+    if (thisNft.traits &&
+      thisNft.traits.every((trait, i) => traitData[i]?.traitName === trait.key)) {
+      setThisNft(prev => (
+        {
+          ...prev,
+          traits: traitData.map((item, i) => {
+            const matched = prev.traits?.filter((trait) => trait.id === item.id)
+            if (matched && matched.length === 1) {
+              if (item.max && item.max < Number(matched[0].value)) {
+                setCheckMax(prev => ({ // used for form errors
+                  ...prev,
+                  [item.id]: false
+                }))
+              }
+              return (
+                {
+                  key: item.traitName,
+                  value: (item.max && item.max < Number(matched[0].value)) ? item.max.toString() : matched[0].value,
+                  type: item.type,
+                  id: item.id,
+                  max: item.max ? item.max : undefined
+                }
+              )
+            }
+            else if (prev.traits !== undefined && prev.traits[i] !== undefined) {
+              return (prev.traits[i])
+            }
+            else return {
+              key: item.traitName,
+              value: '',
+              type: item.type,
+              id: item.id,
+              max: item.max ? item.max : undefined
+            }
+          })
+        }
+      ))
+    }
+  }, [traitData])
+
+  useEffect(() => {
+    const filter = rarityData.filter((data) => data.rarity === raritySelect)
+    if (filter.length !== 1) setRaritySelect('')
+  }, [rarityData])
+
+  useEffect(() => {
+    if (royaltyToggle === true && thisNft.royalties !== customRoyalties) {
       setThisNft(prev => ({
         ...prev,
         royalties: customRoyalties
@@ -80,69 +135,48 @@ const NftItem: FC<INftItemProps> = (
 
   useEffect(() => {
     setThisNft(nftData[index])
+    setRoyaltyToggle(nftData[index].royaltyLocked)
+    // @ts-ignore
+    nftData[index].rarity !== undefined && setRaritySelect(nftData[index].rarity)
+    // @ts-ignore
+    nftData[index].royalties !== undefined && setCustomRoyalties(nftData[index].royalties)
   }, [id])
 
   useEffect(() => {
-    if (nftData[index].royaltyLocked === false) {
+    if (nftData[index].royaltyLocked === false && nftData[index].royalties !== thisNft.royalties) {
       setThisNft(prev => ({
-          ...prev,
-          royalties: nftData[index].royalties,
-          royaltyLocked: false
+        ...prev,
+        royalties: nftData[index].royalties,
+        royaltyLocked: false
       }))
       setRoyaltyToggle(false)
     }
-  }, [nftData[index].royaltyLocked])
+  }, [nftData[index]?.royaltyLocked])
+
+  // useEffect(() => {
+  //   setUpdateBlocker(true)
+  //   setThisNft(nftData[index])
+  //   setRoyaltyToggle(nftData[index].royaltyLocked)
+  //   // @ts-ignore
+  //   nftData[index].royalties !== undefined && setCustomRoyalties(nftData[index].royalties)
+  // }, [JSON.stringify(nftData[index])])
 
   useEffect(() => {
-    setNftData((prevArray) => {
-      const newArray = prevArray.map((item, i) => {
-        if (index === i) {
-          return thisNft
-        }
-        return item
-      })
-      return newArray
-    })
-  }, [JSON.stringify(thisNft)])
-
-  useEffect(() => {
-    setThisNft(prev => (
-      {
-        ...prev,
-        traits: traitData.map((item, i) => {
-          const matched = prev.traits?.filter((trait) => trait.id === item.id)
-          if (matched && matched.length === 1) {
-            if (item.max && item.max < Number(matched[0].value)) {
-              setCheckMax(prev => ({ // used for form errors
-                ...prev,
-                [item.id]: false
-              }))
+    const timeout = setTimeout(() => {
+      if (JSON.stringify(nftData[index]) !== JSON.stringify(thisNft)) {
+        setNftData((prevArray) => {
+          const newArray = prevArray.map((item, i) => {
+            if (index === i) {
+              return thisNft
             }
-            return (
-              {
-                key: item.traitName,
-                value: (item.max && item.max < Number(matched[0].value)) ? item.max.toString() : matched[0].value,
-                type: item.type,
-                id: item.id,
-                max: item.max ? item.max : undefined
-              }
-            )
-          }
-          else {
-            return (
-              {
-                key: item.traitName,
-                value: '',
-                type: item.type,
-                id: item.id,
-                max: item.max ? item.max : undefined
-              }
-            )
-          }
+            return item
+          })
+          return newArray
         })
       }
-    ))
-  }, [JSON.stringify(traitData)])
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, [JSON.stringify(thisNft)])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setThisNft(prev => ({
@@ -158,7 +192,7 @@ const NftItem: FC<INftItemProps> = (
         if (e.target.name === item.key) {
           const filteredTraits = traitData.filter((trait) => trait.id === item.id)
           let newValue = e.target.value
-          if (filteredTraits.length < 2 && filteredTraits[0].max && Number(newValue) > filteredTraits[0].max) {
+          if (filteredTraits.length < 2 && filteredTraits[0] !== undefined && filteredTraits[0].max && Number(newValue) > filteredTraits[0].max) {
             setCheckMax(prev => ({
               ...prev,
               [item.id]: true
@@ -189,47 +223,49 @@ const NftItem: FC<INftItemProps> = (
     }))
   }
 
-  useEffect(() => {
-    const filter = rarityData.filter((data) => data.rarity === raritySelect)
-    if (filter.length !== 1) setRaritySelect('')
-  }, [rarityData])
-  const [raritySelect, setRaritySelect] = useState('')
   const handleRarityChange = (e: SelectChangeEvent) => {
     setRaritySelect(e.target.value)
-  }
-  useEffect(() => {
     setThisNft(prev => ({
       ...prev,
-      rarity: raritySelect
+      rarity: e.target.value
     }))
-  }, [raritySelect])
+  }
 
   const removeItem = () => {
+    setSkeleton(true)
     setNftImageUrls(prev => {
       const state = { ...prev };
       delete state[id]
       return state;
     })
     setNftData(current => current.filter((item, idx) => item.id !== id))
+    setUnbouncedData(current => current.filter((item, idx) => item.id !== id))
   }
 
   return (
     <Box sx={{ position: 'relative', display: 'block', p: 1, background: theme.palette.divider, mb: 2, borderRadius: '6px' }} key={index}>
-      <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="stretch">
+      <Grid container spacing={1} sx={{ mb: '16px' }} alignItems="center">
         <Grid item xs={12} sm={3}>
-          <Box sx={{ width: '100%', height: '300px', display: 'block', position: 'relative' }}>
-            <Image
+          {skeleton ? (
+            <Skeleton variant="rounded" width={'100%'} height={300} />
+          ) : (
+            <img
               src={nftImageUrls[id]}
               alt="NFT Preview Image"
-              layout="fill"
-              objectFit="contain"
-              sizes="(max-width: 768px) 100vw,
-                    (max-width: 1200px) 50vw,
-                    33vw"
+              width="100%"
+              style={{
+                borderRadius: '8px',
+              }}
+              crossOrigin="anonymous"
             />
-          </Box>
+          )}
+
+
         </Grid>
         <Grid item xs={12} sm={9}>
+        {skeleton ? (
+            <Skeleton variant="rounded" width={'100%'} height={300} />
+          ) : (
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <Grid
@@ -273,16 +309,16 @@ const NftItem: FC<INftItemProps> = (
               </Grid>
             </Grid>
             <Grid item key={index} xs={12}>
-                <TextField
-                  fullWidth
-                  variant="filled"
-                  id="nft-description"
-                  name="description"
-                  label="Description"
-                  value={thisNft.description}
-                  onChange={handleChange}
-                />
-              </Grid>
+              <TextField
+                fullWidth
+                variant="filled"
+                id="nft-description"
+                name="description"
+                label="Description"
+                value={thisNft.description}
+                onChange={handleChange}
+              />
+            </Grid>
             {rarityData.length > 1 && (
               <Grid item xs={6}>
                 <FormControl variant="filled" fullWidth>
@@ -381,6 +417,7 @@ const NftItem: FC<INftItemProps> = (
               console log this nft
             </Button>
           </Grid>
+          )}
         </Grid>
       </Grid>
     </Box>

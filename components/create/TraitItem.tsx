@@ -20,82 +20,69 @@ import { IFileUrl } from '@components/forms/FileUploadArea';
 const TraitItem: FC<{
   data: ITraitsData[];
   setData: React.Dispatch<React.SetStateAction<ITraitsData[]>>;
-  // images?: boolean;
   i: number;
 }> = ({
   data,
   setData,
   i,
-  // images 
 }) => {
-    const [traitImg, setTraitImg] = useState<IFileUrl[]>([])
-    // const [imgClearTrigger, setImgClearTrigger] = useState(false)
     const theme = useTheme()
     const upSm = useMediaQuery(theme.breakpoints.up('md'))
-
-    useEffect(() => {
-      setData((prevArray) => {
-        const newArray = prevArray.map((item, index) => {
-          if (index === i) {
-            return {
-              ...item,
-              image: traitImg[0]?.url
-            }
-          }
-          return item
-        })
-        return newArray
-      })
-    }, [JSON.stringify(traitImg)])
+    const [localTraitData, setLocalTraitData] = useState<{
+      traitName: string;
+      type: "Property" | "Level" | "Stat";
+      max?: number;
+    }>({
+      traitName: '',
+      type: 'Property'
+    })
 
     const removeItem = (index: number) => {
       setData(current => current.filter((_item, idx) => idx !== index))
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setData((prevArray) => {
-        const newArray = prevArray.map((item, index) => {
-          if (index === i) {
-            return {
-              ...item,
-              [e.target.name]: e.target.value
-            }
-          }
-          return item
-        })
-        return newArray
+      setLocalTraitData(prev => {
+        return {
+          ...prev,
+          [e.target.name]: e.target.value
+        }
       })
     }
 
     const handleSelectChange = (e: SelectChangeEvent) => {
-      setData((prevArray) => {
-        const newArray = prevArray.map((item, index) => {
-          if (index === i) {
-            return {
-              ...item,
-              [e.target.name]: e.target.value
-            }
-          }
-          return item
-        })
-        return newArray
+      setLocalTraitData(prev => {
+        return {
+          ...prev,
+          [e.target.name]: e.target.value
+        }
       })
     };
 
-    // useEffect(() => {
-    //   if (data[i].type === 'Property') {
-    //     const newArray = data.map((item, index) => {
-    //       if (index === i) {
-    //         return {
-    //           ...item,
-    //           max: undefined
-    //         }
-    //       }
-    //       return item
-    //     })
-    //     setData(newArray)
-    //   }
-    // }, [data[i].type])
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        setData((prevArray) => {
+          const newArray = prevArray.map((item, index) => {
+            if (index === i) {
+              return {
+                ...item,
+                ...localTraitData
+              }
+            }
+            return item
+          })
+          return newArray
+        })
+      }, 2000);
+      return () => clearTimeout(timeout);
+    }, [localTraitData])
+
+    useEffect(() => {
+      setLocalTraitData({
+        traitName: data[i].traitName,
+        type: data[i].type,
+      })
+    }, [])
 
     return (
       <>
@@ -111,7 +98,7 @@ const TraitItem: FC<{
               id="trait-name"
               name="traitName"
               label="Trait Name"
-              value={data[i].traitName}
+              value={localTraitData.traitName}
               onChange={handleChange}
             />
           </Grid>
@@ -130,7 +117,7 @@ const TraitItem: FC<{
                 <InputLabel id="trait-type-label">Trait Type</InputLabel>
                 <Select
                   id="trait-type"
-                  value={data[i].type}
+                  value={localTraitData.type}
                   label="Type"
                   name="type"
                   onChange={handleSelectChange}
@@ -148,9 +135,9 @@ const TraitItem: FC<{
                 id="trait-max"
                 name="max"
                 type="number"
-                disabled={data[i].type === 'Property'}
+                disabled={localTraitData.type === 'Property'}
                 label={'Max Value'}
-                value={data[i].max}
+                value={localTraitData.max}
                 onChange={handleChange}
               />
             </Grid>

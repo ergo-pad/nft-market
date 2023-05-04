@@ -84,17 +84,20 @@ const ArtistForm: FC<IArtistFormProps> = ({ artistData, setArtistData, clearForm
   const [clearTriggerBanner, setClearTriggerBanner] = useState(false)
 
   useEffect(() => {
-    setClearTriggerAvatar(true)
-    setClearTriggerBanner(true)
-    setArtistSocials([artistSocialsInit])
-    setArtistData(artistDataInit)
-    setClearForm(false)
+    if (clearForm === true) {
+      setClearTriggerAvatar(true)
+      setClearTriggerBanner(true)
+      setArtistSocials([artistSocialsInit])
+      setArtistData(artistDataInit)
+      setClearForm(false)
+    }
   }, [clearForm])
 
   useEffect(() => {
     const getUserProfile = async () => {
       try {
         const res = await apiContext.api.get(`/user/${walletAddress}`);
+        console.log(res.data)
         setArtistData({
           address: walletAddress,
           name: res.data.name,

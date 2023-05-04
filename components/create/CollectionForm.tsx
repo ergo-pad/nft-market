@@ -20,8 +20,8 @@ interface ICollectionFormProps {
   setCollectionData: React.Dispatch<React.SetStateAction<ICollectionData>>;
   clearForm: boolean;
   setClearForm: React.Dispatch<React.SetStateAction<boolean>>;
-  collectionFormValidation: {name: boolean;}
-  setCollectionFormValidation: React.Dispatch<React.SetStateAction<{name: boolean;}>>;
+  collectionFormValidation: { name: boolean; }
+  setCollectionFormValidation: React.Dispatch<React.SetStateAction<{ name: boolean; }>>;
 }
 
 const CollectionForm: FC<ICollectionFormProps> = ({
@@ -51,11 +51,28 @@ const CollectionForm: FC<ICollectionFormProps> = ({
     setExpiryToggle(!expiryToggle);
   };
 
+  useEffect(() => {
+    if (collectionData) {
+      setCollectionLogoImg([{
+        url: collectionData.collectionLogoUrl,
+        ipfs: collectionData.collectionLogoUrl.replace("https://cloudflare-ipfs.com/ipfs/", "ipfs://")
+      }])
+      setCollectionBannerImg([{
+        url: collectionData.bannerImageUrl,
+        ipfs: collectionData.bannerImageUrl.replace("https://cloudflare-ipfs.com/ipfs/", "ipfs://")
+      }])
+      setCollectionFeaturedImg([{
+        url: collectionData.featuredImageUrl,
+        ipfs: collectionData.featuredImageUrl.replace("https://cloudflare-ipfs.com/ipfs/", "ipfs://")
+      }])
+    }
+  }, [])
+
   // COLLECTION DATA STATES //
   const [mintExpiry, setMintExpiry] = useState<Dayjs | null>(dayjs());
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.name === 'collectionName') setCollectionFormValidation(prevState => {return { ...prevState, name: false }})
+    if (e.target.name === 'collectionName') setCollectionFormValidation(prevState => { return { ...prevState, name: false } })
     setCollectionData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   useEffect(() => {
