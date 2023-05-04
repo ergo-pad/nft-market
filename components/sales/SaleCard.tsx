@@ -39,6 +39,7 @@ export interface ISaleCardItem {
   artistName?: string;
   explicit?: boolean;
   type?: string;
+  status: string;
 }
 
 interface ISaleCard {

@@ -37,6 +37,7 @@ interface ISale {
   packs: IPack[];
   collection?: ICollection;
   artist?: IArtist;
+  status: string;
 }
 
 interface IPack {
@@ -184,7 +185,10 @@ const MintSaleInfo: FC<{
     currency: 'Erg',
     saleId: '',
     packId: '',
-    soldOut: false
+    soldOut: false,
+    status: '',
+    startTime: '',
+    endTime: ''
   })
   const [featuredImage, setFeaturedImage] = useState('')
   const [loading, setLoading] = useState(true)
@@ -196,6 +200,7 @@ const MintSaleInfo: FC<{
     endTime: "",
     sellerWallet: "",
     saleWallet: "",
+    status: "",
     packs: [{
       id: "",
       name: "",
@@ -255,7 +260,10 @@ const MintSaleInfo: FC<{
         currency: currency,
         saleId: apiGetSaleById.id,
         packId: openNow ? apiGetSaleById.packs[2].id : apiGetSaleById.packs[0].id,
-        soldOut: openNow ? apiGetSaleById.packs[2].soldOut : apiGetSaleById.packs[0].soldOut
+        soldOut: openNow ? apiGetSaleById.packs[2].soldOut : apiGetSaleById.packs[0].soldOut,
+        status: apiGetSaleById.status,
+        startTime: apiGetSaleById.startTime,
+        endTime: apiGetSaleById.endTime
       })
       setFeaturedImage(apiGetSaleById.packs[0].image)
     }
@@ -267,7 +275,10 @@ const MintSaleInfo: FC<{
         currency: currency,
         saleId: apiGetSaleById.id,
         packId: openNow ? apiGetSaleById.packs[2].id : apiGetSaleById.packs[0].id,
-        soldOut: openNow ? apiGetSaleById.packs[2].soldOut : apiGetSaleById.packs[0].soldOut
+        soldOut: openNow ? apiGetSaleById.packs[2].soldOut : apiGetSaleById.packs[0].soldOut,
+        status: apiGetSaleById.status,
+        startTime: apiGetSaleById.startTime,
+        endTime: apiGetSaleById.endTime
       })
     }
   }, [apiGetSaleById])
@@ -288,7 +299,10 @@ const MintSaleInfo: FC<{
           currency: currency,
           saleId: apiGetSaleById.id,
           packId: openNow ? apiGetSaleById.packs[packIndex + 2].id : apiGetSaleById.packs[packIndex].id,
-          soldOut: openNow ? apiGetSaleById.packs[packIndex + 2].soldOut : apiGetSaleById.packs[packIndex].soldOut
+          soldOut: openNow ? apiGetSaleById.packs[packIndex + 2].soldOut : apiGetSaleById.packs[packIndex].soldOut,
+          status: apiGetSaleById.status,
+          startTime: apiGetSaleById.startTime,
+          endTime: apiGetSaleById.endTime
         })
         setFeaturedImage(apiGetSaleById.packs[packIndex].image)
       }
@@ -454,7 +468,7 @@ const MintSaleInfo: FC<{
                     </Typography>
                   </Grid>
                   <Grid item zeroMinWidth xs>
-                    <Typography color="text.secondary" sx={{...textSx, textAlign: 'right'}} noWrap>
+                    <Typography color="text.secondary" sx={{ ...textSx, textAlign: 'right' }} noWrap>
                       <Link href={'/users/' + apiGetSaleById.artist.address}>
                         {apiGetSaleById.artist.address}
                       </Link>
@@ -597,7 +611,7 @@ const MintSaleInfo: FC<{
                                   {content.rarity.map((item, i) => {
                                     return (
                                       <ListItem key={i} sx={{ pl: 4 }}>
-                                        {item.odds / totalOdds * 100}% Chance of {item.rarity}
+                                        {formatNumber((item.odds / totalOdds * 100), 1)}% Chance of {item.rarity}
                                       </ListItem>
                                     )
                                   })}

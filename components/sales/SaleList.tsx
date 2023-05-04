@@ -121,6 +121,7 @@ const SaleList: FC<ISaleListProps> = ({ notFullWidth, collection, artistAddress 
           collectionId: item.collection?.id,
           artist: item.artist?.address,
           artistName: item.artist?.name,
+          status: item.status
           // explicit: false,
           // type: '',
         }

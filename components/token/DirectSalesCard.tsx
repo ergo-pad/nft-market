@@ -33,6 +33,9 @@ export interface IDirectSalesCardProps {
   saleId: string;
   packId: string;
   soldOut: boolean;
+  status: string;
+  startTime: string;
+  endTime: string;
 }
 
 const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
@@ -44,7 +47,10 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
     currency,
     saleId,
     packId,
-    soldOut
+    soldOut,
+    status,
+    startTime,
+    endTime
   } = props
   const theme = useTheme()
   const upSm = useMediaQuery(theme.breakpoints.up('sm'))
@@ -88,7 +94,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
         <CardContent>
           {/* <Card sx={{ background: 'none', border: 'none', p: 0 }}>
         <CardContent sx={{ p: 0 }}> */}
-          {price === 0 ? (
+          {price === 0 || status !== "LIVE" ? (
             <Typography>
               Not currently for sale
             </Typography>
@@ -169,9 +175,9 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
               </Button>
               {soldOut && <Box>
                 <Typography variant="body2" sx={{ mt: 1, mb: 0 }}>
-                  These packs are sold out. 
+                  These packs are sold out.
                 </Typography>
-                </Box>}
+              </Box>}
 
               {/* <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
