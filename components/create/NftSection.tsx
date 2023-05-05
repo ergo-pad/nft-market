@@ -31,6 +31,14 @@ interface INftSectionProps {
   fungible: boolean;
   setFungible: React.Dispatch<React.SetStateAction<boolean>>;
   tokenDetailsData: ITokenDetailsData;
+  tokenFormValidation: {
+    name: boolean;
+    rarity: boolean;
+  }[];
+  setTokenFormValidation: React.Dispatch<React.SetStateAction<{
+    name: boolean;
+    rarity: boolean;
+  }[]>>;
 }
 
 const NftSection: FC<INftSectionProps> = ({
@@ -44,7 +52,9 @@ const NftSection: FC<INftSectionProps> = ({
   setClearTriggerNftImages,
   fungible,
   setFungible,
-  tokenDetailsData
+  tokenDetailsData,
+  tokenFormValidation,
+  setTokenFormValidation
 }) => {
   const theme = useTheme();
   const { CSVReader } = useCSVReader();
@@ -54,6 +64,11 @@ const NftSection: FC<INftSectionProps> = ({
     meta: []
   });
   const [nftImages, setNftImages] = useState<IFileUrl[]>([]);
+  // const [uploadedUrls, setUploadedUrls] = useState<{ [key: string]: string }>(tokenDetailsData.nfts.reduce((acc, item) => {
+  //   // @ts-ignore
+  //   acc[item.id] = item.image;
+  //   return acc;
+  // }, {}));
   const [uploadedUrls, setUploadedUrls] = useState<{ [key: string]: string }>({});
   const [backdrop, setBackdrop] = useState({
     visible: false,
@@ -70,6 +85,9 @@ const NftSection: FC<INftSectionProps> = ({
   const [openAllRoyaltiesWarningDialog, setOpenAllRoyaltiesWarningDialog] =
     useState(false);
   const { CSVDownloader, Type } = useCSVDownloader();
+  const [render, setRender] = useState(false)
+  const [newNftData, setNewNftData] = useState<INftData[]>([])
+  const [debounceNftData, setDebounceNftData] = useState<INftData[]>([])
 
   const toggleFungible = () => {
     setFungible(!fungible);
@@ -137,6 +155,13 @@ const NftSection: FC<INftSectionProps> = ({
             royaltyLocked: false,
           },
         ]);
+        setTokenFormValidation((prev) => [
+          ...prev,
+          {
+            name: false,
+            rarity: false
+          }
+        ])
         setUploadedUrls((prev) => ({ ...prev, [uuid]: item.url }));
       }
       return;
@@ -148,6 +173,7 @@ const NftSection: FC<INftSectionProps> = ({
       setNftImages([]);
       setNftData([]);
       setDebounceNftData([])
+      setTokenFormValidation([])
       setUploadedUrls(prevState => { return {} })
       // setClearTriggerNftImages(false); 
       // don't do that here, it's done in the FileUploadArea which is a component used elsewhere. 
@@ -158,10 +184,6 @@ const NftSection: FC<INftSectionProps> = ({
       }])
     }
   }, [clearTriggerNftImages]);
-
-  const [render, setRender] = useState(false)
-  const [newNftData, setNewNftData] = useState<INftData[]>([])
-  const [debounceNftData, setDebounceNftData] = useState<INftData[]>([])
 
   const parseData = (data: ITokenDetailsData, royaltyData: IRoyaltyItem[]) => {
     const traitsFields = data.availableTraits.map((item, i) => {
@@ -362,6 +384,7 @@ const NftSection: FC<INftSectionProps> = ({
       if (!(JSON.stringify(debounceNftData) === JSON.stringify(newNftData))) {
         setNftData(newNftData)
         setDebounceNftData(newNftData)
+        setTokenFormValidation(Array.from({ length: newNftData.length }, () => ({ name: false, rarity: false })))
       }
 
       setRender(false)
@@ -383,7 +406,24 @@ const NftSection: FC<INftSectionProps> = ({
   }, [debounceNftData])
 
   useEffect(() => {
-    setDebounceNftData(nftData)
+    // tokenDetailsData.nfts.map((item, i) => {
+    //   return {
+    //     url: resolveIpfs(item.image),
+    //     ipfs: item.image,
+    //   }
+    // })
+    if (tokenDetailsData.nfts.length > 0) {
+      setDebounceNftData(tokenDetailsData.nfts)
+      const urls = tokenDetailsData.nfts.reduce((acc, item) => {
+        // @ts-ignore
+        acc[item.id] = resolveIpfs(item.image);
+        return acc;
+      }, {})
+      setUploadedUrls(urls);
+      console.log(urls)
+    }
+    else setDebounceNftData(nftData)
+    setTokenFormValidation(Array.from({ length: nftData.length }, () => ({ name: false, rarity: false })))
   }, [])
 
   useEffect(() => {
@@ -623,12 +663,14 @@ const NftSection: FC<INftSectionProps> = ({
             nftImageUrls={uploadedUrls}
             setNftImageUrls={setUploadedUrls}
             index={i}
-            key={i}
+            key={item.id}
             id={item.id}
             royaltyData={royaltyData}
             fungible={fungible}
             skeleton={nftSkeleton}
             setSkeleton={setNftSkeleton}
+            tokenFormValidation={tokenFormValidation}
+            setTokenFormValidation={setTokenFormValidation}
           />
         );
       })}

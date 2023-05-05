@@ -199,8 +199,10 @@ const Mint: NextPage = () => {
     ];
     if (localStorageData[0] !== null)
       setArtistData(JSON.parse(localStorageData[0]));
-    if (localStorageData[1] !== null)
+    if (localStorageData[1] !== null) {
+      console.log(JSON.parse(localStorageData[1]))
       setCollectionData(JSON.parse(localStorageData[1]));
+    }
     if (localStorageData[2] !== null)
       setTokenDetailsData(JSON.parse(localStorageData[2]));
     if (localStorageData[3] !== null)
@@ -216,6 +218,10 @@ const Mint: NextPage = () => {
     name: false,
   });
   const [saleFormValidation, setSaleFormValidation] = useState({ name: false });
+  const [tokenFormValidation, setTokenFormValidation] = useState<{
+    name: boolean;
+    rarity: boolean;
+  }[]>([])
 
   // CLEAR FORM STATES //
   const [clearArtistForm, setClearArtistForm] = useState(false);
@@ -257,8 +263,8 @@ const Mint: NextPage = () => {
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
         ? // It's the last step, but not all steps have been completed,
-          // find the first step that has been completed
-          steps.findIndex((step, i) => !(i in stepperCompleted))
+        // find the first step that has been completed
+        steps.findIndex((step, i) => !(i in stepperCompleted))
         : activeStep + 1;
     setActiveStep(newActiveStep);
   };
@@ -313,9 +319,20 @@ const Mint: NextPage = () => {
     }
   };
   const handleStepperComplete = async () => {
-    // made it an object so we can add more validation later,
-    // but for now we know we're just checking name uniqueness for a collection here
+    // FORM VALIDATION HERE
+    // Note: made collectionFormValidation an object so we could add more validation later,
+    // but for now we know we're just checking name uniqueness for a collection so it could be a boolean
     if (activeStep === 1) {
+      if (collectionData.collectionName.length === 0) {
+        setCollectionFormValidation((prevState) => {
+          return {
+            ...prevState,
+            name: true,
+          };
+        })
+        apiContext.api.error("Please choose a collection name");
+        return false;
+      }
       const doesCollectionNameExist = async () => {
         try {
           const slug = slugify(collectionData.collectionName);
@@ -344,7 +361,25 @@ const Mint: NextPage = () => {
         });
       }
     }
-    if (activeStep === 3) {
+    if (activeStep === 2) { // NFT data
+      const validationArray = tokenDetailsData.nfts.map((item) => {
+        return {
+          name: item.nftName.trim() === "",
+          rarity: !rarityData.some(
+            (option) => option.rarity === item.rarity
+          ),
+        };
+      })
+      const hasError = validationArray.some(
+        (item) => item.name || item.rarity
+      );
+      if (hasError) {
+        setTokenFormValidation(validationArray)
+        apiContext.api.error("Please eliminate token errors");
+        return false;
+      }
+    }
+    if (activeStep === 3) { // Sale info
       const doesSaleNameExist = async () => {
         try {
           const slug = slugify(saleInfoData.saleName);
@@ -458,17 +493,17 @@ const Mint: NextPage = () => {
               amount: Number(packEntry.count ?? 0),
               rarity: packEntry.probabilities
                 ? packEntry.probabilities.map((rarity) => {
-                    return {
-                      rarity: rarity.rarityName,
-                      odds: Number(rarity.probability),
-                    };
-                  })
-                : [
-                    {
-                      rarity: "",
-                      odds: 100,
-                    },
-                  ],
+                  return {
+                    rarity: rarity.rarityName,
+                    odds: Number(rarity.probability),
+                  };
+                })
+                : rarityData.map((item, i) => {
+                  return {
+                    rarity: item.rarity,
+                    odds: 100,
+                  }
+                }),
             };
           }),
           tpe: "COMBINED", // what are other fields ??
@@ -554,31 +589,31 @@ const Mint: NextPage = () => {
           description: nft.description ?? "",
           traits:
             nft.traits &&
-            nft.traits[0].key !== undefined &&
-            nft.traits[0].key !== ""
+              nft.traits[0].key !== undefined &&
+              nft.traits[0].key !== ""
               ? nft.traits.map((trait) => {
-                  return {
-                    name: trait.key,
-                    tpe: trait.type.toUpperCase(),
-                    valueString:
-                      typeof trait.value === "string" ? trait.value : null,
-                    valueInt:
-                      typeof trait.value === "number" ? trait.value : null,
-                  };
-                })
+                return {
+                  name: trait.key,
+                  tpe: trait.type.toUpperCase(),
+                  valueString:
+                    typeof trait.value === "string" ? trait.value : null,
+                  valueInt:
+                    typeof trait.value === "number" ? trait.value : null,
+                };
+              })
               : [],
           rarity: nft.rarity ?? "",
           explicit: nft.explicit,
           royalty:
             nft.royalties &&
-            nft.royalties[0].address !== undefined &&
-            nft.royalties[0].address !== ""
+              nft.royalties[0].address !== undefined &&
+              nft.royalties[0].address !== ""
               ? nft.royalties.map((royalty) => {
-                  return {
-                    address: royalty.address,
-                    royaltyPct: Number(royalty.pct),
-                  };
-                })
+                return {
+                  address: royalty.address,
+                  royaltyPct: Number(royalty.pct),
+                };
+              })
               : [],
         };
       })
@@ -651,9 +686,9 @@ const Mint: NextPage = () => {
                 onClick={handleStep(i)}
                 sx={{
                   "& .MuiStepLabel-root .MuiStepLabel-labelContainer .MuiStepLabel-label":
-                    {
-                      mb: 0,
-                    },
+                  {
+                    mb: 0,
+                  },
                 }}
               >
                 <Collapse
@@ -702,9 +737,9 @@ const Mint: NextPage = () => {
                       completed={stepperCompleted[index]}
                       sx={{
                         "& .MuiStepLabel-root .MuiStepLabel-labelContainer .MuiStepLabel-label":
-                          {
-                            mb: 0,
-                          },
+                        {
+                          mb: 0,
+                        },
                       }}
                     >
                       <StepButton color="inherit" onClick={handleStep(index)}>
@@ -800,6 +835,8 @@ const Mint: NextPage = () => {
                     setClearForm={setClearTokenDetailsForm}
                     rarityData={rarityData}
                     setRarityData={setRarityData}
+                    tokenFormValidation={tokenFormValidation}
+                    setTokenFormValidation={setTokenFormValidation}
                   />
                 </Collapse>
                 <Collapse in={activeStep === 3} mountOnEnter unmountOnExit>
@@ -870,6 +907,12 @@ const Mint: NextPage = () => {
             )}
           </Grid>
         </Grid>
+        <Button
+          onClick={() => { console.log(tokenFormValidation)}}
+          sx={{ mr: 1 }}
+        >
+          console log token form validation
+        </Button>
       </Container>
     </>
   );

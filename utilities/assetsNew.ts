@@ -151,9 +151,9 @@ export const getWalletList = async (addresses: string[]): Promise<IWalletListTok
         data: {},
       };
     });
+    console.log(balances.data)
   const balance = reduceBalances(balances.data);
   if (balance) {
-    console.log(balance.tokens)
     return balance.tokens
   }
 

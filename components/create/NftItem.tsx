@@ -14,6 +14,7 @@ import {
   MenuItem,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   Checkbox,
   Collapse,
   Skeleton
@@ -39,6 +40,14 @@ interface INftItemProps {
   fungible: boolean;
   skeleton: boolean;
   setSkeleton: React.Dispatch<React.SetStateAction<boolean>>
+  tokenFormValidation: {
+    name: boolean;
+    rarity: boolean;
+  }[];
+  setTokenFormValidation: React.Dispatch<React.SetStateAction<{
+    name: boolean;
+    rarity: boolean;
+  }[]>>;
 }
 
 const NftItem: FC<INftItemProps> = (
@@ -55,7 +64,9 @@ const NftItem: FC<INftItemProps> = (
     royaltyData,
     fungible,
     skeleton,
-    setSkeleton
+    setSkeleton,
+    tokenFormValidation,
+    setTokenFormValidation
   }
 ) => {
   const theme = useTheme()
@@ -121,7 +132,13 @@ const NftItem: FC<INftItemProps> = (
 
   useEffect(() => {
     const filter = rarityData.filter((data) => data.rarity === raritySelect)
-    if (filter.length !== 1) setRaritySelect('')
+    if (filter.length !== 1) {
+      setRaritySelect('')
+      setThisNft(prev => ({
+        ...prev,
+        rarity: ''
+      }))
+    }
   }, [rarityData])
 
   useEffect(() => {
@@ -179,6 +196,19 @@ const NftItem: FC<INftItemProps> = (
   }, [JSON.stringify(thisNft)])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.target.name === 'nftName' && e.target.value !== '') {
+      setTokenFormValidation((prev) =>
+        prev.map((item, i) => {
+          if (index === i) {
+            return {
+              ...item,
+              name: false
+            };
+          }
+          return item;
+        })
+      );
+    }
     setThisNft(prev => ({
       ...prev,
       [e.target.name]: e.target.value
@@ -225,6 +255,19 @@ const NftItem: FC<INftItemProps> = (
 
   const handleRarityChange = (e: SelectChangeEvent) => {
     setRaritySelect(e.target.value)
+    if (e.target.value !== '') {
+      setTokenFormValidation((prev) =>
+        prev.map((item, i) => {
+          if (index === i) {
+            return {
+              ...item,
+              rarity: false
+            };
+          }
+          return item;
+        })
+      );
+    }
     setThisNft(prev => ({
       ...prev,
       rarity: e.target.value
@@ -263,160 +306,169 @@ const NftItem: FC<INftItemProps> = (
 
         </Grid>
         <Grid item xs={12} sm={9}>
-        {skeleton ? (
+          {skeleton ? (
             <Skeleton variant="rounded" width={'100%'} height={300} />
           ) : (
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Grid
-                container
-                spacing={1}
-                alignItems="center"
-              >
-                <Grid item xs>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    id="nft-name"
-                    name="nftName"
-                    label="Name"
-                    value={thisNft.nftName}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                {fungible && (
-                  <Grid item xs={2}>
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <Grid
+                  container
+                  spacing={1}
+                  alignItems="center"
+                >
+                  <Grid item xs>
                     <TextField
                       fullWidth
                       variant="filled"
-                      id="quantity"
-                      name="qty"
-                      label="Quantity"
-                      value={thisNft.qty}
+                      id="nft-name"
+                      name="nftName"
+                      label="Name"
+                      value={thisNft.nftName}
                       onChange={handleChange}
+                      error={tokenFormValidation[index].name}
+                      helperText={tokenFormValidation[index].name ? "Name the token" : null}
                     />
                   </Grid>
-                )}
-                <Grid item xs="auto">
-                  <IconButton onClick={() => {
-                    removeItem()
-                  }}>
-                    <Icon>
-                      delete
-                    </Icon>
-                  </IconButton>
+                  {fungible && (
+                    <Grid item xs={2}>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        id="quantity"
+                        name="qty"
+                        label="Quantity"
+                        value={thisNft.qty}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+                  )}
+                  <Grid item xs="auto">
+                    <IconButton onClick={() => {
+                      removeItem()
+                    }}>
+                      <Icon>
+                        delete
+                      </Icon>
+                    </IconButton>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-            <Grid item key={index} xs={12}>
-              <TextField
-                fullWidth
-                variant="filled"
-                id="nft-description"
-                name="description"
-                label="Description"
-                value={thisNft.description}
-                onChange={handleChange}
-              />
-            </Grid>
-            {rarityData.length > 1 && (
-              <Grid item xs={6}>
-                <FormControl variant="filled" fullWidth>
-                  <InputLabel id="rarity-label">Rarity</InputLabel>
-                  <Select
-                    id="rarity"
-                    value={raritySelect}
-                    label="Rarity"
-                    name="rarity"
-                    onChange={handleRarityChange}
-                  >
-                    {rarityData.map((item, i) => {
-                      return (
-                        <MenuItem key={i} value={item.rarity}>{item.rarity}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl>
+              <Grid item key={index} xs={12}>
+                <TextField
+                  fullWidth
+                  variant="filled"
+                  id="nft-description"
+                  name="description"
+                  label="Description"
+                  value={thisNft.description}
+                  onChange={handleChange}
+                />
               </Grid>
-            )}
-
-            {thisNft.traits && thisNft.traits[0].key !== '' && (
-              thisNft.traits.map((item, i) => {
-                return (
-                  <Grid item key={i} xs={6}>
-                    <TextField
-                      fullWidth
-                      variant="filled"
-                      id="trait-value"
-                      label={item.key}
-                      type={item.type === 'Level' || item.type === 'Stat' ? 'number' : ''}
-                      value={item.value}
-                      name={item.key}
-                      onChange={handleChangeTrait}
-                      error={checkMax[item.id]}
-                      helperText={checkMax[item.id] ? 'Keep numbers below trait max' : ''}
-                    />
-                  </Grid>
-                )
-              })
-            )}
-            <Grid item xs={12}>
-              <Grid
-                container
-                alignItems="center"
-                sx={{
-                  width: '100%',
-                  mb: '0px',
-                }}
-              >
-                <Grid item xs>
-                  <FormControl sx={{ pl: '8px', color: theme.palette.text.secondary }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={thisNft.explicit}
-                          onChange={handleExplicitCheckbox}
-                        />
-                      }
-                      label="Contains explicit content"
-                    />
+              {(rarityData.length > 1 || rarityData[0].rarity.length > 0) && (
+                <Grid item xs={6}>
+                  <FormControl
+                    variant="filled"
+                    fullWidth
+                    error={tokenFormValidation[index].rarity}
+                  >
+                    <InputLabel id="rarity-label">Rarity</InputLabel>
+                    <Select
+                      id="rarity"
+                      value={raritySelect}
+                      label="Rarity"
+                      name="rarity"
+                      onChange={handleRarityChange}
+                    >
+                      {rarityData.map((item, i) => {
+                        return (
+                          <MenuItem key={i} value={item.rarity}>{item.rarity}</MenuItem>
+                        )
+                      })}
+                    </Select>
+                    {tokenFormValidation[index].rarity &&
+                      <FormHelperText>Choose a rarity</FormHelperText>
+                    }
                   </FormControl>
                 </Grid>
-                <Grid item xs="auto">
-                  <Box onClick={() => handleRoyaltyToggle()} sx={{ '&:hover': { cursor: 'pointer' } }}>
-                    <Typography
-                      sx={{
-                        display: 'inline-block',
-                        mr: '6px',
-                        verticalAlign: 'middle',
-                        color: royaltyToggle ? theme.palette.text.primary : theme.palette.text.secondary
-                      }}
-                    >
-                      Custom Royalties
-                    </Typography>
-                    <Switch
-                      focusVisibleClassName=".Mui-focusVisible"
-                      disableRipple
-                      checked={royaltyToggle}
-                    />
-                  </Box>
+              )}
+
+              {thisNft.traits && thisNft.traits[0].key !== '' && (
+                thisNft.traits.map((item, i) => {
+                  return (
+                    <Grid item key={i} xs={6}>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        id="trait-value"
+                        label={item.key}
+                        type={item.type === 'Level' || item.type === 'Stat' ? 'number' : ''}
+                        value={item.value}
+                        name={item.key}
+                        onChange={handleChangeTrait}
+                        error={checkMax[item.id]}
+                        helperText={checkMax[item.id] ? 'Keep numbers below trait max' : ''}
+                      />
+                    </Grid>
+                  )
+                })
+              )}
+              <Grid item xs={12}>
+                <Grid
+                  container
+                  alignItems="center"
+                  sx={{
+                    width: '100%',
+                    mb: '0px',
+                  }}
+                >
+                  <Grid item xs>
+                    <FormControl sx={{ pl: '8px', color: theme.palette.text.secondary }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={thisNft.explicit}
+                            onChange={handleExplicitCheckbox}
+                          />
+                        }
+                        label="Contains explicit content"
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs="auto">
+                    <Box onClick={() => handleRoyaltyToggle()} sx={{ '&:hover': { cursor: 'pointer' } }}>
+                      <Typography
+                        sx={{
+                          display: 'inline-block',
+                          mr: '6px',
+                          verticalAlign: 'middle',
+                          color: royaltyToggle ? theme.palette.text.primary : theme.palette.text.secondary
+                        }}
+                      >
+                        Custom Royalties
+                      </Typography>
+                      <Switch
+                        focusVisibleClassName=".Mui-focusVisible"
+                        disableRipple
+                        checked={royaltyToggle}
+                      />
+                    </Box>
+                  </Grid>
                 </Grid>
               </Grid>
+
+              <Collapse in={royaltyToggle} sx={{ pl: '8px', width: '100%' }}>
+                <RoyaltySection
+                  data={customRoyalties}
+                  setData={setCustomRoyalties}
+                />
+              </Collapse>
+
+              <Button onClick={() => {
+                console.log(thisNft)
+              }}>
+                console log this nft
+              </Button>
             </Grid>
-
-            <Collapse in={royaltyToggle} sx={{ pl: '8px', width: '100%' }}>
-              <RoyaltySection
-                data={customRoyalties}
-                setData={setCustomRoyalties}
-              />
-            </Collapse>
-
-            <Button onClick={() => {
-              console.log(thisNft)
-            }}>
-              console log this nft
-            </Button>
-          </Grid>
           )}
         </Grid>
       </Grid>

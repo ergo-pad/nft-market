@@ -54,13 +54,30 @@ interface ITokenDetailsProps {
   setClearForm: React.Dispatch<React.SetStateAction<boolean>>;
   rarityData: IRarityData[];
   setRarityData: React.Dispatch<React.SetStateAction<IRarityData[]>>;
+  tokenFormValidation: {
+    name: boolean;
+    rarity: boolean;
+  }[];
+  setTokenFormValidation: React.Dispatch<React.SetStateAction<{
+    name: boolean;
+    rarity: boolean;
+  }[]>>;
 }
 
-const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetailsData, clearForm, setClearForm, rarityData, setRarityData }) => {
+const TokenDetails: FC<ITokenDetailsProps> = ({
+  tokenDetailsData,
+  setTokenDetailsData,
+  clearForm,
+  setClearForm,
+  rarityData,
+  setRarityData,
+  tokenFormValidation,
+  setTokenFormValidation
+}) => {
   // const theme = useTheme()
-  const [traitData, setTraitData] = useState<ITraitsData[]>(tokenDetailsDataInit.availableTraits)
+  const [traitData, setTraitData] = useState<ITraitsData[]>(tokenDetailsData.availableTraits)
   const [clearTriggerNftImages, setClearTriggerNftImages] = useState(false)
-  const [nftData, setNftData] = useState<INftData[]>([])
+  const [nftData, setNftData] = useState<INftData[]>(tokenDetailsData.nfts)
   const [fungible, setFungible] = useState(false)
 
   useEffect(() => {
@@ -99,12 +116,14 @@ const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetail
 
   // CLEAR FORM //
   useEffect(() => {
-    setClearTriggerNftImages(true) // this is a trigger to update child state
-    setRarityData(tokenDetailsDataInit.rarities) // this is a local state
-    setTraitData(tokenDetailsDataInit.availableTraits) // this is a local state
-    setTokenDetailsData(tokenDetailsDataInit) // this belongs to parent
-    setNftData([])
-    setClearForm(false)
+    if (clearForm === true) {
+      setClearTriggerNftImages(true) // this is a trigger to update child state
+      setRarityData(tokenDetailsDataInit.rarities) // this is a local state
+      setTraitData(tokenDetailsDataInit.availableTraits) // this is a local state
+      setTokenDetailsData(tokenDetailsDataInit) // this belongs to parent
+      setNftData([])
+      setClearForm(false)
+    }
   }, [clearForm])
 
   return (
@@ -133,6 +152,8 @@ const TokenDetails: FC<ITokenDetailsProps> = ({ tokenDetailsData, setTokenDetail
           fungible={fungible}
           setFungible={setFungible}
           tokenDetailsData={tokenDetailsData}
+          tokenFormValidation={tokenFormValidation}
+          setTokenFormValidation={setTokenFormValidation}
         />
       </Box>
 
