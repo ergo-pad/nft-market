@@ -196,6 +196,19 @@ const NftItem: FC<INftItemProps> = (
   }, [JSON.stringify(thisNft)])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.target.name === 'nftName' && e.target.value !== '') {
+      setTokenFormValidation((prev) =>
+        prev.map((item, i) => {
+          if (index === i) {
+            return {
+              ...item,
+              name: false
+            };
+          }
+          return item;
+        })
+      );
+    }
     setThisNft(prev => ({
       ...prev,
       [e.target.name]: e.target.value
@@ -242,6 +255,19 @@ const NftItem: FC<INftItemProps> = (
 
   const handleRarityChange = (e: SelectChangeEvent) => {
     setRaritySelect(e.target.value)
+    if (e.target.value !== '') {
+      setTokenFormValidation((prev) =>
+        prev.map((item, i) => {
+          if (index === i) {
+            return {
+              ...item,
+              rarity: false
+            };
+          }
+          return item;
+        })
+      );
+    }
     setThisNft(prev => ({
       ...prev,
       rarity: e.target.value

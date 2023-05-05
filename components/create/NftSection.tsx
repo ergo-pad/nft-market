@@ -64,6 +64,11 @@ const NftSection: FC<INftSectionProps> = ({
     meta: []
   });
   const [nftImages, setNftImages] = useState<IFileUrl[]>([]);
+  // const [uploadedUrls, setUploadedUrls] = useState<{ [key: string]: string }>(tokenDetailsData.nfts.reduce((acc, item) => {
+  //   // @ts-ignore
+  //   acc[item.id] = item.image;
+  //   return acc;
+  // }, {}));
   const [uploadedUrls, setUploadedUrls] = useState<{ [key: string]: string }>({});
   const [backdrop, setBackdrop] = useState({
     visible: false,
@@ -179,8 +184,6 @@ const NftSection: FC<INftSectionProps> = ({
       }])
     }
   }, [clearTriggerNftImages]);
-
-
 
   const parseData = (data: ITokenDetailsData, royaltyData: IRoyaltyItem[]) => {
     const traitsFields = data.availableTraits.map((item, i) => {
@@ -403,7 +406,23 @@ const NftSection: FC<INftSectionProps> = ({
   }, [debounceNftData])
 
   useEffect(() => {
-    setDebounceNftData(nftData)
+    // tokenDetailsData.nfts.map((item, i) => {
+    //   return {
+    //     url: resolveIpfs(item.image),
+    //     ipfs: item.image,
+    //   }
+    // })
+    if (tokenDetailsData.nfts.length > 0) {
+      setDebounceNftData(tokenDetailsData.nfts)
+      const urls = tokenDetailsData.nfts.reduce((acc, item) => {
+        // @ts-ignore
+        acc[item.id] = resolveIpfs(item.image);
+        return acc;
+      }, {})
+      setUploadedUrls(urls);
+      console.log(urls)
+    }
+    else setDebounceNftData(nftData)
     setTokenFormValidation(Array.from({ length: nftData.length }, () => ({ name: false, rarity: false })))
   }, [])
 

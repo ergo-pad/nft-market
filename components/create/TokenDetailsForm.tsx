@@ -75,9 +75,9 @@ const TokenDetails: FC<ITokenDetailsProps> = ({
   setTokenFormValidation
 }) => {
   // const theme = useTheme()
-  const [traitData, setTraitData] = useState<ITraitsData[]>(tokenDetailsDataInit.availableTraits)
+  const [traitData, setTraitData] = useState<ITraitsData[]>(tokenDetailsData.availableTraits)
   const [clearTriggerNftImages, setClearTriggerNftImages] = useState(false)
-  const [nftData, setNftData] = useState<INftData[]>([])
+  const [nftData, setNftData] = useState<INftData[]>(tokenDetailsData.nfts)
   const [fungible, setFungible] = useState(false)
 
   useEffect(() => {
