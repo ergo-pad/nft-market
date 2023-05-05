@@ -235,12 +235,6 @@ const SellTokens: FC<ISellTokensProps> = ({ open, setOpen, tokens }) => {
             >
               Awaiting your confirmation of the transaction in the dApp connector.
             </Typography>
-            <Button onClick={() => setSubmitting("success")}>
-              Test Success
-            </Button>
-            <Button onClick={() => setSubmitting("failed")}>
-              Test Failed
-            </Button>
           </Box>
         )
       case "success":

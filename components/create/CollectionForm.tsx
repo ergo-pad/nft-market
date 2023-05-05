@@ -105,11 +105,13 @@ const CollectionForm: FC<ICollectionFormProps> = ({
 
   // CLEAR FORM //
   useEffect(() => {
-    setClearTriggerCollectionFeatured(true); // this is a trigger to update child state
-    setClearTriggerCollectionBanner(true); // this is a trigger to update child state
-    setClearTriggerCollectionLogo(true); // this is a trigger to update child state
-    setCollectionData(collectionDataInit); // this belongs to parent
-    setClearForm(false);
+    if (clearForm === true) {
+      setClearTriggerCollectionFeatured(true); // this is a trigger to update child state
+      setClearTriggerCollectionBanner(true); // this is a trigger to update child state
+      setClearTriggerCollectionLogo(true); // this is a trigger to update child state
+      setCollectionData(collectionDataInit); // this belongs to parent
+      setClearForm(false);
+    }
   }, [clearForm]);
 
   return (
@@ -123,10 +125,10 @@ const CollectionForm: FC<ICollectionFormProps> = ({
             id="collection-name"
             label="Collection Name"
             name="collectionName"
-            value={collectionData.collectionName || ""}
+            value={collectionData.collectionName}
             onChange={handleChange}
             error={collectionFormValidation.name}
-            helperText={collectionFormValidation.name ? "A collection already exists with this name" : null}
+            helperText={collectionFormValidation.name ? "Choose a unique collection name" : null}
           />
         </Grid>
         <Grid item xs={12} md={6}>

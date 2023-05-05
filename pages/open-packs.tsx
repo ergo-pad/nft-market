@@ -43,12 +43,30 @@ const Open: NextPage = () => {
     ))
   }
 
+  interface ObjectWithQty {
+    [key: string]: any;
+    qty: number;
+  }
+
+  function expandArrayObjects<T extends ObjectWithQty>(arr: T[]): T[] {
+    return ([] as T[]).concat(...arr.map(obj => {
+      let repeatedObjs = Array(obj.amount).fill({} as T);
+      Object.keys(obj).forEach(key => {
+        repeatedObjs.forEach((repeatedObj, i) => {
+          repeatedObj[key] = obj[key];
+        });
+      });
+      return repeatedObjs;
+    }));
+  }
+  
   const fetchData = async (addresses: any[]) => {
     const tokenList: any[] = await getWalletList(addresses);
     const additionalData = await tokenListInfo(tokenList);
     const packTokenList = additionalData.filter((item) => item.type === 'PACK')
-    setNftList(packTokenList)
-    setSelected(packTokenList.map(() => {
+    const expandedList = expandArrayObjects(packTokenList)
+    setNftList(expandedList)
+    setSelected(expandedList.map(() => {
       return false
     }))
     setLoading(false)
